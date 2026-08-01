@@ -118,6 +118,9 @@
   .fatd__h2 { font-size: 36px; }
 }
 
+/* smaller heading variant — must come after the breakpoint above to win */
+.fatd__h2--sm { font-size: 24px; }
+
 .fatd__lead { margin-top: 20px; color: var(--fatd-muted-fg); text-wrap: pretty; }
 .fatd__section--teal .fatd__lead,
 .fatd__section--deep .fatd__lead { color: rgba(244, 236, 216, 0.85); }
@@ -574,6 +577,25 @@
 
 @media (min-width: 640px) {
   .fatd__sticky { display: none; }
+}
+
+/* ---------- mobile: centre the content ----------
+   The source design left-aligns copy at this width; centring is a deliberate
+   departure. Structured rows (checklists, FAQ, the offer list, the quote) stay
+   left-aligned — centring those breaks their icon/marker alignment. */
+
+@media (max-width: 639px) {
+  .fatd__section > .fatd__inner { text-align: center; }
+  .fatd__cards { text-align: center; }
+  .fatd__card-icon { margin-inline: auto; }
+  .fatd__author-head { justify-content: center; }
+  .fatd__hero-sub,
+  .fatd__hero-tagline { margin-inline: auto; }
+
+  .fatd__checks,
+  .fatd__offer-list,
+  .fatd__faq,
+  .fatd__quote { text-align: left; }
 }
 
 @media (prefers-reduced-motion: reduce) {
