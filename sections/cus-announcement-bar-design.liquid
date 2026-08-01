@@ -1,0 +1,182 @@
+<style>
+.cus-announcement-design{
+  background-color: #0C150D; /* Updated to match the image */
+}
+
+.cus-announcement-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 5rem;
+  font-size: 14px;
+  width: 100%;
+  position: relative;
+  font-family: Arial, sans-serif;
+}
+
+.cus-banner-item {
+  display: flex;
+  align-items: center;
+  font-weight: normal;
+  color: #fff;
+}
+
+.cus-banner-item strong {
+  font-weight: bold;
+}
+
+.cus-icon {
+  margin-right: 5px;
+}
+
+.cus-announcement-text {
+  color: #fff;
+  cursor: pointer;
+}
+
+.cus-link {
+  color: #fff;
+  text-decoration: underline;
+  font-weight: normal;
+}
+
+.cus-link:hover {
+  text-decoration: underline;
+}
+
+.copy-text {
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.tooltip {
+  visibility: hidden;
+  text-align: center;
+  padding: 5px;
+  border-radius: 5px;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+  .copy-text svg{
+    margin-left: 5px;
+  }
+
+
+.copy-text:hover .tooltip {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .cus-announcement-banner {
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    overflow: hidden;
+    height: 60px;
+  }
+
+  .cus-banner-item {
+    position: absolute;
+    width: 100%;
+    justify-content: center;
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .cus-banner-item.active {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+
+<div class="cus-announcement-design">
+  <div class="cus-announcement-banner page-width">
+    <div class="cus-banner-item active" id="announcement1">
+      <span class="cus-icon">🚚</span> 
+      <span class="cus-announcement-text">
+        <strong>Free delivery</strong> on all 
+        <a href="https://thesunnahstore.co.uk/collections/panjabi" class="cus-link">Panjabi</a> 
+        and <a href="https://thesunnahstore.co.uk/collections/thobe" class="cus-link">Thobe</a> orders!
+      </span>
+    </div>
+    <div class="cus-banner-item" id="announcement2">
+      <span class="cus-announcement-text">
+        Enjoy a <strong>5% discount</strong> with the coupon code 
+        <span class="copy-text" onclick="copyToClipboard(this, 'BISMILLAH')">
+          “<strong>BISMILLAH</strong>” 
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="12" height="12">
+            <path fill="white" d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"/>
+          </svg>
+
+          <span class="tooltip">Copied</span>
+        </span>
+      </span>
+    </div>
+  </div>
+</div>
+
+<script>
+  function startMobileSwipe() {
+    let announcements = document.querySelectorAll('.cus-banner-item');
+    let currentIndex = 0;
+
+    function changeAnnouncement() {
+      announcements.forEach(item => item.classList.remove('active'));
+      announcements[currentIndex].classList.add('active');
+      currentIndex = (currentIndex + 1) % announcements.length;
+    }
+
+    if (window.innerWidth <= 768) {
+      announcements.forEach((item, index) => {
+        item.classList.remove('active');
+        if (index === 0) item.classList.add('active');
+      });
+      setInterval(changeAnnouncement, 4000);
+    }
+  }
+
+  function copyToClipboard(element, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      let tooltip = element.querySelector('.tooltip');
+      tooltip.style.visibility = 'visible';
+      tooltip.style.opacity = '1';
+      setTimeout(() => {
+        tooltip.style.visibility = 'hidden';
+        tooltip.style.opacity = '0';
+      }, 1500);
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", startMobileSwipe);
+  window.addEventListener('resize', startMobileSwipe);
+</script>
+
+{% schema %}
+{
+  "name": "Cus Announcement Bar",
+  "tag": "section",
+  "class": "section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Cus Announcement Bar"
+    }
+  ]
+}
+{% endschema %}

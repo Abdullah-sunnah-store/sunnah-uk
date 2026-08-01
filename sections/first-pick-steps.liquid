@@ -1,0 +1,429 @@
+
+<style>
+   .page-width-2{
+    background-color: #0c150d !important;
+     position: relative;
+     padding: 1px;
+     background-image: url('https://cdn.shopify.com/s/files/1/0934/9539/4644/files/Untitled-3.png?v=1748084444');
+  }
+   .page-width-2::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  opacity: 0.7;
+  z-index: 1;
+}
+.first-pick-section {
+  position: relative;
+  overflow: hidden; 
+  background-color: #232334;;
+  padding: 60px 0px;
+  margin: 30px auto;
+  max-width: 1000px;
+  color: #fff;
+  z-index: 1;
+  border-radius: 20px;
+  overflow: visible;
+}
+
+/* Header */
+.first-pick-section__header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.first-pick-section__subtitle {
+  color: white;
+  font-size: 24px;
+  margin-bottom: 10px;
+  font-weight: 500;
+  margin-top: 0;
+}
+
+.first-pick-section__heading {
+  color: white;
+  font-size: 48px;
+  margin-top: 0;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* Steps Container */
+.first-pick-section__steps {
+  /* display: flex;
+  flex-wrap: wrap; */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  justify-content: center;
+  gap: 25px;
+  width: calc(100% + 200px);
+  margin: 0 -100px 70px -100px;
+  padding: 0 20px;
+}
+
+/* Step Cards */
+.first-pick-section__card {
+  background-color: #383848;
+  border-radius: 15px;
+  padding: 35px 20px 25px;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.first-pick-section__card:nth-child(2n):hover {
+  transform: translateY(30px);
+}
+.first-pick-section__card:nth-child(2n) {
+    transform: translateY(4rem);
+  }
+.first-pick-section__card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.first-pick-section__label {
+  background-color: {{ section.settings.accent_color | default: '#735bf2' }};
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  position: absolute;
+  top: -15px;
+  left: 30px;
+  font-weight: 600;
+  transform: rotate(-3deg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.first-pick-section__image {
+  margin: 20px 0 30px;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.first-pick-section__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.first-pick-section__description {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* CTA Button */
+.first-pick-section__cta {
+  text-align: center;
+  margin-top: 20px;
+}
+.first-pick-section__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(45deg, #17443F, #2ABCA7);
+  color: white;
+  padding: 15px 30px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 18px;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Remove old background fill effect */
+.first-pick-section__button::after {
+  display: none;
+}
+
+/* Add shine effect */
+.first-pick-section__button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.first-pick-section__button:hover::before {
+  animation: smooth-shine 2s ease-in-out infinite;
+}
+
+.first-pick-section__button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px {{ section.settings.accent_color | default: '#735bf2' | color_modify: 'alpha', 0.4 }};
+}
+
+/* Content above shine */
+.first-pick-section__button > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Icon styles */
+.first-pick-section__button svg {
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+  z-index: 2;
+  position: relative;
+}
+
+.first-pick-section__button:hover svg {
+  transform: translateX(3px);
+}
+
+/* Shine animation */
+@keyframes smooth-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+
+
+/* Stars background */
+.first-pick-section__star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background-color: white;
+  border-radius: 50%;
+  opacity: 0.3;
+}
+
+/* Stars background pattern */
+.first-pick-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(white 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.03;
+  z-index: 0;
+}
+@media screen and (min-width: 901px) and (max-width: 1099px) {
+   .first-pick-section__steps {
+    width: 100%;
+    margin: 0 auto;
+    margin-bottom: 40px;
+     grid-template-rows: repeat(auto-fit, minmax(220px, 1fr));
+     width: 100%;
+     margin: unset;
+}  
+   .first-pick-section__card:nth-child(2n) {
+    transform: translateY(0rem);
+  }
+  .first-pick-section__card:nth-child(2n):hover {
+  transform: translateY(-5px) !important;
+}
+}
+/* Responsive Design */
+@media screen and (max-width: 900px) {
+  .first-pick-section__heading {
+    font-size: 40px;
+  }
+  
+  .first-pick-section__steps {
+    gap: 40px;
+    width: 100%;
+    margin: unset;
+    grid-template-rows: repeat(auto-fit, minmax(220px, 1fr));
+    
+  }
+  .first-pick-section__card:nth-child(2n) {
+    transform: translateY(0rem);
+  }
+    .first-pick-section__card:nth-child(2n):hover {
+  transform: translateY(-5px) !important;
+}
+}
+
+@media screen and (max-width: 600px) {
+  .first-pick-section {
+    padding: 50px 20px;
+  }
+  
+  .first-pick-section__heading {
+    font-size: 32px;
+  }
+  
+  .first-pick-section__subtitle {
+    font-size: 20px;
+  }
+  
+  .first-pick-section__card {
+    width: 100%;
+  }
+  
+  .first-pick-section__button {
+    padding: 12px 25px;
+    font-size: 16px;
+  }
+    .first-pick-section__card:nth-child(2n) {
+    transform: translateY(0rem);
+  }
+    .first-pick-section__card:nth-child(2n):hover {
+  transform: translateY(-5px) !important;
+}
+}
+</style>
+
+{% schema %}
+{
+  "name": "First Pick Steps",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Subtitle",
+      "default": "Want First Pick?"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Heading",
+      "default": "Follow These Steps"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Shop"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#121524"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#735bf2"
+    },
+    {
+      "type": "image_picker",
+      "id": "step1_image",
+      "label": "Step 1 Image"
+    },
+    {
+      "type": "text",
+      "id": "step1_text",
+      "label": "Step 1 Text",
+      "default": "Choose Products"
+    },
+    {
+      "type": "image_picker",
+      "id": "step2_image",
+      "label": "Step 2 Image"
+    },
+    {
+      "type": "text",
+      "id": "step2_text",
+      "label": "Step 2 Text",
+      "default": "Choose Gift Box"
+    },
+    {
+      "type": "image_picker",
+      "id": "step3_image",
+      "label": "Step 3 Image"
+    },
+    {
+      "type": "text",
+      "id": "step3_text",
+      "label": "Step 3 Text",
+      "default": "Confirm Box"
+    }
+  ],
+  "presets": [
+    {
+      "name": "First Pick Steps",
+      "category": "Custom Content"
+    }
+  ]
+}
+{% endschema %}
+<div class="  page-width-2">
+<div class="first-pick-section">
+  <div class="first-pick-section__header">
+    <h2 class="first-pick-section__subtitle">{{ section.settings.heading }}</h2>
+    <h1 class="first-pick-section__heading">{{ section.settings.subheading }}</h1>
+  </div>
+
+  <div class="first-pick-section__steps">
+    <div class="first-pick-section__card">
+      <div class="first-pick-section__label">1. Choose Products</div>
+      <div class="first-pick-section__image">
+        <img src="{{ section.settings.step1_image | img_url: '300x' }}" alt="Step 1 Image" />
+      </div>
+      <p class="first-pick-section__description">{{ section.settings.step1_text }}</p>
+    </div>
+
+    <div class="first-pick-section__card">
+      <div class="first-pick-section__label">2. Choose Gift Box</div>
+      <div class="first-pick-section__image">
+        <img src="{{ section.settings.step2_image | img_url: '300x' }}" alt="Step 2 Image" />
+      </div>
+      <p class="first-pick-section__description">{{ section.settings.step2_text }}</p>
+    </div>
+
+    <div class="first-pick-section__card">
+      <div class="first-pick-section__label">3. Confirm Box</div>
+      <div class="first-pick-section__image">
+        <img src="{{ section.settings.step3_image | img_url: '300x' }}" alt="Step 3 Image" />
+      </div>
+      <p class="first-pick-section__description">{{ section.settings.step3_text }}</p>
+    </div>
+  </div>
+
+    <div class="first-pick-section__cta">
+    <a href="{{ section.settings.button_link | default: '#' }}" class="first-pick-section__button">
+      <span class="button-text">{{ section.settings.button_text }}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </a>
+  </div>
+
+</div>
+</div>

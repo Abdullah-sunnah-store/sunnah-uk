@@ -1,0 +1,597 @@
+{% schema %}
+{
+  "name": "Featured Drop",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Section Heading",
+      "default": "Featured Drop"
+    },
+    {
+      "type": "text",
+      "id": "drop_title",
+      "label": "Drop Title",
+      "default": "dYdX Chain"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Shop The Drop"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom Title (Optional)"
+        },
+        {
+          "type": "text",
+          "id": "custom_price",
+          "label": "Custom Price (Optional)"
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Add to Cart Button Text",
+          "default": "Add to Cart"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Drop",
+      "blocks": [
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .page-width-2{
+    background-color: #fafafa  !important;
+     position: relative;
+  }
+   .page-width-2::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  opacity: 0.7;
+  z-index: 1;
+}
+  .cus-button:not([disabled]):hover::after {
+  box-shadow: unset;
+}
+.featured-drop {
+  background-color: #232334;
+  padding: 40px 20px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  border-radius: 20px;
+  margin: 60px auto;
+  max-width: 1000px;
+ overflow: visible;
+
+}
+
+.featured-drop::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  opacity: 0.7;
+  z-index: -1;
+}
+
+
+.featured-drop__heading {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.featured-drop__title {
+  text-align: center;
+  font-size: 42px;
+  font-weight: 700;
+  margin: 0 0 90px 0;
+  color: #fff;
+}
+
+.featured-drop__products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  width: calc(100% + 200px);
+  margin: 0 -100px;
+  margin-bottom: 40px;
+}
+
+.product-card {
+  background-color: #1b1b2d;
+  border-radius: 20px;
+  overflow: hidden;
+  padding-bottom: 15px;
+  position: relative;
+  transition: transform 0.3s ease-in-out;
+  height: fit-content;
+}
+ .product-card:nth-child(2n) {
+    transform: translateY(-4rem);
+  }
+  .product-card:nth-child(2n):hover {
+   transform: scale(1.05) translateY(-4rem );
+   
+}
+  .product-card:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease-in-out;
+}
+.product-card__image-wrapper {
+  background-color: #fff;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  overflow: hidden;
+}
+.product-card__image-wrapper a {
+  width: 100%;
+  height: 100%;
+}
+.product-card__image-wrapper a img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.product-card__image {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+}
+.product-card__image-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card__image-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.product-card__image-wrapper img.hover-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+}
+
+.product-card__image-wrapper:hover img.hover-image {
+  opacity: 1;
+}
+
+.product-card__image-wrapper:hover img.main-image {
+  opacity: 1;
+}
+
+.product-card__title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 15px 5px;
+  color: #fff;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-card__price {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 15px;
+}
+.product-card__add-to-cart button {
+  text-decoration: none;
+  color: #fff;
+  padding: 15px 40px;
+  border-radius: 20px;
+  background-color: transparent;
+  cursor: pointer;
+}
+.product-card__add-to-cart {
+  margin: 20px 0 20px 15px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+
+.sold-out-label {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 5px;
+}
+
+.featured-drop__button {
+  display: flex;
+  justify-content: center;
+   filter: drop-shadow(0 0 20px rgba(78, 97, 231, 0.3));
+  transition: transform 0.3s ease;
+}
+.cus-button-2 {
+  border: 1px solid;
+  color: #fff;
+  padding: 15px 30px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 2px;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  transition: all 0.6s ease-out;
+}
+.cus-button {
+  background: linear-gradient(45deg, #17443F, #2ABCA7);
+  color: #fff;
+  padding: 15px 25px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 2px;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  transition: all 0.6s ease-out;
+  margin-top: 10px;
+}
+
+.cus-button svg {
+  position: relative;
+  z-index: 1;
+}
+
+/* Smooth shine layer */
+.cus-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(255, 255, 255, 0.4) 70%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: translateX(-100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Infinite shine animation on hover */
+.cus-button:hover::before {
+  animation: smooth-shine 2s ease-in-out infinite;
+}
+
+/* Optional lift on hover */
+.cus-button:hover {
+  transform: translateY(-2px);
+}
+
+/* Keep content above shine */
+.cus-button > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Shine animation */
+@keyframes smooth-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+
+
+@media screen and (min-width: 769px) and (max-width: 1099px) {
+   .featured-drop__products {
+    grid-template-rows: repeat(auto-fit, minmax(220px, 1fr));
+    width: 100%;
+    margin: 0 auto;
+    margin-bottom: 40px;
+  }  
+    .featured-drop__title {
+  margin-bottom: 40px;
+  }
+   .product-card:nth-child(2n) {
+    transform: translateY(0rem);
+  }
+   .product-card:nth-child(2n):hover {
+   transform: scale(1.05) translateY(0rem );
+   
+  }
+  }
+@media screen and (max-width: 768px) {
+  .featured-drop__products {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    width: calc(100% + 20px);
+    margin: 0 -10px !important;
+    margin: 0 auto 40px auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px; /* optional space below products */
+  }
+  .featured-drop {
+  margin: 60px 15px;
+  padding: 40px 0px;
+}
+
+  .product-card {
+    flex: 0 0 auto;
+    width: 70%; 
+    scroll-snap-align: start;
+  }
+
+  .product-card__image-wrapper {
+    height: 400px;
+  }
+
+  .featured-drop__title {
+    font-size: 32px;
+    margin-bottom: 40px;
+  }
+   .cus-button {
+    padding: 12px 25px;
+    font-size: 16px;
+   }
+  
+  .product-card__add-to-cart {
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 20px 15px;
+  }
+  .product-card__title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 15px 5px;
+  color: #fff;
+}
+
+  .product-card__add-to-cart button {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 0px;
+  }
+
+  .product-card:nth-child(2n),
+  .product-card:nth-child(2n):hover {
+    transform: none;
+    order: 0;
+  }
+  .product-card:hover {
+  transform: none !important;
+  transition: none !important;
+}
+
+  .product-grid {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+}
+
+</style>
+<div class=" page-width-2">
+<div class="featured-drop">
+  {% if section.settings.section_heading != blank %}
+    <div class="featured-drop__heading">{{ section.settings.section_heading }}</div>
+  {% endif %}
+  
+  {% if section.settings.drop_title != blank %}
+    <h2 class="featured-drop__title">{{ section.settings.drop_title }}</h2>
+  {% endif %}
+  
+  <div class="featured-drop__products">
+    {% for block in section.blocks %}
+      {% if block.settings.product != blank %}
+        {% assign product = all_products[block.settings.product] %}
+        <div class="product-card" {{ block.shopify_attributes }}>
+          
+          <div class="product-card__image-wrapper">
+            <a href="{{ product.url }}" >
+          {% assign first_image = product.images[0] %}
+          {% assign second_image = product.images[1] %}
+          
+          <div class="product-card__image-wrapper">
+            <img 
+              src="{{ first_image | img_url: '600x600' }}" 
+              alt="{{ product.title | escape }}" 
+              class="main-image" />
+            
+            {% if second_image %}
+              <img 
+                src="{{ second_image | img_url: '600x600' }}" 
+                alt="{{ product.title | escape }} - Hover" 
+                class="hover-image" />
+            {% endif %}
+          </div>
+
+           </a>
+          </div>
+          
+          <div class="product-card__title">
+            {{ block.settings.custom_title | default: product.title }}
+            {% if product.available == false %}
+              <span class="sold-out-label">Sold Out</span>
+            {% endif %}
+          </div>
+          
+          <div class="product-card__price">
+            {% if block.settings.custom_price != blank %}
+              {{ block.settings.custom_price }}
+            {% else %}
+              {{ product.price | money }}
+            {% endif %}
+          </div>
+          
+          <div class="product-card__add-to-cart">
+            <button 
+              class="product-card__add-to-cart-link cus-button-2"
+              data-product-id="{{ first_available_variant.id | default: product.variants.first.id }}"
+              data-product-handle="{{ product.handle }}"
+             >
+             
+                {{ section.settings.add_to_cart_text | default: 'ADD TO BAG' }}
+             
+          
+              
+            </button>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  
+  {% if section.settings.button_text != blank %}
+    <div class="featured-drop__button">
+      <a href="{{ section.settings.button_link | default: '#' }}" class="cus-button ">
+        {{ section.settings.button_text }}
+        <!-- <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4.16667 10H15.8333" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10 4.16667L15.8333 10L10 15.8333" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg> -->
+      </a>
+    </div>
+  {% endif %}
+</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const addToCartButtons = document.querySelectorAll('.product-card__add-to-cart-link.cus-button-2');
+
+  addToCartButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      if (button.disabled) return;
+      
+      const productId = button.getAttribute('data-product-id');
+      const originalText = button.textContent;
+      
+      button.disabled = true;
+      button.textContent = 'Adding...';
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: productId,
+          quantity: 1
+        })
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        button.textContent = 'Added!';
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.disabled = false;
+        }, 2000);
+
+        // Update cart drawer if exists
+        const cartDrawer = document.querySelector('cart-drawer');
+        if (cartDrawer) {
+          cartDrawer.classList.remove('is-empty');
+          fetch('/cart?view=drawer')
+            .then(response => response.text())
+            .then(html => {
+              const tempDiv = document.createElement('div');
+              tempDiv.innerHTML = html;
+              const newDrawerContent = tempDiv.querySelector('#CartDrawer');
+              if (newDrawerContent) {
+                document.querySelector('#CartDrawer').innerHTML = newDrawerContent.innerHTML;
+                cartDrawer.open();
+              }
+            });
+        }
+      })
+      .catch((error) => {
+        console.error('Error adding product to cart:', error);
+        button.textContent = 'Error';
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.disabled = false;
+        }, 2000);
+      });
+    });
+  });
+});
+</script>

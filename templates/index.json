@@ -1,0 +1,421 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "custom_banner_section_XKBJbD": {
+      "type": "custom-banner-section",
+      "name": "Custom Banner Section",
+      "settings": {
+        "media_type": "image",
+        "invitation_image": "shopify://shop_images/Web_PIc_Long_2.jpg",
+        "image_alt": "Nikah Wedding Invitation",
+        "invitation_image_mobile": "shopify://shop_images/Web_pic_1.jpg",
+        "image_alt_mobile": "Nikah Wedding Invitation - Mobile",
+        "invitation_video": "",
+        "video_autoplay": true,
+        "video_loop": true,
+        "video_muted": true,
+        "video_controls": false,
+        "media_link": "shopify://collections/all",
+        "open_in_new_tab": false,
+        "title": "SPREAD YOUR DEEN.",
+        "subtitle": "<p><em><strong>Every box we curate carries love, faith & beauty.</strong></em></p>",
+        "heading_color": "#ffffffe6",
+        "subheading_color": "#ffffffe6",
+        "button_text": "Explore",
+        "button_link": "shopify://collections/all",
+        "button_open_new_tab": false,
+        "button_bg_color": "#fafafa",
+        "button_text_color": "#000000",
+        "button_border_color": "#ffffff4d",
+        "button_hover_bg_color": "#ffffff",
+        "button_hover_text_color": "#000000"
+      }
+    },
+    "custom_banner_section_NAaahQ": {
+      "type": "custom-banner-section",
+      "name": "Custom Banner Section",
+      "settings": {
+        "media_type": "video",
+        "invitation_image": "shopify://shop_images/6e4432b2-Gift-Box-DSC08124-scaled.webp",
+        "image_alt": "Nikah Wedding Invitation",
+        "image_alt_mobile": "Nikah Wedding Invitation - Mobile",
+        "invitation_video": "https://cdn.shopify.com/videos/c/o/v/92d21c7a96184fec850311a7f7dd33e6.mp4",
+        "video_autoplay": true,
+        "video_loop": true,
+        "video_muted": true,
+        "video_controls": true,
+        "media_link": "shopify://collections/all",
+        "open_in_new_tab": false,
+        "title": "Personalized Prayer Mat",
+        "subtitle": "<p><em>Pray Side by Side, Forever Engraved</em></p>",
+        "heading_color": "#fafafa",
+        "subheading_color": "#fafafa",
+        "button_text": "Customize Yours",
+        "button_link": "shopify://collections/all",
+        "button_open_new_tab": false,
+        "button_bg_color": "#ffffffe6",
+        "button_text_color": "#000000",
+        "button_border_color": "#ffffff4d",
+        "button_hover_bg_color": "#ffffff",
+        "button_hover_text_color": "#000000"
+      }
+    },
+    "custom_categories_design_JQtAmq": {
+      "type": "custom-categories-design",
+      "blocks": {
+        "category_JA8akL": {
+          "type": "category",
+          "settings": {
+            "category_image": "shopify://shop_images/6f621977-Mug-MercyLove-DSC04180-1-jpg.webp",
+            "category_title": "Mug",
+            "category_subtitle": "Hearts find rest in dhikr. 13:28",
+            "cta_text": "Explore Mugs",
+            "category_link": "shopify://collections/mug"
+          }
+        },
+        "category_BiLF3V": {
+          "type": "category",
+          "settings": {
+            "category_image": "shopify://shop_images/0bdabbd2-tss-notebook-DSC03096.webp",
+            "category_title": "Note Books",
+            "category_subtitle": "Ink Your Intentions",
+            "cta_text": "Start Writing",
+            "category_link": "shopify://collections/notebooks"
+          }
+        },
+        "category_6rRD9R": {
+          "type": "category",
+          "settings": {
+            "category_image": "shopify://shop_images/0f8b0d8c-dua-jar-front.webp",
+            "category_title": "Dua Cards",
+            "category_subtitle": "Call upon Me; I respond. 40:60",
+            "cta_text": "Shop Dua Cards",
+            "category_link": "shopify://collections/dua-cards"
+          }
+        },
+        "category_bgDDRP": {
+          "type": "category",
+          "settings": {
+            "category_image": "shopify://shop_images/Ayatul-Kursi-2-Metal-Frame.jpg",
+            "category_title": "Frames",
+            "category_subtitle": "Every glance, a reminder.",
+            "cta_text": "Browse Frames",
+            "category_link": "shopify://collections/frames"
+          }
+        }
+      },
+      "block_order": [
+        "category_JA8akL",
+        "category_BiLF3V",
+        "category_6rRD9R",
+        "category_bgDDRP"
+      ],
+      "disabled": true,
+      "name": "custom categories design",
+      "settings": {
+        "heading_text": "Faith-Inspired Finds, Just for You.",
+        "sub_heading_text": "Explore our handpicked Islamic lifestyle pieces that speak to the soul.",
+        "section_id": "",
+        "animation_speed": "slow"
+      }
+    },
+    "custom_products_section_hiVtBb": {
+      "type": "custom-products-section",
+      "blocks": {
+        "product_BrgxRb": {
+          "type": "product",
+          "settings": {
+            "product_image": "shopify://shop_images/DSC3743-2.jpg",
+            "product_title": "Explore Mugs",
+            "product_description": "",
+            "product_link": "shopify://collections/mug",
+            "cta_text": "Shop Now",
+            "cta_link": ""
+          }
+        },
+        "product_EjJQwp": {
+          "type": "product",
+          "settings": {
+            "product_image": "shopify://shop_images/Dua_Jar_1.jpg",
+            "product_title": "Shop Dua Card",
+            "product_description": "",
+            "product_link": "shopify://collections/dua-cards",
+            "cta_text": "Shop Now",
+            "cta_link": ""
+          }
+        },
+        "product_zyPxqH": {
+          "type": "product",
+          "settings": {
+            "product_image": "shopify://shop_images/Grow_Through_What_you_go_through_Gold_Foiled_Notebook-1_1.jpg",
+            "product_title": "Start Writing",
+            "product_description": "",
+            "product_link": "shopify://collections/notebooks",
+            "cta_text": "Shop Now",
+            "cta_link": ""
+          }
+        },
+        "product_ipLgne": {
+          "type": "product",
+          "settings": {
+            "product_image": "shopify://shop_images/Ayatul-Kursi-2-Metal-Frame.jpg",
+            "product_title": "Browse Frames",
+            "product_description": "",
+            "product_link": "shopify://collections/frames",
+            "cta_text": "Shop Now",
+            "cta_link": ""
+          }
+        }
+      },
+      "block_order": [
+        "product_BrgxRb",
+        "product_EjJQwp",
+        "product_zyPxqH",
+        "product_ipLgne"
+      ],
+      "name": "Product Showcase",
+      "settings": {
+        "section_title": "",
+        "desktop_columns": "auto",
+        "background_color": "#ffffff",
+        "title_color": "#333333",
+        "text_color": "#333333",
+        "description_color": "#666666",
+        "button_color": "#007bff",
+        "button_text_color": "#ffffff",
+        "button_hover_color": "#0056b3"
+      }
+    },
+    "custom_banner_section_j3fdrU": {
+      "type": "custom-banner-section",
+      "name": "Custom Banner Section",
+      "settings": {
+        "media_type": "image",
+        "invitation_image": "shopify://shop_images/NIkah-Nama-Ancient-Edition.webp",
+        "image_alt": "Nikah Wedding Invitation",
+        "image_alt_mobile": "Nikah Wedding Invitation - Mobile",
+        "invitation_video": "",
+        "video_autoplay": true,
+        "video_loop": true,
+        "video_muted": true,
+        "video_controls": false,
+        "media_link": "shopify://collections/nikah-gifts",
+        "open_in_new_tab": false,
+        "title": "Nikah Gifts",
+        "subtitle": "<p><em>Hearts joined together. 8:63</em></p>",
+        "heading_color": "#fafafa",
+        "subheading_color": "#fafafa",
+        "button_text": "Explore Togetherness",
+        "button_link": "shopify://collections/nikah-gifts",
+        "button_open_new_tab": false,
+        "button_bg_color": "#ffffffe6",
+        "button_text_color": "#000000",
+        "button_border_color": "#ffffff4d",
+        "button_hover_bg_color": "#ffffff",
+        "button_hover_text_color": "#000000"
+      }
+    },
+    "new_custom_categories_design_YGn7yP": {
+      "type": "new-custom-categories-design",
+      "blocks": {
+        "category_GyWfwG": {
+          "type": "category",
+          "settings": {
+            "category_image": "shopify://shop_images/3e5714c7-Gift-Box-DSC08132-scaled.webp",
+            "category_title": "",
+            "category_subtitle": "",
+            "cta_text": "Sukoon Premium Gift Package",
+            "category_link": "shopify://collections/all-gifts"
+          }
+        },
+        "category_kJV6R6": {
+          "type": "category",
+          "settings": {
+            "category_image": "shopify://shop_images/394799130_774f639d-8ac2-4062-bc03-4d8be0fcb361.jpg",
+            "category_title": "",
+            "category_subtitle": "",
+            "cta_text": "Nikah Conversation Card",
+            "category_link": "shopify://collections/cards"
+          }
+        },
+        "category_TgwtdQ": {
+          "type": "category",
+          "settings": {
+            "category_image": "shopify://shop_images/718a4fd7-Rabbana-Dua-Card-Gold-Foil-4-jpg.webp",
+            "category_title": "",
+            "category_subtitle": "",
+            "cta_text": "Ruqyah Cards",
+            "category_link": "shopify://collections/dua-cards"
+          }
+        },
+        "category_KCYM78": {
+          "type": "category",
+          "settings": {
+            "category_image": "shopify://shop_images/8e0e6dde-Four-Quls-gold-foileld-Fibre-jpg.webp",
+            "category_title": "",
+            "category_subtitle": "",
+            "cta_text": "Four Quls",
+            "category_link": "shopify://collections/frames"
+          }
+        },
+        "category_MDwMAE": {
+          "type": "category",
+          "settings": {
+            "category_image": "shopify://shop_images/Leather-oud-DSC09797-1-jpg.webp",
+            "category_title": "",
+            "category_subtitle": "",
+            "cta_text": "Leather Oud",
+            "category_link": "shopify://collections/perfume-oil"
+          }
+        },
+        "category_L4fAwR": {
+          "type": "category",
+          "settings": {
+            "category_image": "shopify://shop_images/DSC3743-2.jpg",
+            "category_title": "",
+            "category_subtitle": "",
+            "cta_text": "Customize Yours",
+            "category_link": "shopify://collections/family-mug"
+          }
+        },
+        "category_UQkq7C": {
+          "type": "category",
+          "settings": {
+            "category_image": "shopify://shop_images/b2741566-Leather-Socks-Brown-DSC07583-jpg.webp",
+            "category_title": "",
+            "category_subtitle": "",
+            "cta_text": "Leather Socks",
+            "category_link": "shopify://collections/winter-sale"
+          }
+        },
+        "category_x4KzAt": {
+          "type": "category",
+          "settings": {
+            "category_image": "shopify://shop_images/d9c496c5-Tss-mug-Lid-DSC02842-1.webp",
+            "category_title": "",
+            "category_subtitle": "",
+            "cta_text": "Lid-Coaster",
+            "category_link": "shopify://collections/lids-coasters"
+          }
+        }
+      },
+      "block_order": [
+        "category_GyWfwG",
+        "category_kJV6R6",
+        "category_TgwtdQ",
+        "category_KCYM78",
+        "category_MDwMAE",
+        "category_L4fAwR",
+        "category_UQkq7C",
+        "category_x4KzAt"
+      ],
+      "name": "new custom categories design",
+      "settings": {
+        "heading_text": "Best seller",
+        "sub_heading_text": "",
+        "section_id": ""
+      }
+    },
+    "soulful_latte_blog_MXmgBH": {
+      "type": "soulful-latte-blog",
+      "name": "Soulful Latte Blog",
+      "settings": {
+        "blog": "news",
+        "posts_to_show": 4,
+        "desktop_columns": "4",
+        "section_title": "SOULFUL LATTE",
+        "section_subtitle": "faith & self-growth journal"
+      }
+    },
+    "hair_reviews_section_EAdDPz": {
+      "type": "hair-reviews-section",
+      "blocks": {
+        "single_image_npbJcm": {
+          "type": "single_image",
+          "settings": {
+            "image": "shopify://shop_images/513909704_1275314494213938_5866087445118907509_n.jpg",
+            "alt_text": "",
+            "overlay_text": ""
+          }
+        },
+        "single_image_fxPTkw": {
+          "type": "single_image",
+          "settings": {
+            "image": "shopify://shop_images/492837589_24119093027683100_80149506766500946_n.jpg",
+            "alt_text": "",
+            "overlay_text": ""
+          }
+        },
+        "single_image_pPLCe8": {
+          "type": "single_image",
+          "settings": {
+            "image": "shopify://shop_images/513681324_1275314697547251_4731433090713043911_n.jpg",
+            "alt_text": "",
+            "overlay_text": ""
+          }
+        },
+        "single_image_Vdamrp": {
+          "type": "single_image",
+          "settings": {
+            "image": "shopify://shop_images/471261726_10234641094705750_5385600285958832397_n.jpg",
+            "alt_text": "",
+            "overlay_text": ""
+          }
+        },
+        "single_image_cL7rTG": {
+          "type": "single_image",
+          "settings": {
+            "image": "shopify://shop_images/487039942_1220138912804181_4741929830682457056_n.jpg",
+            "alt_text": "",
+            "overlay_text": ""
+          }
+        },
+        "single_image_3tQ4RP": {
+          "type": "single_image",
+          "settings": {
+            "image": "shopify://shop_images/504100058_3945410719004832_3115165897882479854_n.jpg",
+            "alt_text": "",
+            "overlay_text": ""
+          }
+        }
+      },
+      "block_order": [
+        "single_image_npbJcm",
+        "single_image_fxPTkw",
+        "single_image_pPLCe8",
+        "single_image_Vdamrp",
+        "single_image_cL7rTG",
+        "single_image_3tQ4RP"
+      ],
+      "name": "Hair Reviews Section",
+      "settings": {
+        "title": "Real People, Real Community Reviews",
+        "subtitle": "Question? We're here for you.",
+        "button_text": "View Real Result",
+        "button_link": "shopify://pages/reviews",
+        "title_color": "#121212",
+        "text_color": "#6b7280",
+        "button_color": "#121212",
+        "button_hover_color": "#121212"
+      }
+    }
+  },
+  "order": [
+    "custom_banner_section_XKBJbD",
+    "custom_banner_section_NAaahQ",
+    "custom_categories_design_JQtAmq",
+    "custom_products_section_hiVtBb",
+    "custom_banner_section_j3fdrU",
+    "new_custom_categories_design_YGn7yP",
+    "soulful_latte_blog_MXmgBH",
+    "hair_reviews_section_EAdDPz"
+  ]
+}

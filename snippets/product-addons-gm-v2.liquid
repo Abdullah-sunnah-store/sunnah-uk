@@ -1,0 +1,751 @@
+<style>
+  .product-addon-container-gm-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 100%;
+    /* background-color: #b69d742b; */ /* Removed background */
+    padding: 20px;
+    border-radius: 12px;
+    box-sizing: border-box;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: relative;
+    margin-top: 40px;
+  }
+
+  /* Discount Badge */
+  .discount-badge {
+    position: absolute;
+    top: -25px;
+    right: 10px;
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    border: 2px solid white;
+    z-index: 10;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(220, 38, 38, 0.6);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    }
+  }
+
+  .cus-header-banner__title-v2 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 5px 0 5px 0;
+    color: #ffffff; /* Changed to white */
+  }
+
+  .cus-header-banner__title-v2 p {
+    margin: 0;
+  }
+
+  .product-addon-container-gm-v2 .product-addon-item-v2 {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .product-addon-image-v2 {
+    width: 120px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: {{ image_type | default: 8 }}px;
+    flex-shrink: 0;
+  }
+
+  .product-addon-details-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .product-addon-title-v2 {
+    font-size: {{ title_size | default: 16 }}px;
+    font-weight: {{ font_weight | default: 600 }}; 
+    color: #ffffff; /* Changed to white */
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .product-addon-price-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .product-addon-price-v2 {
+    font-size: {{ price_size | default: 16 }}px;
+    color: #ffffff; /* Changed to white */
+    font-weight: 600;
+  }
+
+  .product-addon-compare-price-v2 {
+    font-size: 14px;
+    color: #ffffff; /* Changed to white */
+    text-decoration: line-through;
+  }
+
+  /* Compare-at price styling */
+  .product-addon-compare-price-v2 {
+    font-size: 14px;
+    color: #ffffff; /* Changed to white */
+    text-decoration: line-through;
+    font-weight: 400;
+  }
+
+  .savings-text {
+    font-size: 12px;
+    color: #059669;
+    font-weight: 600;
+    background: #f0fdf4;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+  }
+
+  /* Variant Selection */
+  .variant-label {
+    font-size: 13px;
+    color: #ffffff; /* Changed to white */
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .variant-options {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .variant-option {
+    padding: 6px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 35px;
+    text-align: center;
+    color: #000;
+  }
+
+  .variant-option:hover:not(.disabled) {
+    border-color: #cfbfa5;
+  }
+
+  .variant-option.selected {
+    background: #fff;
+    color: #000;
+    border: 3px solid #579143;
+  }
+
+  .variant-option.disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  /* Stock Status */
+  .stock-status {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    margin: 4px 0;
+  }
+
+  .stock-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+  }
+
+  .stock-text {
+    color: #ffffff; /* Changed to white */
+    font-weight: 500;
+  }
+
+  .product-addon-add-button-v2 {
+    padding: 12px 20px;
+    background-color: #18443F;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  .product-addon-add-button-v2:hover:not(:disabled) {
+    background-color: #18443F;
+    transform: translateY(-1px);
+  }
+
+  .product-addon-add-button-v2:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .product-addon-container-gm-v2 {
+      padding: 15px;
+      gap: 15px;
+    }
+    
+    .discount-badge {
+      top: -22px;
+      right: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      border-radius: 20px;
+    }
+    
+    .product-addon-item-v2 {
+      padding: 12px;
+      gap: 12px;
+    }
+    
+    .product-addon-image-v2 {
+      width: 110px;
+      height: 150px;
+    }
+    
+    .product-addon-title-v2 {
+      font-size: {{ title_size_mb | default: 14 }}px;
+    }
+    
+    .product-addon-price-v2 {
+      font-size: {{ price_size_mb | default: 14 }}px;
+    }
+
+    .cus-header-banner__title-v2 {
+      font-size: 30px;
+      margin-bottom: 12px;
+    }
+    
+    .variant-options {
+      gap: 4px;
+    }
+    
+    .variant-option {
+      padding: 4px 8px;
+      font-size: 11px;
+      min-width: 30px;
+    }
+
+    .savings-text {
+      font-size: 11px;
+      padding: 1px 4px;
+    }
+  }
+</style>
+
+{% comment %} Generate random seed based on current time {% endcomment %}
+{% assign current_time = 'now' | date: '%s' %}
+{% assign random_seed = current_time | modulo: 1000 %}
+
+{% assign available_count = 0 %}
+{% for product in product_addon %}
+  {% if product != blank and product.available %}
+    {% assign available_count = available_count | plus: 1 %}
+  {% endif %}
+{% endfor %}
+
+{% if available_count > 2 %}
+  {% assign first_random = random_seed | modulo: available_count %}
+  {% assign second_random = random_seed | plus: 17 | times: 3 | modulo: available_count %}
+  {% if first_random == second_random %}
+    {% assign second_random = first_random | plus: 1 | modulo: available_count %}
+  {% endif %}
+{% endif %}
+
+{% comment %} Calculate the maximum discount percentage from all available products {% endcomment %}
+{% assign max_discount_percentage = 0 %}
+{% for product in product_addon %}
+  {% if product != blank and product.available %}
+    {% for variant in product.variants %}
+      {% if variant.compare_at_price > variant.price %}
+        {% assign discount = variant.compare_at_price | minus: variant.price %}
+        {% assign discount_percentage = discount | times: 100 | divided_by: variant.compare_at_price %}
+        {% if discount_percentage > max_discount_percentage %}
+          {% assign max_discount_percentage = discount_percentage %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+<div class="product-addon-container-gm-v2">
+  {% comment %} Dynamic Discount Badge - Show only if there's an actual discount {% endcomment %}
+  {% if max_discount_percentage > 0 %}
+    <div class="discount-badge" id="dynamic-discount-badge">
+      {{ max_discount_percentage }}% OFF
+    </div>
+  {% endif %}
+  
+  <h2 class="cus-header-banner__title-v2" style="color: {{ section.settings.text_color }}">
+    {{ custom_heading_text | default: 'Special Offer For You' }}
+  </h2>
+  
+  {% assign current_index = 0 %}
+  {% assign products_shown = 0 %}
+  {% for product in product_addon %}
+    {% if product != blank and product.available %}
+      {% assign show_product = false %}
+      {% if available_count <= 2 %}
+        {% assign show_product = true %}
+      {% else %}
+        {% if current_index == first_random or current_index == second_random %}
+          {% assign show_product = true %}
+        {% endif %}
+      {% endif %}
+      
+      {% if show_product == true and products_shown < 1 %}
+        {% comment %} Find first available variant {% endcomment %}
+        {% assign first_available_variant = null %}
+        {% for variant in product.variants %}
+          {% if variant.available and first_available_variant == null %}
+            {% assign first_available_variant = variant %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+        
+        <div class="product-addon-item-v2" data-product-handle="{{ product.handle }}">
+          <img class="product-addon-image-v2" src="{{ product.featured_image | image_url }}" alt="{{ product.title }}">
+          
+          <div class="product-addon-details-v2">
+            <h3 class="product-addon-title-v2">{{ product.title | truncatewords: 6 }}</h3>
+            
+            {% comment %} Store all product variants data in a hidden script tag {% endcomment %}
+            <script type="application/json" class="product-variants-data">
+              {
+                "handle": "{{ product.handle }}",
+                "variants": [
+                  {% for variant in product.variants %}
+                  {
+                    "id": {{ variant.id }},
+                    "price": {{ variant.price }},
+                    "compare_at_price": {{ variant.compare_at_price | default: 0 }},
+                    "available": {{ variant.available }},
+                    "inventory_quantity": {{ variant.inventory_quantity | default: 0 }},
+                    "option1": "{{ variant.option1 }}",
+                    "option2": "{{ variant.option2 }}",
+                    "option3": "{{ variant.option3 }}"
+                  }{% unless forloop.last %},{% endunless %}
+                  {% endfor %}
+                ],
+                "firstAvailableVariant": {% if first_available_variant %}{{ first_available_variant.id }}{% else %}null{% endif %}
+              }
+            </script>
+            
+            {% comment %} Price Section with Compare-at Price - Use first available variant {% endcomment %}
+            <div class="product-addon-price-container">
+              <span class="product-addon-price-v2" data-price="{{ first_available_variant.price | default: product.variants.first.price }}">
+                {{ first_available_variant.price | default: product.variants.first.price | money }}
+              </span>
+              {% assign display_variant = first_available_variant | default: product.variants.first %}
+              {% if display_variant.compare_at_price > display_variant.price %}
+                <span class="product-addon-compare-price-v2" data-compare-price="{{ display_variant.compare_at_price }}">
+                  {{ display_variant.compare_at_price | money }}
+                </span>
+                {% assign savings = display_variant.compare_at_price | minus: display_variant.price %}
+                <span class="savings-text">
+                  Save {{ savings | money }}
+                </span>
+              {% endif %}
+            </div>
+
+            {% comment %} Variant Selection {% endcomment %}
+            {% if product.variants.size > 1 %}
+              <div class="product-variant-section">
+                {% for option in product.options_with_values %}
+                  {% comment %} Get the value from first available variant for this option {% endcomment %}
+                  {% assign default_value = option.values.first %}
+                  {% if first_available_variant %}
+                    {% case option.position %}
+                      {% when 1 %}
+                        {% assign default_value = first_available_variant.option1 %}
+                      {% when 2 %}
+                        {% assign default_value = first_available_variant.option2 %}
+                      {% when 3 %}
+                        {% assign default_value = first_available_variant.option3 %}
+                    {% endcase %}
+                  {% endif %}
+                  
+                  <label class="variant-label">{{ option.name }}: <span class="selected-variant-value">{{ default_value }}</span></label>
+                  <div class="variant-options" data-option-name="{{ option.name | downcase }}" data-option-position="{{ option.position }}">
+                    {% for value in option.values %}
+                      {% comment %} Check if this option value has any available variants {% endcomment %}
+                      {% assign has_available_variant = false %}
+                      {% for variant in product.variants %}
+                        {% assign match = false %}
+                        {% case option.position %}
+                          {% when 1 %}
+                            {% if variant.option1 == value and variant.available %}
+                              {% assign has_available_variant = true %}
+                              {% break %}
+                            {% endif %}
+                          {% when 2 %}
+                            {% if variant.option2 == value and variant.available %}
+                              {% assign has_available_variant = true %}
+                              {% break %}
+                            {% endif %}
+                          {% when 3 %}
+                            {% if variant.option3 == value and variant.available %}
+                              {% assign has_available_variant = true %}
+                              {% break %}
+                            {% endif %}
+                        {% endcase %}
+                      {% endfor %}
+                      
+                      <div class="variant-option {% if value == default_value %}selected{% endif %} {% unless has_available_variant %}disabled{% endunless %}" 
+                           data-value="{{ value }}" 
+                           data-option-position="{{ option.position }}"
+                           {% unless has_available_variant %}data-disabled="true"{% endunless %}>
+                        {{ value }}
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {% comment %} Stock Status {% endcomment %}
+            {% assign display_variant = first_available_variant | default: product.variants.first %}
+            {% if display_variant.inventory_quantity > 0 and display_variant.inventory_quantity <= 10 %}
+              <div class="stock-status">
+                <div class="stock-indicator"></div>
+                <span class="stock-text">Only {{ display_variant.inventory_quantity }} left in stock</span>
+              </div>
+            {% endif %}
+
+            {% comment %} Determine button state {% endcomment %}
+            {% assign button_variant = first_available_variant | default: product.variants.first %}
+            
+            <button 
+              class="product-addon-add-button-v2"
+              data-product-id="{{ button_variant.id }}"
+              data-product-handle="{{ product.handle }}"
+              {% unless button_variant.available %}disabled{% endunless %}>
+              {% if button_variant.available %}
+                {{ section.settings.button_text | default: 'ADD TO BAG' }}
+              {% else %}
+                SOLD OUT
+              {% endif %}
+            </button>
+          </div>
+        </div>
+        {% assign products_shown = products_shown | plus: 1 %}
+      {% endif %}
+      {% assign current_index = current_index | plus: 1 %}
+    {% endif %}
+  {% endfor %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const productItems = document.querySelectorAll('.product-addon-item-v2');
+  const discountBadge = document.getElementById('dynamic-discount-badge');
+
+  // Money formatting function - Changed to British Pound
+  function formatMoney(cents) {
+    return new Intl.NumberFormat('en-GB', {
+      style: 'currency',
+      currency: 'GBP'
+    }).format(cents / 100);
+  }
+
+  // Calculate discount percentage
+  function calculateDiscountPercentage(price, compareAtPrice) {
+    if (compareAtPrice > price) {
+      return Math.round(((compareAtPrice - price) / compareAtPrice) * 100);
+    }
+    return 0;
+  }
+
+  // Calculate discount price
+  function calculateSavings(price, compareAtPrice) {
+    return compareAtPrice > price ? compareAtPrice - price : 0;
+  }
+
+  // Update discount badge with current variant's discount
+  function updateDiscountBadge(discountPercentage) {
+    if (discountBadge && discountPercentage > 0) {
+      discountBadge.textContent = `${discountPercentage}% OFF`;
+      discountBadge.style.display = 'block';
+    } else if (discountBadge) {
+      discountBadge.style.display = 'none';
+    }
+  }
+
+  // Check if variant combination is available
+  function isVariantCombinationAvailable(productData, selectedOptions) {
+    for (let variant of productData.variants) {
+      if (!variant.available) continue;
+      
+      let match = true;
+      if (selectedOptions[0] && variant.option1 !== selectedOptions[0]) match = false;
+      if (selectedOptions[1] && variant.option2 !== selectedOptions[1]) match = false;
+      if (selectedOptions[2] && variant.option3 !== selectedOptions[2]) match = false;
+      
+      if (match) return true;
+    }
+    return false;
+  }
+
+  // Update disabled state of variant options
+  function updateVariantAvailability(item, productData) {
+    const variantOptionGroups = item.querySelectorAll('.variant-options');
+    
+    variantOptionGroups.forEach((group, groupIndex) => {
+      const options = group.querySelectorAll('.variant-option');
+      const currentSelectedOptions = [];
+      
+      // Get currently selected options
+      item.querySelectorAll('.variant-option.selected').forEach(selectedOption => {
+        const optionGroup = selectedOption.closest('.variant-options');
+        const position = parseInt(optionGroup.getAttribute('data-option-position')) - 1;
+        currentSelectedOptions[position] = selectedOption.getAttribute('data-value');
+      });
+      
+      options.forEach(option => {
+        const optionValue = option.getAttribute('data-value');
+        const testOptions = [...currentSelectedOptions];
+        testOptions[groupIndex] = optionValue;
+        
+        const isAvailable = isVariantCombinationAvailable(productData, testOptions);
+        
+        if (isAvailable) {
+          option.classList.remove('disabled');
+          option.removeAttribute('data-disabled');
+        } else {
+          option.classList.add('disabled');
+          option.setAttribute('data-disabled', 'true');
+        }
+      });
+    });
+  }
+
+  productItems.forEach((item) => {
+    const variantOptions = item.querySelectorAll('.variant-option');
+    const button = item.querySelector('.product-addon-add-button-v2');
+    const priceElement = item.querySelector('.product-addon-price-v2');
+    const comparePriceElement = item.querySelector('.product-addon-compare-price-v2');
+    const savingsElement = item.querySelector('.savings-text');
+    const stockStatus = item.querySelector('.stock-status');
+    const stockText = stockStatus ? stockStatus.querySelector('.stock-text') : null;
+    const productHandle = item.getAttribute('data-product-handle');
+    
+    // Get product variants data
+    const variantsDataScript = item.querySelector('.product-variants-data');
+    const productData = JSON.parse(variantsDataScript.textContent);
+    
+    // Initialize with first available variant or selected variant
+    updateSelectedVariant(item, productData);
+    updateVariantAvailability(item, productData);
+
+    // Handle variant selection
+    variantOptions.forEach((option) => {
+      option.addEventListener('click', () => {
+        // Don't allow selection of disabled options
+        if (option.hasAttribute('data-disabled')) {
+          return;
+        }
+        
+        const optionGroup = option.closest('.variant-options');
+        
+        // Remove selected class from siblings
+        optionGroup.querySelectorAll('.variant-option').forEach(opt => {
+          opt.classList.remove('selected');
+        });
+        
+        // Add selected class to clicked option
+        option.classList.add('selected');
+        
+        // Update selected variant value display
+        const label = optionGroup.previousElementSibling;
+        const valueSpan = label.querySelector('.selected-variant-value');
+        valueSpan.textContent = option.getAttribute('data-value');
+        
+        // Update selected variant and price
+        updateSelectedVariant(item, productData);
+        updateVariantAvailability(item, productData);
+      });
+    });
+
+    // Add to cart functionality
+    button.addEventListener('click', () => {
+      if (button.disabled) return;
+      
+      const productId = button.getAttribute('data-product-id');
+      button.disabled = true;
+      button.textContent = 'Adding...';
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: productId,
+          quantity: 1
+        })
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        button.textContent = 'Added!';
+        setTimeout(() => {
+          button.textContent = '{{ section.settings.button_text | default: "ADD TO BAG" }}';
+          button.disabled = false;
+        }, 2000);
+
+        // Update cart drawer if exists
+        const cartDrawer = document.querySelector('cart-drawer');
+        if (cartDrawer) {
+          cartDrawer.classList.remove('is-empty');
+          fetch('/cart?view=drawer')
+            .then(response => response.text())
+            .then(html => {
+              const tempDiv = document.createElement('div');
+              tempDiv.innerHTML = html;
+              const newDrawerContent = tempDiv.querySelector('#CartDrawer');
+              if (newDrawerContent) {
+                document.querySelector('#CartDrawer').innerHTML = newDrawerContent.innerHTML;
+                cartDrawer.open();
+              }
+            });
+        }
+      })
+      .catch((error) => {
+        console.error('Error adding product to cart:', error);
+        button.textContent = 'Error';
+        setTimeout(() => {
+          button.textContent = '{{ section.settings.button_text | default: "ADD TO BAG" }}';
+          button.disabled = false;
+        }, 2000);
+      });
+    });
+  });
+
+  function updateSelectedVariant(item, productData) {
+    const selectedOptions = item.querySelectorAll('.variant-option.selected');
+    const button = item.querySelector('.product-addon-add-button-v2');
+    const priceElement = item.querySelector('.product-addon-price-v2');
+    const comparePriceElement = item.querySelector('.product-addon-compare-price-v2');
+    const savingsElement = item.querySelector('.savings-text');
+    const stockStatus = item.querySelector('.stock-status');
+    const stockText = stockStatus ? stockStatus.querySelector('.stock-text') : null;
+    
+    // Build selected options array
+    let selectedVariantOptions = [];
+    selectedOptions.forEach(option => {
+      const optionGroup = option.closest('.variant-options');
+      const optionPosition = parseInt(optionGroup.getAttribute('data-option-position'));
+      selectedVariantOptions[optionPosition - 1] = option.getAttribute('data-value');
+    });
+
+    // Find matching variant
+    let matchingVariant = null;
+    for (let variant of productData.variants) {
+      let match = true;
+      
+      // Check if all selected options match this variant
+      if (selectedVariantOptions[0] && variant.option1 !== selectedVariantOptions[0]) match = false;
+      if (selectedVariantOptions[1] && variant.option2 !== selectedVariantOptions[1]) match = false;
+      if (selectedVariantOptions[2] && variant.option3 !== selectedVariantOptions[2]) match = false;
+      
+      if (match) {
+        matchingVariant = variant;
+        break;
+      }
+    }
+
+    // If no matching variant found, try to find first available variant
+    if (!matchingVariant) {
+      matchingVariant = productData.variants.find(v => v.available) || productData.variants[0];
+    }
+
+    // Update UI with matching variant data
+    if (matchingVariant) {
+      // Update button with correct variant ID
+      button.setAttribute('data-product-id', matchingVariant.id);
+      
+      // Update price
+      priceElement.textContent = formatMoney(matchingVariant.price);
+      
+      // Calculate and update discount badge
+      const discountPercentage = calculateDiscountPercentage(matchingVariant.price, matchingVariant.compare_at_price);
+      updateDiscountBadge(discountPercentage);
+      
+      // Update compare at price and savings
+      if (comparePriceElement) {
+        if (matchingVariant.compare_at_price > matchingVariant.price) {
+          comparePriceElement.textContent = formatMoney(matchingVariant.compare_at_price);
+          comparePriceElement.style.display = 'inline';
+          
+          // Show savings if savings element exists
+          if (savingsElement) {
+            const savings = calculateSavings(matchingVariant.price, matchingVariant.compare_at_price);
+            savingsElement.textContent = `Save ${formatMoney(savings)}`;
+            savingsElement.style.display = 'inline';
+          }
+        } else {
+          comparePriceElement.style.display = 'none';
+          if (savingsElement) {
+            savingsElement.style.display = 'none';
+          }
+        }
+      }
+      
+      // Update stock status
+      if (stockText && matchingVariant.inventory_quantity > 0 && matchingVariant.inventory_quantity <= 10) {
+        stockText.textContent = `Only ${matchingVariant.inventory_quantity} left in stock`;
+        stockStatus.style.display = 'flex';
+      } else if (stockStatus) {
+        stockStatus.style.display = 'none';
+      }
+      
+      // Update button availability
+      if (!matchingVariant.available) {
+        button.disabled = true;
+        button.textContent = 'SOLD OUT';
+      } else {
+        button.disabled = false;
+        button.textContent = '{{ section.settings.button_text | default: "ADD TO BAG" }}';
+      }
+    }
+  }
+});
+</script>

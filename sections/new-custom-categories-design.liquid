@@ -1,0 +1,872 @@
+{% comment %}
+  Sports Category Section with Single Row Layout and Navigation Buttons
+  Shows single row on all devices with horizontal scroll and navigation controls
+  Desktop: Uses dynamic column layout in single row with scroll navigation
+  Added: Infinite loop functionality
+{% endcomment %}
+
+<section class="new-sports-categories" data-desktop-columns="{{ section.settings.desktop_columns }}">
+  <!-- Move title outside of scroll container -->
+  <div class="new-sports-categories__header">
+    <div class="new-sports-categories__title">
+      <h2>{{ section.settings.heading_text }}</h2>
+      <p>{{ section.settings.sub_heading_text }}</p>
+    </div>
+    
+    <!-- Navigation Buttons -->
+    <div class="new-sports-categories__nav">
+      <button class="new-sports-categories__nav-btn new-sports-categories__nav-btn--prev" id="prevBtn" aria-label="Previous">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="new-sports-categories__nav-btn new-sports-categories__nav-btn--next" id="nextBtn" aria-label="Next">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  
+  <div class="new-sports-categories__scroll-container" id="newSportsCategoriesCarousel">
+    <div class="new-sports-categories__scroll-content" id="newSportsCategoriesTrack">
+      
+      {% for block in section.blocks %}
+        <div class="new-sports-category" {{ block.shopify_attributes }}>
+          {% if block.settings.category_link != blank %}
+            <a href="{{ block.settings.category_link }}" class="new-sports-category__link">
+          {% endif %}
+          
+          <div class="new-sports-category__image-wrapper">
+            {% if block.settings.category_image != blank %}
+              {{ block.settings.category_image | image_url: width: 600 | image_tag: 
+                 loading: 'lazy',
+                 class: 'new-sports-category__image',
+                 alt: block.settings.category_title }}
+            {% else %}
+              <div class="new-sports-category__placeholder">
+                <span>{{ block.settings.category_title | default: 'Category Image' }}</span>
+              </div>
+            {% endif %}
+            
+            <div class="new-sports-category__overlay">
+              <div class="new-sports-category__content">
+                <h3 class="new-sports-category__title">{{ block.settings.category_title }}</h3>
+                <p class="new-sports-category__subtitle">{{ block.settings.category_subtitle }}</p>
+                
+                <!-- CTA Button -->
+                <div class="new-sports-category__cta">
+                  <span class="new-sports-category__cta-button">
+                    {{ block.settings.cta_text | default: 'Customize Yours' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {% if block.settings.category_link != blank %}
+            </a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+.new-sports-categories {
+  background-color: #f8f9fa;
+  position: relative;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Header with title and navigation */
+.new-sports-categories__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 40px;
+  padding: 0 20px;
+}
+
+.new-sports-categories__title {
+  color: #000;
+  font-weight: 400 !important;
+  line-height: 1.3;
+  word-break: break-word;
+  font-family: circular std !important;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0;
+  flex: 1;
+}
+
+.new-sports-categories__title h2 {
+  text-align: start;
+  font-size: 36px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  color: #000;
+}
+
+.new-sports-categories__title p {
+  text-align: start;
+  font-size: 20px;
+  margin-top: 0;
+}
+
+/* Navigation Buttons */
+.new-sports-categories__nav {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-bottom: 5px;
+}
+
+.new-sports-categories__nav-btn {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #666;
+}
+
+.new-sports-categories__nav-btn:hover {
+  border-color: #333;
+  color: #333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.new-sports-categories__nav-btn:active {
+  transform: translateY(0);
+}
+
+.new-sports-categories__nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.new-sports-categories__scroll-container {
+  width: 100%;
+  position: relative;
+  margin-bottom: 2rem;
+  box-sizing: border-box;
+  /* Enable horizontal scroll for all devices */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+/* Hide scrollbar for webkit browsers */
+.new-sports-categories__scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.new-sports-categories__scroll-content {
+  display: flex;
+  gap: 20px;
+  width: max-content;
+  padding: 0 20px;
+  box-sizing: border-box;
+  /* Single row layout - no wrapping */
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
+.new-sports-category {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* Fixed width for consistent layout */
+  flex: 0 0 300px;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+}
+
+.new-sports-category:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.new-sports-category__link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  border: none;
+  outline: none;
+}
+
+.new-sports-category__image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.new-sports-category__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  border: none;
+  outline: none;
+}
+
+.new-sports-category:hover .new-sports-category__image {
+  transform: scale(1.05);
+}
+
+.new-sports-category__placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.new-sports-category__overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  padding: 0 0.5rem 0;
+  color: white;
+  box-sizing: border-box;
+}
+
+.new-sports-category__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.new-sports-category__title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+
+.new-sports-category__subtitle {
+  font-size: 1.2rem;
+  margin: 0;
+  opacity: 0.9;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* CTA Button Styles */
+.new-sports-category__cta {
+  margin-top: 1rem;
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+
+.new-sports-category:hover .new-sports-category__cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.new-sports-category__cta-button {
+  display: inline-block;
+  background: #fff;
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+  text-shadow: none;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.new-sports-category__cta-button:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+}
+
+.new-sports-category__cta-button:active {
+  transform: translateY(0);
+}
+
+/* Shimmer effect for CTA button */
+.new-sports-category__cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  transition: left 0.6s ease;
+}
+
+.new-sports-category:hover .new-sports-category__cta-button::before {
+  left: 100%;
+}
+
+/* Remove any potential debugging styles */
+* {
+  box-sizing: border-box;
+}
+
+/* Desktop responsive adjustments */
+@media (min-width: 1201px) {
+  .new-sports-category {
+    flex: 0 0 350px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1200px) {
+  .new-sports-category {
+    flex: 0 0 280px;
+  }
+  
+  .new-sports-categories__title h2 {
+    font-size: 32px;
+  }
+  
+  .new-sports-categories__title p {
+    font-size: 18px;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .new-sports-categories {
+    padding: 1rem 0;
+  }
+  
+  .new-sports-categories__header {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 0;
+    margin-bottom: 30px;
+  }
+  
+  .new-sports-categories__title {
+    margin: 0;
+    flex: 1;
+  }
+  
+  .new-sports-categories__title h2 {
+    font-size: 24px;
+  }
+  
+  .new-sports-categories__title p {
+    font-size: 14px;
+  }
+  
+  .new-sports-categories__nav {
+    flex-shrink: 0;
+    margin-bottom: 5px;
+  }
+  
+  .new-sports-categories__nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .new-sports-categories__scroll-content {
+    gap: 15px;
+  }
+  
+  .new-sports-category {
+    flex: 0 0 280px;
+    min-width: 250px;
+  }
+  
+  .new-sports-category__image-wrapper {
+    height: 320px;
+  }
+  
+  .new-sports-category__title {
+    font-size: 16px;
+  }
+  
+  .new-sports-category__subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .new-sports-category__overlay {
+    padding: 0 0.5rem 0;
+  }
+  
+  .new-sports-category__cta-button {
+    padding: 8px 16px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .new-sports-categories {
+    padding: 1rem 0;
+  }
+  
+  .new-sports-categories__header {
+    margin-bottom: 20px;
+  }
+  
+  .new-sports-categories__title h2 {
+    font-size: 20px;
+  }
+  
+  .new-sports-categories__title p {
+    font-size: 12px;
+  }
+  
+  .new-sports-categories__nav-btn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .new-sports-categories__scroll-content {
+    gap: 12px;
+  }
+  
+  .new-sports-category {
+    flex: 0 0 250px;
+    min-width: 220px;
+  }
+  
+  .new-sports-category__image-wrapper {
+    height: 280px;
+  }
+  
+  .new-sports-category__cta-button {
+    padding: 6px 12px;
+    font-size: 10px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const carousel = document.getElementById('newSportsCategoriesCarousel');
+  const track = document.getElementById('newSportsCategoriesTrack');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  
+  if (!carousel || !track || !prevBtn || !nextBtn) return;
+
+  let originalItems = [];
+  let isInfiniteLoop = false;
+  let currentIndex = 0;
+  let isScrolling = false;
+
+  // Initialize infinite loop
+  function initInfiniteLoop() {
+    const items = track.querySelectorAll('.new-sports-category');
+    if (items.length < 3) return; // Need at least 3 items for smooth infinite loop
+    
+    originalItems = Array.from(items);
+    isInfiniteLoop = true;
+    
+    // Clone items for seamless loop
+    const firstClones = [];
+    const lastClones = [];
+    
+    // Clone first few items to end
+    for (let i = 0; i < 3; i++) {
+      const clone = originalItems[i].cloneNode(true);
+      clone.classList.add('clone');
+      firstClones.push(clone);
+      track.appendChild(clone);
+    }
+    
+    // Clone last few items to beginning
+    for (let i = originalItems.length - 3; i < originalItems.length; i++) {
+      const clone = originalItems[i].cloneNode(true);
+      clone.classList.add('clone');
+      lastClones.unshift(clone);
+    }
+    
+    // Insert last clones at the beginning
+    lastClones.forEach(clone => {
+      track.insertBefore(clone, track.firstChild);
+    });
+    
+    // Set initial position (skip the cloned items at the beginning)
+    const cardWidth = getCardWidth();
+    carousel.scrollLeft = cardWidth * 3;
+    currentIndex = 0;
+  }
+
+  // Get card width including gap
+  function getCardWidth() {
+    const card = track.querySelector('.new-sports-category');
+    if (!card) return 0;
+    
+    const cardRect = card.getBoundingClientRect();
+    const style = window.getComputedStyle(track);
+    const gap = parseInt(style.gap) || 0;
+    
+    return cardRect.width + gap;
+  }
+
+  // Update button states (always enabled for infinite loop)
+  function updateButtonStates() {
+    if (isInfiniteLoop) {
+      prevBtn.disabled = false;
+      nextBtn.disabled = false;
+      return;
+    }
+    
+    const scrollLeft = carousel.scrollLeft;
+    const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+    
+    prevBtn.disabled = scrollLeft <= 0;
+    nextBtn.disabled = scrollLeft >= maxScroll - 1;
+  }
+
+  // Smooth scroll function
+  function smoothScroll(element, target, duration = 300) {
+    if (isScrolling) return;
+    isScrolling = true;
+    
+    const start = element.scrollLeft;
+    const change = target - start;
+    const startTime = performance.now();
+
+    function animateScroll(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Easing function
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      
+      element.scrollLeft = start + (change * easeOut);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      } else {
+        isScrolling = false;
+        if (isInfiniteLoop) {
+          checkInfiniteLoop();
+        }
+        updateButtonStates();
+      }
+    }
+    
+    requestAnimationFrame(animateScroll);
+  }
+
+  // Check and handle infinite loop positioning
+  function checkInfiniteLoop() {
+    if (!isInfiniteLoop) return;
+    
+    const cardWidth = getCardWidth();
+    const totalOriginalWidth = cardWidth * originalItems.length;
+    const cloneWidth = cardWidth * 3;
+    
+    // If we're at the end clones, jump to the beginning
+    if (carousel.scrollLeft >= totalOriginalWidth + cloneWidth) {
+      carousel.scrollLeft = cloneWidth;
+      currentIndex = 0;
+    }
+    // If we're at the beginning clones, jump to the end
+    else if (carousel.scrollLeft <= 0) {
+      carousel.scrollLeft = totalOriginalWidth;
+      currentIndex = originalItems.length - 1;
+    }
+  }
+
+  // Navigation functions
+  function scrollPrev() {
+    if (isScrolling) return;
+    
+    const cardWidth = getCardWidth();
+    const currentScroll = carousel.scrollLeft;
+    const targetScroll = currentScroll - cardWidth;
+    
+    if (isInfiniteLoop) {
+      currentIndex = currentIndex > 0 ? currentIndex - 1 : originalItems.length - 1;
+    }
+    
+    smoothScroll(carousel, targetScroll);
+  }
+
+  function scrollNext() {
+    if (isScrolling) return;
+    
+    const cardWidth = getCardWidth();
+    const currentScroll = carousel.scrollLeft;
+    const targetScroll = currentScroll + cardWidth;
+    
+    if (isInfiniteLoop) {
+      currentIndex = currentIndex < originalItems.length - 1 ? currentIndex + 1 : 0;
+    }
+    
+    smoothScroll(carousel, targetScroll);
+  }
+
+  // Auto-scroll functionality (disabled)
+  let autoScrollInterval;
+  const autoScrollDelay = 4000; // 4 seconds
+
+  function startAutoScroll() {
+    // Auto-scroll disabled
+    return;
+  }
+
+  function stopAutoScroll() {
+    if (autoScrollInterval) {
+      clearInterval(autoScrollInterval);
+      autoScrollInterval = null;
+    }
+  }
+
+  // Event listeners
+  prevBtn.addEventListener('click', () => {
+    scrollPrev();
+  });
+
+  nextBtn.addEventListener('click', () => {
+    scrollNext();
+  });
+
+  // Pause auto-scroll on hover (disabled)
+  // Auto-scroll functionality has been disabled
+
+  // Update button states on scroll
+  carousel.addEventListener('scroll', () => {
+    if (!isScrolling) {
+      updateButtonStates();
+    }
+  });
+
+  // Update on window resize
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      if (isInfiniteLoop) {
+        const cardWidth = getCardWidth();
+        carousel.scrollLeft = cardWidth * (3 + currentIndex);
+      }
+      updateButtonStates();
+    }, 100);
+  });
+
+  // Touch/swipe support for mobile
+  let startX = 0;
+  let scrollLeft = 0;
+  let isDown = false;
+
+  carousel.addEventListener('mousedown', (e) => {
+    isDown = true;
+    startX = e.pageX - carousel.offsetLeft;
+    scrollLeft = carousel.scrollLeft;
+  });
+
+  carousel.addEventListener('mouseleave', () => {
+    isDown = false;
+  });
+
+  carousel.addEventListener('mouseup', () => {
+    isDown = false;
+    if (isInfiniteLoop) {
+      setTimeout(checkInfiniteLoop, 100);
+    }
+    updateButtonStates();
+  });
+
+  carousel.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - carousel.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    carousel.scrollLeft = scrollLeft - walk;
+  });
+
+  // Touch events for mobile
+  carousel.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].pageX - carousel.offsetLeft;
+    scrollLeft = carousel.scrollLeft;
+  });
+
+  carousel.addEventListener('touchmove', (e) => {
+    const x = e.touches[0].pageX - carousel.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    carousel.scrollLeft = scrollLeft - walk;
+  });
+
+  carousel.addEventListener('touchend', () => {
+    if (isInfiniteLoop) {
+      setTimeout(checkInfiniteLoop, 100);
+    }
+    updateButtonStates();
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.target.closest('.new-sports-categories')) {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        scrollPrev();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        scrollNext();
+      }
+    }
+  });
+
+  // Initialize
+  setTimeout(() => {
+    initInfiniteLoop();
+    updateButtonStates();
+  }, 100);
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', stopAutoScroll);
+});
+</script>
+
+{% schema %}
+{
+  "name": "new custom categories",
+  "tag": "section",
+  "class": "new-section-sports-categories",
+  "max_blocks": 20,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "text",
+      "id": "heading_text",
+      "label": "Heading",
+      "default": "Shop The Classics"
+    },
+    {
+      "type": "text",
+      "id": "sub_heading_text",
+      "label": "Sub Heading",
+      "default": "Timeless styles that never go out of fashion"
+    },
+    {
+      "type": "text",
+      "id": "section_id",
+      "label": "Section ID",
+      "info": "Optional custom ID for this section"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Product Category",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "category_image",
+          "label": "Category Image"
+        },
+        {
+          "type": "text",
+          "id": "category_title",
+          "label": "Category Title",
+          "default": "Air Jordan 1"
+        },
+        {
+          "type": "text",
+          "id": "category_subtitle",
+          "label": "Category Subtitle",
+          "default": "Premium Sneakers"
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "CTA Button Text",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "category_link",
+          "label": "Category Link",
+          "info": "Link to collection, product, or page"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "new custom categories design",
+      "settings": {
+        "heading_text": "Shop The Classics",
+        "sub_heading_text": "Timeless styles that never go out of fashion"
+      },
+      "blocks": [
+        {
+          "type": "category",
+          "settings": {
+            "category_title": "Air Jordan 1",
+            "category_subtitle": "Classic Basketball",
+            "cta_text": "Shop Now"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "category_title": "Dunk",
+            "category_subtitle": "Street Style",
+            "cta_text": "Shop Now"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "category_title": "Field General",
+            "category_subtitle": "Athletic Performance",
+            "cta_text": "Shop Now"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "category_title": "Air Force 1",
+            "category_subtitle": "Timeless Classic",
+            "cta_text": "Shop Now"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "category_title": "Air Max",
+            "category_subtitle": "Comfort & Style",
+            "cta_text": "Shop Now"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

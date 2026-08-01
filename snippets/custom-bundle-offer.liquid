@@ -1,0 +1,163 @@
+<style>
+        .bundle-container {
+            max-width: 400px;
+            margin: auto;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .bundle-option {
+            border: 2px solid transparent;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .bundle-option.active {
+            border: 2px solid #007f5f;
+            background-color: #f1f8f5;
+        }
+
+        .bundle-label {
+            font-weight: bold;
+        }
+
+        .bundle-price {
+            font-weight: bold;
+        }
+
+        .bundle-discount {
+            color: green;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .size-selection {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .size-selection select {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+        }
+
+        .bundle-add-to-bag {
+            width: 100%;
+            background-color: #007f5f;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.bundle-add-to-bag:hover {
+            background-color: #005f47;
+}
+
+.bundle-add-to-bag:active {
+            transform: scale(0.95);
+}
+
+    </style>
+
+<div class="bundle-container">
+    <h2>LEATHER SOCKS BROWN</h2>
+    <p>£36.99</p>
+
+{% assign first_variant = product.variants | first %}
+{% assign first_variant_price = first_variant.price | money %}
+{% assign first_variant_price_raw = first_variant.price %}
+
+{% assign duo_price = first_variant_price_raw | times: 2 | money %}
+{% assign trio_price = first_variant_price_raw | times: 3 | money %}
+
+<div class="bundle-option" data-items="1" data-discount="0">
+    <span class="bundle-label">{{ first_variant.title }}</span>
+    <span class="bundle-price">{{ first_variant_price }} / Pair</span>
+</div>
+
+<div class="bundle-option" data-items="2" data-discount="5">
+    <span class="bundle-label">Duo Set <span class="bundle-discount">-5%</span></span>
+    <span class="bundle-price">{{ duo_price }} / Pair</span>
+</div>
+
+<div class="bundle-option" data-items="3" data-discount="10">
+    <span class="bundle-label">Trio Set <span class="bundle-discount">-10%</span></span>
+    <span class="bundle-price">{{ trio_price }} / Pair</span>
+</div>
+
+
+
+    <div class="size-selection" id="size-selection">
+        <h3>Select size:</h3>
+        <div id="size-container"></div>
+    </div>
+
+    <div class="bundle-add-to-bag">ADD TO BAG</div>
+</div>
+
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+    const bundleOptions = document.querySelectorAll(".bundle-option");
+    const sizeSelection = document.getElementById("size-selection");
+    const sizeContainer = document.getElementById("size-container");
+
+    bundleOptions.forEach(option => {
+        option.addEventListener("click", function () {
+            // Remove active class from all options
+            bundleOptions.forEach(opt => opt.classList.remove("active"));
+            this.classList.add("active");
+
+            let items = parseInt(this.getAttribute("data-items"));
+            let discount = parseInt(this.getAttribute("data-discount"));
+            let basePrice = 36.99;
+            let totalPrice = basePrice * items * (1 - discount / 100);
+
+            // Update displayed price
+            this.querySelector(".bundle-price").innerText = `£${totalPrice.toFixed(2)} / Pair`;
+
+            // Show size selection for all products including single
+            sizeSelection.style.display = "block";
+            sizeContainer.innerHTML = "";
+
+            for (let i = 1; i <= items; i++) {
+                sizeContainer.innerHTML += `
+                    <label>#${i}
+                        <select>
+                            <option selected disabled>Size</option>
+                            <option>Size 39</option>
+                            <option>Size 40</option>
+                            <option>Size 41</option>
+                            <option>Size 42</option>
+                            <option>Size 43</option>
+                            <option>Size 44</option>
+                        </select>
+                    </label>
+                `;
+            }
+        });
+    });
+
+    // Auto-select the first bundle (Single) on page load
+    bundleOptions[0].click();
+});
+</script>
+
+

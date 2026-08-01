@@ -1,0 +1,683 @@
+{% comment %}
+  Enhanced Shopify Blog Section - Soulful Latte Design
+  Matches the original HTML design with improved functionality
+{% endcomment %}
+
+<style>
+    
+    
+    .cus-blog-section {
+        font-family: 'Georgia', serif;
+        background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+        color: #f5f5f5;
+        line-height: 1.6;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .cus-blog-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    .cus-blog-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem 0;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .cus-blog-logo {
+        font-size: 4rem;
+        color: #d4a574;
+        font-weight: bold;
+        letter-spacing: 3px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        margin-bottom: 0.5rem;
+    }
+    
+    .cus-blog-tagline {
+        font-size: 1.8rem;
+        color: #c4b5a0;
+        font-style: italic;
+        margin-bottom: 2rem;
+    }
+    
+    .cus-blog-search-container {
+        max-width: 800px;
+        margin: 0 auto 2rem;
+        position: relative;
+          width: 50%;
+    }
+    
+    .cus-blog-search-bar {
+        width: 100%;
+        padding: 15px 50px 15px 20px;
+        border: 2px solid #d4a574;
+        border-radius: 25px;
+        background: rgba(255,255,255,0.1);
+        color: #f5f5f5;
+        font-size: 1.2rem;
+        backdrop-filter: blur(10px);
+    }
+    
+    .cus-blog-search-bar::placeholder {
+        color: #c4b5a0;
+    }
+    
+    .cus-blog-search-bar:focus {
+        outline: none;
+        box-shadow: 0 0 20px rgba(212, 165, 116, 0.3);
+    }
+    
+    .cus-blog-search-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #d4a574;
+        border: none;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .cus-blog-search-btn:hover {
+        background: #c4b5a0;
+        transform: translateY(-50%) scale(1.1);
+    }
+    
+    .cus-blog-filter-tags {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin: 2rem 0;
+        flex-wrap: wrap;
+    }
+    
+    .cus-blog-tag {
+        padding: 6px 12px 3px;
+        background: rgba(212, 165, 116, 0.2);
+        border: 1px solid #d4a574;
+        border-radius: 20px;
+        color: #d4a574;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.2rem;
+        display: inline-block;
+    }
+    
+    .cus-blog-tag:hover, .cus-blog-tag.active {
+        background: #d4a574;
+        color: #1a1a1a;
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+    
+    .cus-blog-articles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+    
+    .cus-blog-article-card {
+        background: rgba(255,255,255,0.05);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(212, 165, 116, 0.2);
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    
+    .cus-blog-article-card.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .cus-blog-article-card:hover {
+        box-shadow: 0 20px 40px rgba(212, 165, 116, 0.2);
+        border-color: #d4a574;
+    }
+    
+    .cus-blog-article-image {
+        width: 100%;
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        transition: transform 0.4s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cus-blog-article-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+    
+    .cus-blog-article-card:hover .cus-blog-article-image img {
+        transform: scale(1.05);
+    }
+    
+    .cus-blog-fallback-image {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, #d4a574, #c4b5a0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #1a1a1a;
+    }
+    
+    .cus-blog-article-content {
+        padding: 1.5rem;
+    }
+    
+    .cus-blog-article-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        color: #c4b5a0;
+    }
+    
+    .cus-blog-author {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .cus-blog-author-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #d4a574, #c4b5a0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        color: #1a1a1a;
+        font-weight: bold;
+    }
+    
+    .cus-blog-read-time {
+        background: rgba(212, 165, 116, 0.2);
+        border: 1px solid #d4a574;
+        border-radius: 20px;
+        color: #d4a574;
+        padding: 6px 12px 3px;
+        font-size: 1.2rem;
+        font-weight: 500;
+        text-transform: capitalize;
+    }
+    
+    .cus-blog-article-title {
+        font-size: 2rem;
+        color: #f5f5f5;
+        margin-bottom: 0.8rem;
+        line-height: 1.4;
+        font-weight: 600;
+    }
+    
+    .cus-blog-article-title a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .cus-blog-article-title a:hover {
+        color: #d4a574;
+    }
+    
+    .cus-blog-article-excerpt {
+        color: #c4b5a0;
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+    
+    .cus-blog-article-footer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .cus-blog-category-tag {
+        background: rgba(212, 165, 116, 0.3);
+        color: #d4a574;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 1.2rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .cus-blog-category-tag:hover {
+        background: #d4a574;
+        color: #1a1a1a;
+    }
+    
+    .cus-blog-read-more {
+        color: #d4a574;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+        font-size: 2rem;
+    }
+    
+    .cus-blog-read-more:hover {
+        color: #f5f5f5;
+        transform: translateX(5px);
+    }
+    
+    .cus-blog-read-more::after {
+        content: ' →';
+        transition: transform 0.3s ease;
+    }
+    
+    .cus-blog-read-more:hover::after {
+        transform: translateX(5px);
+    }
+    
+    .cus-blog-featured-card {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        background: linear-gradient(135deg, rgba(212, 165, 116, 0.1) 0%, rgba(196, 181, 160, 0.1) 100%);
+        border: 2px solid #d4a574;
+    }
+    
+    .cus-blog-featured-card .cus-blog-article-image {
+        height: 300px;
+    }
+    
+    .cus-blog-featured-card .cus-blog-article-content {
+        padding: 2rem;
+    }
+    
+    .cus-blog-featured-card .cus-blog-article-title {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+    
+    .cus-blog-featured-card .cus-blog-article-excerpt {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .cus-blog-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 3rem;
+        padding: 2rem 0;
+    }
+    
+    .cus-blog-pagination a, .cus-blog-pagination span {
+        padding: 10px 15px;
+        border: 1px solid #d4a574;
+        border-radius: 8px;
+        color: #d4a574;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        background: rgba(255,255,255,0.05);
+    }
+    
+    .cus-blog-pagination a:hover, .cus-blog-pagination .current {
+        background: #d4a574;
+        color: #1a1a1a;
+    }
+    
+    .cus-blog-no-articles {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #c4b5a0;
+        font-size: 1.2rem;
+        grid-column: 1 / -1;
+    }
+    
+    .cus-blog-no-articles h2 {
+        color: #d4a574;
+        margin-bottom: 1rem;
+    }
+    
+    /* Coffee cup animation */
+    @keyframes steam {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(-20px) rotate(10deg); opacity: 0; }
+    }
+    
+    .cus-blog-coffee-steam {
+        display: inline-block;
+        animation: steam 2s infinite;
+    }
+    
+    .cus-blog-coffee-steam:nth-child(2) {
+        animation-delay: 0.5s;
+    }
+    
+    .cus-blog-coffee-steam:nth-child(3) {
+        animation-delay: 1s;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .cus-blog-logo {
+            font-size: 2rem;
+        }
+        
+        .cus-blog-featured-card {
+            grid-template-columns: 1fr;
+        }
+        
+        .cus-blog-articles-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .cus-blog-filter-tags {
+            gap: 0.5rem;
+        }
+        
+        .cus-blog-container {
+            padding: 0 1rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .cus-blog-logo {
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+        
+        .cus-blog-tagline {
+            font-size: 1.4rem;
+        }
+        
+        .cus-blog-search-bar {
+            padding: 15px 45px 15px 15px;
+        }
+        
+        .cus-blog-tag {
+            padding: 6px 12px;
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<section class="cus-blog-section">
+    <div class="cus-blog-container">
+        <div class="cus-blog-header">
+            <h1 class="cus-blog-logo">
+                {{ section.settings.blog_title | default: "SOULFUL LATTE" }}
+                <span class="cus-blog-coffee-steam">☁️</span>
+                <span class="cus-blog-coffee-steam">☁️</span>
+                <span class="cus-blog-coffee-steam">☁️</span>
+                ☕
+            </h1>
+            <p class="cus-blog-tagline">{{ section.settings.blog_description | default: "faith & self-growth journal" }}</p>
+            
+            <div class="cus-blog-search-container">
+                <form action="{{ blog.url }}" method="get" class="cus-blog-search-form">
+                    <input type="text" name="q" class="cus-blog-search-bar" placeholder="Search for wisdom, reflection, growth..." value="{{ current_tags.first | default: '' }}">
+                    <button type="submit" class="cus-blog-search-btn">🔍</button>
+                </form>
+            </div>
+            
+            <div class="cus-blog-filter-tags">
+                <a href="{{ blog.url }}" class="cus-blog-tag {% unless current_tags %}active{% endunless %}">All</a>
+                {% for tag in blog.all_tags limit: 6 %}
+                    <a href="{{ blog.url }}/tagged/{{ tag | handle }}" class="cus-blog-tag {% if current_tags contains tag %}active{% endif %}">{{ tag }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="cus-blog-articles-grid">
+            {% if blog.articles.size > 0 %}
+                {% for article in blog.articles %}
+                    <article class="cus-blog-article-card {% if forloop.first and section.settings.featured_first %}cus-blog-featured-card{% endif %}" data-tags="{{ article.tags | join: ',' | downcase }}" data-title="{{ article.title | downcase }}" data-excerpt="{{ article.excerpt | strip_html | downcase }}">
+                        <div class="cus-blog-article-image">
+                            {% if article.image %}
+                                <img src="{{ article.image | img_url: '600x400' }}" alt="{{ article.title }}" loading="lazy">
+                            {% else %}
+                                <div class="cus-blog-fallback-image">
+                                    {% case article.tags.first %}
+                                        {% when 'Faith' %}
+                                            🕌
+                                        {% when 'Family' %}
+                                            👨‍👩‍👧‍👦
+                                        {% when 'Self-Growth' %}
+                                            🌱
+                                        {% when 'Lifestyle' %}
+                                            ✨
+                                        {% when 'Community' %}
+                                            🤝
+                                        {% when 'Reflection' %}
+                                            🤔
+                                        {% else %}
+                                            📝
+                                    {% endcase %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="cus-blog-article-content">
+                                  <h2 class="cus-blog-article-title">
+                                <a href="{{ article.url }}">{{ article.title }}</a>
+                            </h2>
+                            <div class="cus-blog-article-meta">
+                                <div class="cus-blog-author">
+                                    {% comment %}     <div class="cus-blog-author-avatar">
+                                    {{ article.author | default: 'Rashid Shahriar' | slice: 0 }}
+                                    </div> 
+                                    <span>{{ article.author | default: 'Rashid Shahriar' }}</span>
+                                    {% endcomment %}
+                                    {% if article.tags.size > 0 %}
+                                    <span class="cus-blog-tag">{{ article.tags.first | capitalize }}</span>
+                                {% else %}
+                                    <span class="cus-blog-tag">Article</span>
+                                {% endif %}
+                                </div>
+                                <span class="cus-blog-read-time">5 min 🕙</span>
+                            </div>
+                            
+                            <p class="cus-blog-article-excerpt">{{ article.content | strip_html | truncate: 150 }}</p>
+                            <div class="cus-blog-article-footer">
+                                 {% comment %}
+                                {% if article.tags.size > 0 %}
+                                    <span class="cus-blog-tag">{{ article.tags.first | capitalize }}</span>
+                                {% else %}
+                                    <span class="cus-blog-tag">Article</span>
+                                {% endif %}
+                                {% endcomment %}
+                                <a href="{{ article.url }}" class="cus-blog-read-more">
+                                    {% if forloop.first and section.settings.featured_first %}
+                                        Reflect with me
+                                    {% else %}
+                                        Read more
+                                    {% endif %}
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <div class="cus-blog-no-articles">
+                    <h2>No articles found</h2>
+                    <p>Check back soon for inspiring content about faith and self-growth.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        {% if paginate.pages > 1 %}
+            <div class="cus-blog-pagination">
+                {% if paginate.previous %}
+                    <a href="{{ paginate.previous.url }}" rel="prev">← Previous</a>
+                {% endif %}
+                
+                {% for part in paginate.parts %}
+                    {% if part.is_link %}
+                        <a href="{{ part.url }}">{{ part.title }}</a>
+                    {% else %}
+                        {% if part.title == paginate.current_page %}
+                            <span class="current">{{ part.title }}</span>
+                        {% else %}
+                            <span>{{ part.title }}</span>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                
+                {% if paginate.next %}
+                    <a href="{{ paginate.next.url }}" rel="next">Next →</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced search functionality
+    const searchBar = document.querySelector('.cus-blog-search-bar');
+    const articles = document.querySelectorAll('.cus-blog-article-card');
+    const noArticlesMessage = document.querySelector('.cus-blog-no-articles');
+    
+    if (searchBar) {
+        searchBar.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            let visibleCount = 0;
+            
+            articles.forEach(article => {
+                const title = article.dataset.title || '';
+                const excerpt = article.dataset.excerpt || '';
+                const tags = article.dataset.tags || '';
+                
+                if (title.includes(searchTerm) || excerpt.includes(searchTerm) || tags.includes(searchTerm)) {
+                    article.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    article.style.display = 'none';
+                }
+            });
+            
+            // Show/hide no articles message
+            if (noArticlesMessage) {
+                noArticlesMessage.style.display = visibleCount === 0 && searchTerm ? 'block' : 'none';
+            }
+        });
+    }
+    
+    // Smooth scrolling for internal links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    
+    // Intersection Observer for fade-in animation
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    // Observe all article cards
+    articles.forEach(article => {
+        observer.observe(article);
+    });
+    
+    // Form submission enhancement
+    const searchForm = document.querySelector('.cus-blog-search-form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            const searchInput = this.querySelector('.cus-blog-search-bar');
+            if (!searchInput.value.trim()) {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+    }
+    
+    // Add loading state to search button
+    const searchBtn = document.querySelector('.cus-blog-search-btn');
+    if (searchBtn && searchForm) {
+        searchForm.addEventListener('submit', function() {
+            searchBtn.innerHTML = '⏳';
+            setTimeout(() => {
+                searchBtn.innerHTML = '🔍';
+            }, 1000);
+        });
+    }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Blog Section design",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "blog_title",
+      "label": "Blog Title",
+      "default": "SOULFUL LATTE"
+    },
+    {
+      "type": "text",
+      "id": "blog_description",
+      "label": "Blog Description",
+      "default": "faith & self-growth journal"
+    },
+    {
+      "type": "checkbox",
+      "id": "featured_first",
+      "label": "Make First Article Featured",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "articles_per_page",
+      "label": "Articles Per Page",
+      "min": 6,
+      "max": 24,
+      "step": 3,
+      "default": 12
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog Section design"
+    }
+  ]
+}
+{% endschema %}

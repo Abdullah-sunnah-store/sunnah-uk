@@ -1,0 +1,667 @@
+<!-- sections/image-carousel.liquid -->
+
+{%- assign section_id = 'carousel-' | append: section.id -%}
+
+<section class="slick-image-carousel-section" id="{{ section_id }}">
+  <div class="slick-carousel-container">
+    <div class="slick-carousel-wrapper" id="carousel-wrapper-{{ section.id }}">
+      
+      {%- for block in section.blocks -%}
+        <div class="slick-carousel-slide" {{ block.shopify_attributes }}>
+          <div class="slick-slide-content">
+            <div class="slick-slide-image">
+              {%- if block.settings.image -%}
+                <img 
+                  src="{{ block.settings.image | image_url: width: 1920 }}" 
+                  alt="{{ block.settings.image.alt | default: block.settings.title }}"
+                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                >
+              {%- else -%}
+                <div class="slick-placeholder-image">
+                  {{ 'image' | placeholder_svg_tag: 'slick-placeholder-svg' }}
+                </div>
+              {%- endif -%}
+            </div>
+            <div class="slick-slide-overlay">
+              <div class="slick-slide-text">
+                {%- if block.settings.title != blank -%}
+                  <h2>{{ block.settings.title }}</h2>
+                {%- endif -%}
+                
+                <div class="slick-slide-actions">
+                  {%- if block.settings.button_text != blank and block.settings.button_url != blank -%}
+                    <a href="{{ block.settings.button_url }}" class="slick-btn-primary">
+                      {{ block.settings.button_text }}
+                    </a>
+                  {%- endif -%}
+                  
+                  {%- if block.settings.subtitle != blank -%}
+                    <p class="slick-slide-subtitle">{{ block.settings.subtitle }}</p>
+                  {%- endif -%}
+                </div>
+              </div>
+              
+              {%- if block.settings.logo != blank -%}
+                <div class="slick-slide-logo">
+                  <img 
+                    src="{{ block.settings.logo | image_url: height: 80 }}" 
+                    alt="{{ block.settings.logo.alt | default: 'Logo' }}"
+                    class="slick-tv-logo"
+                    loading="lazy"
+                  >
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+
+    </div>
+  </div>
+</section>
+
+<!-- Include Slick Slider CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"/>
+
+<style>
+.slick-image-carousel-section {
+  position: relative;
+  width: 100%;
+  height: {{ section.settings.section_height }}vh;
+  min-height: 400px;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.slick-carousel-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.slick-carousel-wrapper {
+  height: 100%;
+}
+
+.slick-carousel-slide {
+  position: relative;
+  height: {{ section.settings.section_height }}vh;
+  min-height: 400px;
+  margin: 0 5px;
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+.slick-carousel-slide.slick-center {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 2;
+}
+
+.slick-slide-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.slick-slide-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.slick-slide-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.slick-placeholder-image {
+  width: 100%;
+  height: 100%;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slick-placeholder-svg {
+  width: 100px;
+  height: 100px;
+  opacity: 0.3;
+}
+
+.slick-slide-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, {{ section.settings.overlay_opacity | divided_by: 100.0 }}) 0%,
+    rgba(0, 0, 0, {{ section.settings.overlay_opacity | divided_by: 200.0 }}) 50%,
+    rgba(0, 0, 0, {{ section.settings.overlay_opacity | divided_by: 400.0 }}) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem;
+  color: {{ section.settings.text_color }};
+}
+
+.slick-slide-text {
+  flex: 1;
+  max-width: 600px;
+}
+
+.slick-slide-text h2 {
+  font-size: clamp(2rem, 6vw, {{ section.settings.title_size }}px);
+  font-weight: 900;
+  line-height: 0.9;
+  margin: 0 0 1.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  white-space: pre-line;
+}
+
+.slick-slide-text .slick-highlight {
+  color: {{ section.settings.accent_color }};
+  position: relative;
+}
+
+.slick-slide-actions {
+  margin-top: 1.5rem;
+}
+
+.slick-btn-primary {
+  background: {{ section.settings.button_bg_color }};
+  color: {{ section.settings.button_text_color }};
+  border: none;
+  padding: 0.8rem 1.8rem;
+  border-radius: {{ section.settings.button_border_radius }}px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.slick-btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.slick-slide-subtitle {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin: 1rem 0 0 0;
+}
+
+.slick-slide-logo {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  margin-left: 2rem;
+}
+
+.slick-tv-logo {
+  height: {{ section.settings.logo_height }}px;
+  width: auto;
+  opacity: 0.9;
+}
+
+/* Slick Slider Custom Styles */
+.slick-carousel-wrapper .slick-list {
+  height: 100%;
+}
+
+.slick-carousel-wrapper .slick-track {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* Custom Arrow Styles */
+{% if section.settings.show_arrows %}
+.slick-carousel-wrapper .slick-prev,
+.slick-carousel-wrapper .slick-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 18%;
+  height: 100%;
+  background: transparent;
+  color: white;
+  font-size: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(2px);
+}
+
+
+.slick-carousel-wrapper .slick-prev:before,
+.slick-carousel-wrapper .slick-next:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+}
+
+.slick-carousel-wrapper .slick-prev:before {
+  transform: translate(-30%, -50%) rotate(-45deg);
+}
+
+.slick-carousel-wrapper .slick-next:before {
+  transform: translate(-70%, -50%) rotate(135deg);
+}
+
+.slick-carousel-wrapper .slick-prev {
+  left: 0;
+}
+
+.slick-carousel-wrapper .slick-next {
+  right: 0;
+}
+{% endif %}
+
+/* Custom Dots Styles */
+{% if section.settings.show_dots %}
+.slick-carousel-wrapper .slick-dots {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex !important;
+  justify-content: center;
+  gap: 0.8rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  z-index: 10;
+}
+
+.slick-carousel-wrapper .slick-dots li {
+  margin: 0;
+  padding: 0;
+}
+
+.slick-carousel-wrapper .slick-dots li button {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0;
+}
+
+.slick-carousel-wrapper .slick-dots li.slick-active button {
+  background: white;
+  transform: scale(1.3);
+}
+
+.slick-carousel-wrapper .slick-dots li button:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+{% endif %}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .slick-slide-overlay {
+    padding: 1.5rem;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .slick-slide-text {
+    max-width: 100%;
+    margin-bottom: 1.5rem;
+  }
+  
+  .slick-slide-text h2 {
+    font-size: clamp(1.5rem, 8vw, {{ section.settings.title_size | divided_by: 1.5 }}px);
+    margin-bottom: 1rem;
+  }
+  
+  .slick-slide-logo {
+    margin-left: 0;
+    justify-content: center;
+  }
+  
+  .slick-carousel-slide {
+    margin: 0 3px;
+  }
+  
+  {% if section.settings.show_arrows %}
+  .slick-carousel-wrapper .slick-prev,
+  .slick-carousel-wrapper .slick-next {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .slick-carousel-wrapper .slick-prev {
+    left: 1rem;
+  }
+  
+  .slick-carousel-wrapper .slick-next {
+    right: 1rem;
+  }
+  {% endif %}
+}
+
+@media (max-width: 480px) {
+  .slick-slide-overlay {
+    padding: 1rem;
+  }
+  
+  .slick-btn-primary {
+    padding: 0.7rem 1.4rem;
+    font-size: 0.9rem;
+  }
+  
+  .slick-tv-logo {
+    height: {{ section.settings.logo_height | divided_by: 1.5 }}px;
+  }
+  
+  .slick-carousel-slide {
+    margin: 0 2px;
+  }
+}
+</style>
+
+<!-- Include jQuery and Slick Slider JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  const sectionId = '{{ section.id }}';
+  const $carousel = $('#carousel-wrapper-' + sectionId);
+  
+  if ($carousel.length === 0) return;
+  
+  // Initialize Slick Slider
+  $carousel.slick({
+    centerMode: true,
+    centerPadding: '20%',
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: {{ section.settings.autoplay | json }},
+    autoplaySpeed: {{ section.settings.autoplay_speed | times: 1000 }},
+    arrows: {{ section.settings.show_arrows | json }},
+    dots: {{ section.settings.show_dots | json }},
+    infinite: true,
+    fade: false,
+    cssEase: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    speed: 600,
+    pauseOnHover: true,
+    pauseOnFocus: true,
+    swipe: true,
+    touchMove: true,
+    accessibility: true,
+    focusOnSelect: true,
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          centerPadding: '15%',
+          slidesToShow: 1
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          centerPadding: '10%',
+          slidesToShow: 1
+        }
+      }
+    ]
+  });
+  
+  // Custom keyboard navigation
+  $(document).on('keydown', function(e) {
+    if (e.key === 'ArrowLeft') {
+      $carousel.slick('slickPrev');
+    } else if (e.key === 'ArrowRight') {
+      $carousel.slick('slickNext');
+    }
+  });
+  
+  // Pause autoplay on section hover
+  $('#{{ section_id }}').hover(
+    function() {
+      $carousel.slick('slickPause');
+    },
+    function() {
+      {% if section.settings.autoplay %}
+      $carousel.slick('slickPlay');
+      {% endif %}
+    }
+  );
+});
+</script>
+
+{% schema %}
+{
+  "name": "Slick Image Carousel",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "label": "Section Height",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay Opacity",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Carousel Settings"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Navigation Arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show Pagination Dots",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Enable Autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Autoplay Speed",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 30,
+      "max": 120,
+      "unit": "px",
+      "label": "Title Size",
+      "default": 72
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#ff6b35"
+    },
+    {
+      "type": "header",
+      "content": "Button Settings"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Button Border Radius",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Logo Settings"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "min": 30,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Logo Height",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Background Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "YOUR SLIDE\nTITLE HERE"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Drama • Your subtitle here"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "Stream now"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button URL"
+        },
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Slick Image Carousel",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "title": "YOUR FRIENDS\n&\nNEIGHBORS",
+            "subtitle": "Drama • Live your best lie.",
+            "button_text": "Stream now"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "title": "MURDER\nIN\nBOSTON",
+            "subtitle": "Crime • Based on true events.",
+            "button_text": "Watch now"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "title": "THE\nCROWN\nSERIES",
+            "subtitle": "Drama • Royal family saga.",
+            "button_text": "Stream now"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

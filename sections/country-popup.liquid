@@ -1,0 +1,346 @@
+<div id="country-popup" class="country-popup-overlay" style="display: none;">
+  <div class="country-popup">
+    <button class="country-popup__close" id="close-popup">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    
+    <div class="country-popup__content">
+      <h3 class="country-popup__title">{{ section.settings.popup_title | default: "ARE YOU IN THE RIGHT PLACE?" }}</h3>
+      
+      <div class="country-popup__options">
+        {% for block in section.blocks %}
+          {% if block.type == 'country_option' %}
+            <a href="{{ block.settings.country_url }}" class="country-option" data-country="{{ block.settings.country_code }}">
+              <div class="country-option__flag">
+                <img src="{{ block.settings.flag_image | img_url: '40x40' }}" alt="{{ block.settings.country_name }} flag" width="24" height="18">
+              </div>
+              <span class="country-option__name">{{ block.settings.country_name }}</span>
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+    /* Country Popup Styles */
+.country-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.country-popup-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.country-popup {
+  background: #1a1a1a;
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+  transform: translateY(30px);
+  transition: transform 0.3s ease;
+}
+
+.country-popup-overlay.active .country-popup {
+  transform: translateY(0);
+}
+
+.country-popup__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.country-popup__close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.country-popup__title {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 30px 0;
+  letter-spacing: 1px;
+}
+
+.country-popup__options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.country-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.country-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.country-option__flag {
+  width: 32px;
+  height: 24px;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.country-option__flag img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.country-option__name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .country-popup {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  .country-popup__title {
+    font-size: 16px;
+  }
+  
+  .country-option {
+    padding: 14px 16px;
+  }
+}
+</style>
+
+<script>class CountryPopup {
+  constructor() {
+    this.popup = document.getElementById('country-popup');
+    this.closeBtn = document.getElementById('close-popup');
+    this.storageKey = 'country_popup_dismissed';
+    this.init();
+  }
+
+  init() {
+    if (!this.popup) return;
+    
+    this.bindEvents();
+    this.checkAndShowPopup();
+  }
+
+  bindEvents() {
+    // Close button
+    if (this.closeBtn) {
+      this.closeBtn.addEventListener('click', () => this.closePopup());
+    }
+
+    // Close on overlay click
+    this.popup.addEventListener('click', (e) => {
+      if (e.target === this.popup) {
+        this.closePopup();
+      }
+    });
+
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.isPopupVisible()) {
+        this.closePopup();
+      }
+    });
+
+    // Country selection
+    const countryOptions = this.popup.querySelectorAll('.country-option');
+    countryOptions.forEach(option => {
+      option.addEventListener('click', (e) => {
+        const country = e.currentTarget.dataset.country;
+        this.selectCountry(country);
+      });
+    });
+  }
+
+  checkAndShowPopup() {
+    // Check if popup was already dismissed
+    const dismissed = localStorage.getItem(this.storageKey);
+    
+    // Check if user already has a country preference
+    const hasCountryPreference = localStorage.getItem('selected_country');
+    
+    if (!dismissed && !hasCountryPreference) {
+      // Get delay from section settings or default to 2 seconds
+      const delay = parseInt(document.querySelector('[data-popup-delay]')?.dataset.popupDelay) || 2000;
+      
+      setTimeout(() => {
+        this.showPopup();
+      }, delay);
+    }
+  }
+
+  showPopup() {
+    if (this.popup) {
+      this.popup.style.display = 'flex';
+      setTimeout(() => {
+        this.popup.classList.add('active');
+      }, 10);
+      
+      // Prevent body scroll
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  closePopup() {
+    if (this.popup) {
+      this.popup.classList.remove('active');
+      setTimeout(() => {
+        this.popup.style.display = 'none';
+        document.body.style.overflow = '';
+      }, 300);
+      
+      // Mark as dismissed
+      localStorage.setItem(this.storageKey, 'true');
+    }
+  }
+
+  selectCountry(country) {
+    // Store selected country
+    localStorage.setItem('selected_country', country);
+    
+    // Mark popup as dismissed
+    localStorage.setItem(this.storageKey, 'true');
+    
+    // Close popup
+    this.closePopup();
+    
+    // Optional: Trigger analytics event
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'country_selected', {
+        country: country
+      });
+    }
+  }
+
+  isPopupVisible() {
+    return this.popup && this.popup.classList.contains('active');
+  }
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  new CountryPopup();
+});
+
+</script>
+{% schema %}
+{
+  "name": "Country Popup",
+  "settings": [
+    {
+      "type": "text",
+      "id": "popup_title",
+      "label": "Popup Title",
+      "default": "ARE YOU IN THE RIGHT PLACE?"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_popup",
+      "label": "Enable Country Popup",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "popup_delay",
+      "label": "Popup Delay (seconds)",
+      "default": 2
+    }
+  ],
+  "blocks": [
+    {
+      "type": "country_option",
+      "name": "Country Option",
+      "settings": [
+        {
+          "type": "text",
+          "id": "country_name",
+          "label": "Country Name"
+        },
+        {
+          "type": "text",
+          "id": "country_code",
+          "label": "Country Code (e.g., UK, US)"
+        },
+        {
+          "type": "image_picker",
+          "id": "flag_image",
+          "label": "Flag Image"
+        },
+        {
+          "type": "url",
+          "id": "country_url",
+          "label": "Country Store URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Country Popup",
+      "blocks": [
+        {
+          "type": "country_option",
+          "settings": {
+            "country_name": "UK",
+            "country_code": "UK"
+          }
+        },
+        {
+          "type": "country_option",
+          "settings": {
+            "country_name": "US",
+            "country_code": "US"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

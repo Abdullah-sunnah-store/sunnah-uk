@@ -1,0 +1,193 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "padding_top": 28,
+        "padding_bottom": 28
+      }
+    },
+    "image_banner_main_kYtFDe": {
+      "type": "image-banner-main",
+      "blocks": {
+        "heading_VXeXWK": {
+          "type": "heading",
+          "settings": {
+            "heading": "<strong>SPREAD YOUR DEEN.   </strong>",
+            "heading_size": "h1"
+          }
+        },
+        "text_UJrJX4": {
+          "type": "text",
+          "settings": {
+            "text": "<em><strong>Every box we curate carries love, faith & beauty.</strong></em>",
+            "text_style": "body"
+          }
+        },
+        "buttons_zPgY3C": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "",
+            "button_link_1": "",
+            "button_style_secondary_1": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_VXeXWK",
+        "text_UJrJX4",
+        "buttons_zPgY3C"
+      ],
+      "name": "image banner main",
+      "settings": {
+        "image": "shopify://shop_images/Web_PIc_Long_2.jpg",
+        "image_overlay_opacity": 0,
+        "image_height": "medium",
+        "desktop_content_position": "bottom-left",
+        "show_text_box": false,
+        "desktop_content_alignment": "center",
+        "color_scheme": "",
+        "image_behavior": "none",
+        "mobile_content_alignment": "center",
+        "stack_images_on_mobile": true,
+        "show_text_below": true
+      }
+    },
+    "hair_reviews_section_ngeHHX": {
+      "type": "hair-reviews-section",
+      "blocks": {
+        "single_image_XtfJWw": {
+          "type": "single_image",
+          "settings": {
+            "image": "shopify://shop_images/513909704_1275314494213938_5866087445118907509_n.jpg",
+            "alt_text": "",
+            "overlay_text": ""
+          }
+        },
+        "single_image_BtKmpC": {
+          "type": "single_image",
+          "settings": {
+            "image": "shopify://shop_images/492837589_24119093027683100_80149506766500946_n.jpg",
+            "alt_text": "",
+            "overlay_text": ""
+          }
+        },
+        "single_image_TwgHMk": {
+          "type": "single_image",
+          "settings": {
+            "image": "shopify://shop_images/513681324_1275314697547251_4731433090713043911_n.jpg",
+            "alt_text": "",
+            "overlay_text": ""
+          }
+        },
+        "single_image_6PM6fV": {
+          "type": "single_image",
+          "settings": {
+            "image": "shopify://shop_images/471261726_10234641094705750_5385600285958832397_n.jpg",
+            "alt_text": "",
+            "overlay_text": ""
+          }
+        },
+        "single_image_DqJk7R": {
+          "type": "single_image",
+          "settings": {
+            "image": "shopify://shop_images/487039942_1220138912804181_4741929830682457056_n.jpg",
+            "alt_text": "",
+            "overlay_text": ""
+          }
+        },
+        "single_image_RYb7jF": {
+          "type": "single_image",
+          "settings": {
+            "image": "shopify://shop_images/504100058_3945410719004832_3115165897882479854_n.jpg",
+            "alt_text": "",
+            "overlay_text": ""
+          }
+        }
+      },
+      "block_order": [
+        "single_image_XtfJWw",
+        "single_image_BtKmpC",
+        "single_image_TwgHMk",
+        "single_image_6PM6fV",
+        "single_image_DqJk7R",
+        "single_image_RYb7jF"
+      ],
+      "name": "Hair Reviews Section",
+      "settings": {
+        "title": "Real People, Real Community Reviews",
+        "subtitle": "Question? We're here for you.",
+        "button_text": "View All",
+        "button_link": "shopify://collections/sale",
+        "title_color": "#121212",
+        "text_color": "#636363",
+        "button_color": "#121212",
+        "button_hover_color": "#121212"
+      }
+    },
+    "testimonials_grid_custom_L69n4b": {
+      "type": "testimonials-grid-custom",
+      "name": "Testimonials Grid",
+      "settings": {
+        "bg_color_1": "#f8f9fa",
+        "image_1": "shopify://shop_images/c573a02b-8-Package-Reshoot-DSC09336.webp",
+        "quote_1": "I swear this will be the best gift for him on our anniversary! I'm so satisfied Alhamdulillah. Item, packaging, the entire giftbox is perfect. Jazakallahu Khairan The Sunnah Store.🌸",
+        "name_1": "Sabiha Mahmud",
+        "title_1": "",
+        "bg_color_2": "#f0f8ff",
+        "image_2": "shopify://shop_images/8eedae69-Package-01-1.webp",
+        "quote_2": "The gift box for Ammu was really amazing. My mother loved it so much. Had good experience with the service Alhamdulillahh.",
+        "name_2": "Nishat Anjum",
+        "title_2": "",
+        "bg_color_3": "#fff5f5",
+        "image_3": "shopify://shop_images/f7ae8e3b-Ramadan-package-DSC05350.webp",
+        "quote_3": "Really loved the system of creating your own gift box...It was a great experience....Good luck for your business...",
+        "name_3": "Mafiur Rahman",
+        "title_3": "",
+        "bg_color_4": "#f0fff4",
+        "image_4": "shopify://shop_images/add12c58-For-her-package-3--png.webp",
+        "quote_4": "Alhamdulillah.. I am so much happy to get such an wonderful gift box and things.. I am truly satisfied and looking forward to order again. In Sha Allah",
+        "name_4": "Asma",
+        "title_4": "",
+        "bg_color_5": "#fffaf0",
+        "image_5": "shopify://shop_images/c8601562-For-her-package-3--png.webp",
+        "quote_5": "Loved your products and I can't thank you enough for delivering my order within a couple of hours  Thanks for understanding my urgency. Loved the perfume quality btw. The musk aswad one specially, smells soo good  Best wishes",
+        "name_5": "Maiyesha Ekra",
+        "title_5": "",
+        "bg_color_6": "#f5f0ff",
+        "image_6": "shopify://shop_images/c3db631e-For-her-04-Mar-01.webp",
+        "quote_6": "I’m really satisfied with the quality of the product.",
+        "name_6": "Tamara Nashim",
+        "title_6": ""
+      }
+    },
+    "instagram_section_design_RbKDHP": {
+      "type": "instagram-section-design",
+      "name": "Cus Instagram Design",
+      "settings": {
+        "image_01": "shopify://shop_images/518114438_122145589154596545_6689776681352197783_n.jpg",
+        "image_08": "shopify://shop_images/Ziqr_calligraphy_Mug-1.jpg"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "image_banner_main_kYtFDe",
+    "hair_reviews_section_ngeHHX",
+    "testimonials_grid_custom_L69n4b",
+    "instagram_section_design_RbKDHP"
+  ]
+}

@@ -1,0 +1,342 @@
+<!-- Brand Logo Auto-Slider Section with Dual Rows (Desktop) / Single Row (Mobile) -->
+<div class="brand-slider-container" style="background: {{ section.settings.background_color }};">
+  <!-- First Row - Slides Left to Right -->
+  <div class="brand-slider-wrapper">
+    <div class="brand-slider-track" style="--desktop-speed: {{ section.settings.desktop_animation_speed }}s; --mobile-speed: {{ section.settings.mobile_animation_speed }}s;">
+      {% for block in section.blocks %}
+        <div class="brand-logo">
+          {% if block.settings.show_image and block.settings.logo %}
+            <img src="{{ block.settings.logo | img_url: '200x' }}" alt="Brand Logo {{ forloop.index }}" loading="lazy">
+          {% endif %}
+          {% if block.settings.show_text and block.settings.rich_text %}
+            <div class="brand-text">
+              {{ block.settings.rich_text }}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <!-- Duplicate for seamless infinite loop -->
+      {% for block in section.blocks %}
+        <div class="brand-logo">
+          {% if block.settings.show_image and block.settings.logo %}
+            <img src="{{ block.settings.logo | img_url: '200x' }}" alt="Brand Logo {{ forloop.index }}" loading="lazy">
+          {% endif %}
+          {% if block.settings.show_text and block.settings.rich_text %}
+            <div class="brand-text">
+              {{ block.settings.rich_text }}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Second Row - Slides Right to Left (Hidden on Mobile) -->
+  <div class="brand-slider-wrapper brand-slider-second-row">
+    <div class="brand-slider-track brand-slider-track-reverse" style="--desktop-speed: {{ section.settings.desktop_animation_speed }}s; --mobile-speed: {{ section.settings.mobile_animation_speed }}s;">
+      {% for block in section.blocks %}
+        <div class="brand-logo">
+          {% if block.settings.show_image and block.settings.logo %}
+            <img src="{{ block.settings.logo | img_url: '200x' }}" alt="Brand Logo {{ forloop.index }}" loading="lazy">
+          {% endif %}
+          {% if block.settings.show_text and block.settings.rich_text %}
+            <div class="brand-text">
+              {{ block.settings.rich_text }}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <!-- Duplicate for seamless infinite loop -->
+      {% for block in section.blocks %}
+        <div class="brand-logo">
+          {% if block.settings.show_image and block.settings.logo %}
+            <img src="{{ block.settings.logo | img_url: '200x' }}" alt="Brand Logo {{ forloop.index }}" loading="lazy">
+          {% endif %}
+          {% if block.settings.show_text and block.settings.rich_text %}
+            <div class="brand-text">
+              {{ block.settings.rich_text }}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+.brand-slider-container {
+  width: 100%;
+  overflow: hidden;
+  padding: 10px 0 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.brand-slider-wrapper {
+  width: 100%;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  margin: 0 auto;
+}
+
+.brand-slider-track {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slide linear infinite;
+  animation-duration: var(--desktop-speed);
+  width: max-content;
+}
+
+.brand-slider-track-reverse {
+  animation: slide-reverse linear infinite;
+  animation-duration: var(--desktop-speed);
+}
+
+.brand-logo {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  min-width: 120px;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+  gap: 10px;
+}
+
+.brand-logo:hover {
+  opacity: 1;
+}
+
+.brand-logo img {
+  max-height: 60px;
+  max-width: 120px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: grayscale(100%);
+  transition: filter 0.3s ease;
+}
+
+.brand-logo:hover img {
+  filter: grayscale(0%);
+}
+
+.brand-text {
+  text-align: center;
+  font-size: 14px;
+  color: #000;
+  line-height: 1.4;
+  max-width: 800px;
+  transition: color 0.3s ease;
+}
+
+.brand-logo:hover .brand-text {
+  color: #000;
+}
+
+/* Handle both image and text together */
+.brand-logo:has(img):has(.brand-text) {
+  min-width: 150px;
+}
+
+.brand-logo:has(img):has(.brand-text) .brand-text {
+  margin-top: 8px;
+}
+
+/* Text only styling */
+.brand-logo:not(:has(img)) .brand-text {
+  font-size: 16px;
+  font-weight: 500;
+  padding: 5px 5px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(187, 225, 234, 0.53), rgba(174, 174, 174, 0.9));
+  transition: background 0.3s ease;
+}
+
+.brand-logo:not(:has(img)):hover .brand-text {
+  background: linear-gradient(135deg, rgba(174, 174, 174, 0.9), rgba(187, 225, 234, 0.53));
+}
+
+@keyframes slide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes slide-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Pause animation on hover */
+.brand-slider-container:hover .brand-slider-track {
+  animation-play-state: paused;
+}
+
+/* Mobile responsive adjustments - Hide second row on mobile */
+@media (max-width: 768px) {
+  .brand-slider-second-row {
+    display: none;
+  }
+  
+  .brand-slider-container {
+    gap: 0;
+    padding: 15px 0;
+  }
+  
+  .brand-slider-track {
+    gap: 15px;
+    animation-duration: var(--mobile-speed);
+  }
+  
+  .brand-slider-track-reverse {
+    animation-duration: var(--mobile-speed);
+  }
+  
+  .brand-logo {
+    min-width: 100px;
+    min-height: 50px;
+  }
+  
+  .brand-logo img {
+    max-height: 50px;
+    max-width: 100px;
+  }
+  
+  .brand-text {
+    font-size: 12px;
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-slider-track {
+    gap: 10px;
+  }
+  
+  .brand-logo {
+    min-width: 80px;
+    min-height: 40px;
+  }
+  
+  .brand-logo img {
+    max-height: 40px;
+    max-width: 80px;
+  }
+  
+  .brand-slider-container {
+    padding: 10px 0;
+  }
+  
+  .brand-text {
+    font-size: 11px;
+    max-width: 200px;
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Brand Logo Slider",
+  "settings": [
+    {
+      "type": "range",
+      "id": "desktop_animation_speed",
+      "label": "Desktop Animation Speed",
+      "min": 10,
+      "max": 320,
+      "step": 5,
+      "default": 30,
+      "unit": "s"
+    },
+    {
+      "type": "range",
+      "id": "mobile_animation_speed",
+      "label": "Mobile Animation Speed",
+      "min": 10,
+      "max": 320,
+      "step": 5,
+      "default": 20,
+      "unit": "s"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Brand Item",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_image",
+          "label": "Show Image",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo Image"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_text",
+          "label": "Show Text",
+          "default": false
+        },
+        {
+          "type": "richtext",
+          "id": "rich_text",
+          "label": "Brand Text",
+          "default": "<p>Brand Name</p>"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 20,
+  "presets": [
+    {
+      "name": "Brand Logo Slider",
+      "blocks": [
+        {
+          "type": "logo",
+          "settings": {
+            "show_image": true,
+            "show_text": false
+          }
+        },
+        {
+          "type": "logo",
+          "settings": {
+            "show_image": true,
+            "show_text": false
+          }
+        },
+        {
+          "type": "logo",
+          "settings": {
+            "show_image": true,
+            "show_text": false
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

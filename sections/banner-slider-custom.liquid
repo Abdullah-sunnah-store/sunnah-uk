@@ -1,0 +1,793 @@
+<!-- sections/responsive-banner.liquid -->
+<div class="responsive-banner-section">
+  <div class="banner-container">
+    <!-- Main Banner with Slider -->
+    <div class="main-banner">
+      <div class="slider-wrapper">
+        <div class="slider-container" id="responsiveSlider">
+          {% assign slide_count = 0 %}
+          {% for block in section.blocks %}
+            {% if block.type == 'main_banner' %}
+              {% assign slide_count = slide_count | plus: 1 %}
+              <div class="slide {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.index0 }}">
+                <div class="slide-background">
+                  {% if block.settings.background_image != blank %}
+                    {{ block.settings.background_image | image_url: width: 1200 | image_tag: loading: 'lazy', alt: block.settings.title, class: 'background-image' }}
+                  {% else %}
+                    <div class="placeholder-bg"></div>
+                  {% endif %}
+                  <div class="overlay"></div>
+                </div>
+                <div class="slide-layout">
+                  <div class="slide-content">
+                    {% if block.settings.title != blank %}
+                      <h1 class="slide-title">{{ block.settings.title }}</h1>
+                    {% endif %}
+                    {% if block.settings.subtitle != blank %}
+                      <p class="slide-subtitle">{{ block.settings.subtitle }}</p>
+                    {% endif %}
+                    {% if block.settings.button_text != blank and block.settings.button_url != blank %}
+                      <a href="{{ block.settings.button_url }}" class="slide-button">
+                        {{ block.settings.button_text }}
+                      </a>
+                    {% endif %}
+                  </div>
+                  {% if block.settings.product_image != blank %}
+                    <div class="slide-product">
+                      {{ block.settings.product_image | image_url: width: 600 | image_tag: loading: 'lazy', alt: block.settings.title, class: 'product-image' }}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <!-- Navigation Arrows - Only show if there are multiple slides -->
+        {% if slide_count > 1 %}
+        <button class="nav-arrow prev-arrow" id="prevBtn" aria-label="Previous slide">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+            <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="nav-arrow next-arrow" id="nextBtn" aria-label="Next slide">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Side Promotional Banners -->
+    <div class="side-banners">
+      {% for block in section.blocks %}
+        {% if block.type == 'promo_banner' %}
+          <div class="promo-banner promo-{{ block.settings.banner_type }}">
+            <div class="promo-background">
+              <a href="{{ block.settings.button_url }}">
+              {% if block.settings.background_image != blank %}
+                {{ block.settings.background_image | image_url: width: 400 | image_tag: loading: 'lazy', alt: block.settings.button_text, class: 'promo-bg-image' }}
+              {% endif %}
+              <div class="promo-overlay"></div>
+              </a>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+.responsive-banner-section {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 15px;
+}
+
+.banner-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 15px;
+  height: 500px;
+}
+
+/* Main Banner Styles */
+.main-banner {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.slider-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.slider-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  z-index: 1;
+}
+
+.slide.active {
+  opacity: 1;
+  z-index: 2;
+}
+
+.slide-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.background-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder-bg {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #d4af37 0%, #f4e4a6 100%);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.slide-layout {
+  position: relative;
+  z-index: 3;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 40px;
+}
+
+.slide-content {
+  flex: 1;
+  color: white;
+  padding: 30px 60px;
+}
+
+.slide-title {
+    color: #fff;
+    font-weight: 600 !important;
+    margin: 0;
+    line-height: 1.3;
+    word-break: break-word;
+    font-family: Alta !important;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.slide-subtitle {
+  opacity: 0.95;
+  line-height: 1.4;
+  font-weight: 400;
+  font-size: 18px;
+}
+
+.slide-button {
+  display: inline-block;
+  background: #000;
+  color: white;
+  padding: 10px 30px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  font-size: 1.8rem;
+}
+
+.slide-button:hover {
+  background: #000;
+  transform: translateY(-2px);
+}
+
+.slide-product {
+  flex: 1;
+  max-width: 45%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 20px;
+}
+
+.product-image {
+  max-width: 100%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+/* Navigation Arrows */
+.nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+  color: #fff;
+  background: transparent;
+  border-radius: 50%;
+  padding: 0;
+  outline: none;
+}
+
+.nav-arrow:hover {
+  transform: translateY(-50%) scale(1.1);
+  background: transparent;
+}
+
+/* .nav-arrow:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+} */
+
+.prev-arrow {
+  left: 0;
+}
+
+.next-arrow {
+  right: 0;
+}
+
+/* Side Banners */
+.side-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.promo-banner {
+  flex: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 25px 20px;
+  color: white;
+  min-height: 200px;
+}
+
+.promo-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.promo-bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.promo-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.promo-dark {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+}
+
+.promo-light {
+  background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+  color: #2e7d32;
+}
+
+.promo-shipping {
+  background: linear-gradient(135deg, #f0f8e8 0%, #dcedc8 100%);
+  color: #2e7d32;
+}
+
+.promo-button {
+  display: inline-block;
+  background: transparent;
+  color: currentColor;
+  padding: 8px 20px;
+  border: 2px solid currentColor;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.promo-dark .promo-button:hover {
+  background: white;
+  color: #1a1a1a;
+}
+
+.promo-light .promo-button:hover,
+.promo-shipping .promo-button:hover {
+  background: #2e7d32;
+  color: white;
+}
+
+.promo-image {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 60px;
+  height: 40px;
+  z-index: 1;
+}
+
+.promo-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Special styling for golden text */
+.promo-dark .promo-small-text {
+  color: #ffd700;
+}
+
+.promo-dark .promo-discount-number {
+  color: #ffd700;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+  .banner-container {
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 10px;
+  }
+  
+  .main-banner {
+    height: 350px;
+    order: 1;
+  }
+  
+  .side-banners {
+    order: 2;
+    flex-direction: row;
+    gap: 10px;
+  }
+  
+  .slide-layout {
+    flex-direction: unset;
+    text-align: start;
+    padding: 25px 20px;
+  }
+  
+  .slide-content {
+    max-width: 100%;
+    margin-bottom: 20px;
+    padding: 30px 30px;
+  }
+  
+  .slide-product {
+    max-width: 100%;
+    padding-left: 0;
+    height: auto;
+  }
+  
+  .slide-title {
+    font-size: 2.4rem;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+  
+  .slide-subtitle {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+  
+  .nav-arrow {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .prev-arrow {
+    left: 0;
+  }
+  
+  .next-arrow {
+    right: 0;
+  }
+  
+  .promo-banner {
+    padding: 20px 15px;
+    min-height: 180px;
+  }
+  
+  .promo-main-text {
+    font-size: 1.3rem;
+  }
+  
+  .promo-discount-number {
+    font-size: 2.8rem;
+  }
+  
+  .promo-discount-text {
+    font-size: 1rem;
+  }
+  .slide-button {
+    display: inline-block;
+    background: #000;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    font-size: 1.6rem;
+}
+}
+
+@media (max-width: 480px) {
+  .responsive-banner-section {
+    padding: 10px;
+  }
+  
+  .main-banner {
+    height: 300px;
+  }
+  
+  .slide-layout {
+    padding: 20px 15px;
+  }
+  
+  .slide-title {
+    font-size: 2.4rem;
+  }
+  
+  .slide-subtitle {
+    font-size: 1.4rem;
+  }
+  
+  .side-banners {
+    flex-direction: row;
+    gap: 8px;
+  }
+  
+  .promo-banner {
+    min-height: 160px;
+    padding: 18px 12px;
+  }
+  
+  .promo-main-text {
+    font-size: 1.1rem;
+  }
+  
+  .promo-discount-number {
+    font-size: 2.5rem;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const slider = document.getElementById('responsiveSlider');
+  if (!slider) return;
+  
+  const slides = slider.querySelectorAll('.slide');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  
+  let currentSlide = 0;
+  const totalSlides = slides.length;
+  let autoSlideInterval;
+  
+  // Auto slide interval (5 seconds)
+  const AUTO_SLIDE_DELAY = 5000;
+  
+  // Early return if no slides
+  if (totalSlides === 0) return;
+  
+  function showSlide(index) {
+    // Remove active class from all slides
+    slides.forEach((slide, i) => {
+      slide.classList.remove('active');
+    });
+    
+    // Ensure index is within bounds
+    if (index >= totalSlides) {
+      index = 0;
+    } else if (index < 0) {
+      index = totalSlides - 1;
+    }
+    
+    // Add active class to current slide
+    if (slides[index]) {
+      slides[index].classList.add('active');
+    }
+    
+    currentSlide = index;
+  }
+  
+  function nextSlide() {
+    const next = (currentSlide + 1) % totalSlides;
+    showSlide(next);
+  }
+  
+  function prevSlide() {
+    const prev = (currentSlide - 1 + totalSlides) % totalSlides;
+    showSlide(prev);
+  }
+  
+  function startAutoSlide() {
+    if (totalSlides > 1) {
+      autoSlideInterval = setInterval(nextSlide, AUTO_SLIDE_DELAY);
+    }
+  }
+  
+  function stopAutoSlide() {
+    if (autoSlideInterval) {
+      clearInterval(autoSlideInterval);
+      autoSlideInterval = null;
+    }
+  }
+  
+  function restartAutoSlide() {
+    stopAutoSlide();
+    startAutoSlide();
+  }
+  
+  // Event listeners with null checks
+  if (nextBtn) {
+    nextBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      nextSlide();
+      restartAutoSlide();
+    });
+  }
+  
+  if (prevBtn) {
+    prevBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      prevSlide();
+      restartAutoSlide();
+    });
+  }
+  
+  // Pause auto slide on hover
+  slider.addEventListener('mouseenter', stopAutoSlide);
+  slider.addEventListener('mouseleave', startAutoSlide);
+  
+  // Touch/swipe support
+  let touchStartX = 0;
+  let touchEndX = 0;
+  let touchStartTime = 0;
+  
+  slider.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartTime = Date.now();
+    stopAutoSlide();
+  }, { passive: true });
+  
+  slider.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+    startAutoSlide();
+  }, { passive: true });
+  
+  function handleSwipe() {
+    const swipeThreshold = 50;
+    const timeThreshold = 500; // Max time for a swipe
+    const diff = touchStartX - touchEndX;
+    const timeDiff = Date.now() - touchStartTime;
+    
+    if (Math.abs(diff) > swipeThreshold && timeDiff < timeThreshold) {
+      if (diff > 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
+    }
+  }
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (slider.matches(':hover') || document.activeElement === slider) {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevSlide();
+        restartAutoSlide();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextSlide();
+        restartAutoSlide();
+      }
+    }
+  });
+  
+  // Initialize - ensure first slide is active
+  showSlide(0);
+  
+  // Start auto slide only if more than one slide
+  if (totalSlides > 1) {
+    startAutoSlide();
+  }
+  
+  // Visibility change handling (pause when tab is not visible)
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      stopAutoSlide();
+    } else {
+      startAutoSlide();
+    }
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Responsive Banner",
+  "tag": "section",
+  "class": "responsive-banner-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Banner Settings"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "main_banner",
+      "name": "Main Banner Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "background_image",
+          "label": "Background Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "product_image",
+          "label": "Product Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "PANJABI & THOBE"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Worn by Tradition, Styled for Today"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button URL"
+        }
+      ]
+    },
+    {
+      "type": "promo_banner",
+      "name": "Promotional Banner",
+      "settings": [
+        {
+          "type": "select",
+          "id": "banner_type",
+          "label": "Banner Style",
+          "options": [
+            {
+              "value": "dark",
+              "label": "Dark Theme (Discount)"
+            },
+            {
+              "value": "light",
+              "label": "Light Theme"
+            },
+            {
+              "value": "shipping",
+              "label": "Shipping Theme"
+            }
+          ],
+          "default": "dark"
+        },
+        {
+          "type": "image_picker",
+          "id": "background_image",
+          "label": "Background Image"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "ORDER NOW"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button URL"
+        },
+        {
+          "type": "image_picker",
+          "id": "promo_image",
+          "label": "Promotional Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Responsive Banner",
+      "blocks": [
+        {
+          "type": "main_banner",
+          "settings": {
+            "title": "PANJABI & THOBE",
+            "subtitle": "Worn by Tradition, Styled for Today",
+            "button_text": "Shop Now"
+          }
+        },
+        {
+          "type": "main_banner",
+          "settings": {
+            "title": "NOTEBOOKS",
+            "subtitle": "Features inspiring quotes, prayers, and praises to Allah",
+            "button_text": "Shop Now"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

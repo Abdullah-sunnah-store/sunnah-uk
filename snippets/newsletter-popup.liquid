@@ -1,0 +1,843 @@
+{% comment %}
+  Newsletter Popup Component for Shopify Dawn Theme
+  Add this to a new snippet file: snippets/newsletter-popup.liquid
+{% endcomment %}
+
+{% if settings.newsletter_popup_enable %}
+<div class="newsletter-popup-wrapper" id="newsletter-popup-wrapper">
+  <div class="newsletter-popup-overlay" id="newsletter-popup-overlay"></div>
+  <div class="newsletter-popup-modal">
+    <div class="newsletter-popup-content">
+      <button type="button" class="newsletter-popup-close" id="newsletter-popup-close">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      
+      <div class="newsletter-popup-body">
+        <div class="newsletter-popup-image" id="newsletter-popup-image">
+          {% if settings.newsletter_popup_image != blank %}
+            {{ settings.newsletter_popup_image | image_url: width: 400 | image_tag: 
+               alt: settings.newsletter_popup_title,
+               loading: 'lazy' }}
+          {% else %}
+            <div class="newsletter-popup-placeholder">
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" stroke-width="2"/>
+                <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+          {% endif %}
+        </div>
+        
+        <div class="newsletter-popup-form-section">
+          <div class="newsletter-popup-header" id="newsletter-popup-header">
+            <h2 class="newsletter-popup-title">
+              {{ settings.newsletter_popup_title | default: 'Stay Updated!' }}
+            </h2>
+            <p class="newsletter-popup-description">
+              {{ settings.newsletter_popup_description | default: 'Subscribe to our newsletter and get exclusive offers, new arrivals, and style tips delivered to your inbox.' }}
+            </p>
+          </div>
+          
+          <div class="newsletter-popup-form">
+            {% form 'customer', class: 'newsletter-form', id: 'newsletter-popup-form' %}
+              {% if form.posted_successfully? %}
+                <div class="newsletter-success-container">
+                  <div class="newsletter-success-message">
+                    <svg width="24" height="24" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M16.25 6.25L8.125 14.375L3.75 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>{{ settings.newsletter_success_message | default: 'Thank you for subscribing!' }}</span>
+                  </div>
+                  
+                  <!-- Welcome Discount Code -->
+                  <div class="discount-code-section">
+                    <h3 class="discount-title">{{ settings.discount_title | default: 'Here\'s your welcome gift!' }}</h3>
+                    <p class="discount-description">{{ settings.discount_description | default: 'Use this code to get your exclusive discount' }}</p>
+                    <div class="discount-code-container">
+                      <span class="discount-code" id="discount-code">{{ settings.discount_code | default: 'WELCOME10' }}</span>
+                      <button type="button" class="copy-code-btn" id="copy-code-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <span class="copy-text">Copy</span>
+                        <span class="copied-text" style="display: none;">Copied!</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Referral Section -->
+                  {% if settings.enable_referral_program %}
+                  <div class="referral-section">
+                    <h3 class="referral-title">{{ settings.referral_title | default: 'Share with friends & earn more!' }}</h3>
+                    <p class="referral-description">{{ settings.referral_description | default: 'Share your referral link and both you and your friend get 15% off!' }}</p>
+                    <div class="referral-link-container">
+                      <input type="text" class="referral-link-input" id="referral-link" value="{{ shop.url }}/?ref={{ customer.id | default: 'NEWUSER' }}&code={{ settings.referral_code | default: 'FRIEND15' }}" readonly>
+                      <button type="button" class="copy-referral-btn" id="copy-referral-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <span class="copy-text">Copy Link</span>
+                        <span class="copied-text" style="display: none;">Copied!</span>
+                      </button>
+                    </div>
+                    
+                    <!-- Social Share Buttons -->
+                    <div class="social-share-buttons">
+                      <button type="button" class="social-share-btn facebook-share" data-platform="facebook">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                        Facebook
+                      </button>
+                      <button type="button" class="social-share-btn twitter-share" data-platform="twitter">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                        </svg>
+                        Twitter
+                      </button>
+                      <button type="button" class="social-share-btn whatsapp-share" data-platform="whatsapp">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.085"/>
+                        </svg>
+                        WhatsApp
+                      </button>
+                    </div>
+                  </div>
+                  {% endif %}
+                  
+                  <button type="button" class="continue-shopping-btn" id="continue-shopping">
+                    {{ settings.continue_shopping_text | default: 'Continue Shopping' }}
+                  </button>
+                </div>
+              {% elsif form.errors %}
+                <div class="newsletter-error-message">
+                  {{ form.errors | first }}
+                </div>
+              {% else %}
+                <div class="newsletter-input-group">
+                  <input
+                    type="email"
+                    name="contact[email]"
+                    id="newsletter-popup-email"
+                    class="newsletter-popup-input"
+                    placeholder="{{ settings.newsletter_placeholder | default: 'Enter your email address' }}"
+                    required
+                    autocomplete="email"
+                  >
+                  <input type="hidden" name="contact[tags]" value="newsletter">
+                  <button type="submit" class="newsletter-popup-submit">
+                    <span class="submit-text">{{ settings.newsletter_button_text | default: 'Subscribe' }}</span>
+                    <span class="submit-loading" style="display: none;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2V6M12 18V22M4.93 4.93L7.76 7.76M16.24 16.24L19.07 19.07M2 12H6M18 12H22M4.93 19.07L7.76 16.24M16.24 7.76L19.07 4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                  </button>
+                </div>
+                
+                {% if settings.newsletter_popup_privacy_text != blank %}
+                  <p class="newsletter-privacy-text">
+                    {{ settings.newsletter_popup_privacy_text }}
+                  </p>
+                {% endif %}
+              {% endif %}
+            {% endform %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .newsletter-popup-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .newsletter-popup-wrapper.active {
+    display: flex;
+  }
+  
+  .newsletter-popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+  }
+  
+  .newsletter-popup-modal {
+    position: relative;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: popupSlideIn 0.3s ease-out;
+  }
+  
+  @keyframes popupSlideIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  
+  .newsletter-popup-content {
+    background: rgb(var(--color-background));
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .newsletter-popup-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: all 0.2s ease;
+  }
+  
+  .newsletter-popup-close:hover {
+    background: rgba(0, 0, 0, 0.7);
+    transform: scale(1.1);
+  }
+  
+  .newsletter-popup-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 400px;
+  }
+  
+  /* Hide image section when form is successfully submitted */
+  .newsletter-popup-body.success-state {
+    grid-template-columns: 1fr;
+  }
+  
+  .newsletter-popup-body.success-state .newsletter-popup-image {
+    display: none;
+  }
+  
+  .newsletter-popup-body.success-state .newsletter-popup-header {
+    display: none;
+  }
+  
+  .newsletter-popup-image {
+    background: linear-gradient(135deg, rgb(var(--color-foreground)) 0%, rgba(var(--color-foreground), 0.8) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .newsletter-popup-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .newsletter-popup-placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .newsletter-popup-form-section {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .newsletter-popup-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    color: rgb(var(--color-foreground));
+    line-height: 1.2;
+  }
+  
+  .newsletter-popup-description {
+    font-size: 16px;
+    color: rgba(var(--color-foreground), 0.8);
+    margin: 0 0 32px 0;
+    line-height: 1.5;
+  }
+  
+  .newsletter-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 16px;
+    width: 100%;
+  }
+  
+  .newsletter-popup-input {
+    padding: 16px 20px;
+    border: 2px solid rgba(var(--color-foreground), 0.2);
+    border-radius: 8px;
+    font-size: 16px;
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
+    transition: all 0.2s ease;
+    width: 100%;
+  }
+  
+  .newsletter-popup-input:focus {
+    outline: none;
+    border-color: rgb(var(--color-foreground));
+    box-shadow: 0 0 0 3px rgba(var(--color-foreground), 0.1);
+  }
+  
+  .newsletter-popup-submit {
+    padding: 16px 32px;
+    background: rgb(var(--color-foreground));
+    color: rgb(var(--color-background));
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .newsletter-popup-submit:hover {
+    background: rgba(var(--color-foreground), 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(var(--color-foreground), 0.3);
+  }
+  
+  .newsletter-popup-submit:active {
+    transform: translateY(0);
+  }
+  
+  .submit-loading svg {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  .newsletter-success-container {
+    text-align: center;
+  }
+  
+  .newsletter-success-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    background: #10b981;
+    color: white;
+    border-radius: 8px;
+    font-weight: 500;
+    margin-bottom: 24px;
+  }
+  
+  .discount-code-section {
+    background: #f8f9fa;
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 2px dashed rgba(var(--color-foreground), 0.2);
+  }
+  
+  .discount-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #000;
+    margin: 0 0 8px 0;
+  }
+  
+  .discount-description {
+    font-size: 14px;
+    color: #000;
+    margin: 0 0 16px 0;
+  }
+  
+  .discount-code-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+    margin-bottom: 12px;
+  }
+  
+  .discount-code {
+    font-size: 18px;
+    font-weight: 700;
+    color: #dc2626;
+    letter-spacing: 1px;
+    flex: 1;
+  }
+  
+  .copy-code-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgb(var(--color-foreground));
+    color: rgb(var(--color-background));
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .copy-code-btn:hover {
+    background: rgba(var(--color-foreground), 0.9);
+    transform: translateY(-1px);
+  }
+ 
+  
+  .referral-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+  }
+  
+  .referral-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+  }
+  
+  .referral-description {
+    font-size: 14px;
+    margin: 0 0 16px 0;
+    opacity: 0.9;
+  }
+  
+  .referral-link-container {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .referral-link-input {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    backdrop-filter: blur(10px);
+  }
+  
+  .referral-link-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .copy-referral-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+  }
+  
+  .copy-referral-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+  }
+  
+  .social-share-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+  
+  .social-share-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
+  }
+  
+  .facebook-share {
+    background: #1877f2;
+  }
+  
+  .twitter-share {
+    background: #1da1f2;
+  }
+  
+  .whatsapp-share {
+    background: #25d366;
+  }
+  
+  .social-share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .continue-shopping-btn {
+    width: 100%;
+    padding: 14px 24px;
+    background: transparent;
+    color: rgb(var(--color-foreground));
+    border: 2px solid rgba(var(--color-foreground), 0.3);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .continue-shopping-btn:hover {
+    background: rgba(var(--color-foreground), 0.05);
+    border-color: rgba(var(--color-foreground), 0.5);
+  }
+  
+  .newsletter-error-message {
+    padding: 16px;
+    background: #ef4444;
+    color: white;
+    border-radius: 8px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  
+  .newsletter-privacy-text {
+    font-size: 12px;
+    color: rgba(var(--color-foreground), 0.6);
+    margin-top: 16px;
+    line-height: 1.4;
+  }
+  
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .newsletter-popup-modal {
+      max-width: 95vw;
+      margin: 20px;
+    }
+    
+    .newsletter-popup-body {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+    
+    .newsletter-popup-image {
+      min-height: 200px;
+    }
+    
+    .newsletter-popup-form-section {
+      padding: 30px 20px;
+    }
+    
+    .newsletter-popup-title {
+      font-size: 24px;
+    }
+    
+    .newsletter-popup-description {
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    
+    .newsletter-popup-close {
+      top: 12px;
+      right: 12px;
+      width: 36px;
+      height: 36px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .newsletter-input-group {
+      flex-direction: column;
+    }
+    
+    .newsletter-popup-input,
+    .newsletter-popup-submit {
+      width: 100%;
+    }
+  }
+</style>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  // Configuration
+  const POPUP_DELAY = {{ settings.newsletter_popup_delay | default: 5000 }};
+  const POPUP_COOKIE_DAYS = {{ settings.newsletter_popup_cookie_days | default: 7 }};
+  
+  // Elements
+  const popupWrapper = document.getElementById('newsletter-popup-wrapper');
+  const popupOverlay = document.getElementById('newsletter-popup-overlay');
+  const popupClose = document.getElementById('newsletter-popup-close');
+  const newsletterForm = document.getElementById('newsletter-popup-form');
+  
+  if (!popupWrapper) return;
+  
+  // Utility functions
+  function setCookie(name, value, days) {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+  }
+  
+  function getCookie(name) {
+    return document.cookie.split('; ').reduce((r, v) => {
+      const parts = v.split('=');
+      return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+    }, '');
+  }
+  
+  // Check if form was successfully submitted
+  function checkFormSuccess() {
+    const successContainer = document.querySelector('.newsletter-success-container');
+    const popupBody = document.querySelector('.newsletter-popup-body');
+    const popupImage = document.querySelector('.newsletter-popup-image');
+    const popupHeader = document.querySelector('.newsletter-popup-header');
+    
+    if (successContainer) {
+      // Hide image and header sections
+      if (popupImage) {
+        popupImage.style.display = 'none';
+      }
+      if (popupHeader) {
+        popupHeader.style.display = 'none';
+      }
+      
+      // Update grid layout to single column
+      if (popupBody) {
+        popupBody.style.gridTemplateColumns = '1fr';
+      }
+      
+      // Center the form section
+      const formSection = document.querySelector('.newsletter-popup-form-section');
+      if (formSection) {
+        formSection.style.textAlign = 'center';
+        formSection.style.justifyContent = 'center';
+      }
+    }
+  }
+  
+  function showPopup() {
+    popupWrapper.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    // Check success state after popup is shown
+    setTimeout(checkFormSuccess, 100);
+  }
+  
+  function hidePopup() {
+    popupWrapper.classList.remove('active');
+    document.body.style.overflow = '';
+    setCookie('newsletter_popup_shown', 'true', POPUP_COOKIE_DAYS);
+  }
+  
+  // Show popup logic
+  function initPopup() {
+    const hasBeenShown = getCookie('newsletter_popup_shown');
+    const isHomePage = window.location.pathname === '/' || window.location.pathname === '';
+    
+    if (!hasBeenShown && isHomePage) {
+      setTimeout(showPopup, POPUP_DELAY);
+    }
+  }
+  
+  // Event listeners
+  popupClose.addEventListener('click', hidePopup);
+  popupOverlay.addEventListener('click', hidePopup);
+  
+  // Close on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && popupWrapper.classList.contains('active')) {
+      hidePopup();
+    }
+  });
+  
+  // Form submission
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', function(e) {
+      const submitButton = this.querySelector('.newsletter-popup-submit');
+      const submitText = submitButton.querySelector('.submit-text');
+      const submitLoading = submitButton.querySelector('.submit-loading');
+      
+      // Show loading state
+      if (submitText && submitLoading) {
+        submitText.style.display = 'none';
+        submitLoading.style.display = 'flex';
+        submitButton.disabled = true;
+      }
+      
+      // The form will submit normally, but we'll hide the popup after a successful submission
+      setTimeout(() => {
+        if (!this.querySelector('.newsletter-error-message')) {
+          // Don't hide popup immediately on success - let user see the discount code
+          // hidePopup();
+        }
+      }, 1000);
+    });
+  }
+  // Copy discount code functionality
+  const copyCodeBtn = document.getElementById('copy-code-btn');
+  if (copyCodeBtn) {
+    copyCodeBtn.addEventListener('click', function() {
+      const discountCode = document.getElementById('discount-code').textContent;
+      const copyText = this.querySelector('.copy-text');
+      const copiedText = this.querySelector('.copied-text');
+      
+      navigator.clipboard.writeText(discountCode).then(function() {
+        copyText.style.display = 'none';
+        copiedText.style.display = 'inline';
+        
+        setTimeout(() => {
+          copyText.style.display = 'inline';
+          copiedText.style.display = 'none';
+        }, 2000);
+      }).catch(function() {
+        // Fallback for older browsers
+        const tempInput = document.createElement('input');
+        tempInput.value = discountCode;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        
+        copyText.style.display = 'none';
+        copiedText.style.display = 'inline';
+        
+        setTimeout(() => {
+          copyText.style.display = 'inline';
+          copiedText.style.display = 'none';
+        }, 2000);
+      });
+    });
+  }
+  // Copy referral link functionality
+  const copyReferralBtn = document.getElementById('copy-referral-btn');
+  if (copyReferralBtn) {
+    copyReferralBtn.addEventListener('click', function() {
+      const referralLink = document.getElementById('referral-link').value;
+      const copyText = this.querySelector('.copy-text');
+      const copiedText = this.querySelector('.copied-text');
+      
+      navigator.clipboard.writeText(referralLink).then(function() {
+        copyText.style.display = 'none';
+        copiedText.style.display = 'inline';
+        
+        setTimeout(() => {
+          copyText.style.display = 'inline';
+          copiedText.style.display = 'none';
+        }, 2000);
+      }).catch(function() {
+        // Fallback for older browsers
+        const tempInput = document.createElement('input');
+        tempInput.value = referralLink;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        
+        copyText.style.display = 'none';
+        copiedText.style.display = 'inline';
+        
+        setTimeout(() => {
+          copyText.style.display = 'inline';
+          copiedText.style.display = 'none';
+        }, 2000);
+      });
+    });
+  }
+  // Social sharing functionality
+  const socialShareBtns = document.querySelectorAll('.social-share-btn');
+  socialShareBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const platform = this.dataset.platform;
+      const referralLink = document.getElementById('referral-link')?.value || window.location.href;
+      const shareText = encodeURIComponent('{{ settings.share_text | default: "Check out this amazing store and get 15% off your first order!" }}');
+      
+      let shareUrl = '';
+      switch(platform) {
+        case 'facebook':
+          shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`;
+          break;
+        case 'twitter':
+          shareUrl = `https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(referralLink)}`;
+          break;
+        case 'whatsapp':
+          shareUrl = `https://wa.me/?text=${shareText}%20${encodeURIComponent(referralLink)}`;
+          break;
+      }
+      
+      if (shareUrl) {
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+      }
+    });
+  });
+  // Continue shopping button
+  const continueShoppingBtn = document.getElementById('continue-shopping');
+  if (continueShoppingBtn) {
+    continueShoppingBtn.addEventListener('click', function() {
+      hidePopup();
+    });
+  }
+  
+  // Initialize popup
+  initPopup();
+  
+  // Initial check for success state (in case page reloads after form submission)
+  checkFormSuccess();
+});
+</script>
+{% endif %}

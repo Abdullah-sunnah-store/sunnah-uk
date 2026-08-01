@@ -1,0 +1,64 @@
+{% comment %}
+  Renders a price range slider for faceted filtering
+
+  Accepts:
+  - filter: {Object} Filter object
+  - id_prefix: {String} Prefix for the input IDs
+  - filter_type: {String} Filter type (horizontal, vertical or drawer)
+
+  Usage:
+  {% render 'price-facet', filter: filter, id_prefix: 'Filter-', filter_type: filter_type %}
+{% endcomment %}
+
+{{ 'component-price-range.css' | asset_url | stylesheet_tag }}
+
+<script src="{{ 'price-range.js' | asset_url }}" defer="defer"></script>
+
+{%- assign min_value = filter.min_value.value | default: 0 -%}
+{%- assign max_value = filter.max_value.value | default: filter.range_max -%}
+{%- assign range_max = filter.range_max | default: max_value -%}
+
+<div class="price-range price-range--{{ filter_type }}">
+  <div class="price-range__inputs-wrapper">
+    <div class="field">
+      <span class="field__currency">{{ cart.currency.symbol }}</span>
+      <input 
+        class="field__input price-range__input price-range__input--min" 
+        name="{{ filter.min_value.param_name }}" 
+        id="{{ id_prefix }}{{ filter.min_value.param_name }}" 
+        type="number" 
+        placeholder="{{ 0 | money_without_currency | replace: ',', '' }}" 
+        min="0" 
+        max="{{ range_max | money_without_currency | replace: ',', '' | ceil }}" 
+        {% if min_value %}value="{{ min_value | money_without_currency | replace: ',', '' }}"{% endif %}
+      >
+      <label class="field__label" for="{{ id_prefix }}{{ filter.min_value.param_name }}">
+        {{ 'products.facets.from' | t }}
+      </label>
+    </div>
+    <div class="field">
+      <span class="field__currency">{{ cart.currency.symbol }}</span>
+      <input 
+        class="field__input price-range__input price-range__input--max" 
+        name="{{ filter.max_value.param_name }}" 
+        id="{{ id_prefix }}{{ filter.max_value.param_name }}" 
+        type="number" 
+        min="0" 
+        placeholder="{{ range_max | money_without_currency | replace: ',', '' }}" 
+        max="{{ range_max | money_without_currency | replace: ',', '' | ceil }}" 
+        {% if max_value %}value="{{ max_value | money_without_currency | replace: ',', '' }}"{% endif %}
+      >
+      <label class="field__label" for="{{ id_prefix }}{{ filter.max_value.param_name }}">
+        {{ 'products.facets.to' | t }}
+      </label>
+    </div>
+  </div>
+
+  <div class="price-range__slider-wrapper">
+    <div class="price-range__slider" id="{{ id_prefix }}{{ filter.param_name }}-slider"></div>
+    <div class="price-range__slider-track">
+      <span class="price-range__slider-marker price-range__slider-marker--min">{{ 0 | money }}</span>
+      <span class="price-range__slider-marker price-range__slider-marker--max">{{ range_max | money }}</span>
+    </div>
+  </div>
+</div>

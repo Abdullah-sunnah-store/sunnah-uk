@@ -1,0 +1,375 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "vendor": {
+          "type": "text",
+          "settings": {
+            "text": "{{ product.vendor }}",
+            "text_style": "uppercase"
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "circle"
+          }
+        },
+        "quantity_selector": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true,
+            "show_gift_card_recipient": true
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
+        "collapsible_tab_emjQqE": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Material",
+            "icon": "question_mark",
+            "content": "<p>Cover: FSC Certified paper from Great Britain, Leafs: 220 pages 80 GSM lined paper  </p>",
+            "page": ""
+          }
+        },
+        "collapsible_tab_78rbGD": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Shipping & Returns",
+            "icon": "truck",
+            "content": "<p>The order will be shipped out to you within 5-7 business days. If you’ve<br/> placed more than one order, your items may arrive in different <br/>packages.</p>",
+            "page": ""
+          }
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share"
+          }
+        }
+      },
+      "block_order": [
+        "vendor",
+        "title",
+        "price",
+        "variant_picker",
+        "quantity_selector",
+        "buy_buttons",
+        "description",
+        "collapsible_tab_emjQqE",
+        "collapsible_tab_78rbGD",
+        "share"
+      ],
+      "disabled": true,
+      "settings": {
+        "enable_sticky_info": true,
+        "color_scheme": "scheme-1",
+        "media_size": "large",
+        "constrain_to_viewport": true,
+        "media_fit": "contain",
+        "gallery_layout": "thumbnail",
+        "media_position": "left",
+        "image_zoom": "lightbox",
+        "mobile_thumbnails": "show",
+        "hide_variants": true,
+        "enable_video_looping": false,
+        "padding_top": 36,
+        "padding_bottom": 12
+      }
+    },
+    "main_product_panjabi_supreme_LnqLLg": {
+      "type": "main-product-panjabi-supreme",
+      "blocks": {
+        "title_6YrQz7": {
+          "type": "title",
+          "settings": {}
+        },
+        "price_Wf6TM8": {
+          "type": "price",
+          "settings": {}
+        },
+        "variant_picker_9qUHTK": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "circle"
+          }
+        },
+        "quantity_selector_hzhn9U": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "product_addons_gcJUM9": {
+          "type": "product-addons",
+          "disabled": true,
+          "settings": {
+            "product_addon": [
+              "enjoy-little-things-box-black",
+              "the-starry-night-gift-box-small-black",
+              "the-starry-night-gift-box-small-blue"
+            ],
+            "addon_bg": "rgba(0,0,0,0)",
+            "checkbox_active_color": "#000000",
+            "checkbox_size": 20,
+            "image_size": 64,
+            "image_size_mb": 56,
+            "image_type": "5",
+            "title_size": 14,
+            "title_size_mb": 12,
+            "font_weight": "bold",
+            "price_size": 12,
+            "price_size_mb": 10,
+            "free_gift_info": "👉 Claim free gift",
+            "title_color": "#ffffff",
+            "price_color": "#ffffff",
+            "price_opacity": 0.7
+          }
+        },
+        "buy_buttons_UMeeWm": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true,
+            "show_gift_card_recipient": true
+          }
+        },
+        "product_addons_v2_g7eKCY": {
+          "type": "product-addons-v2",
+          "disabled": true,
+          "settings": {
+            "custom_heading_text": "",
+            "product_addon": [
+              "arabian-platinum-thobe-caramel-brown",
+              "arabian-platinum-thobe-copper-brown",
+              "arabian-platinum-thobe-cornflower-blue",
+              "arabian-platinum-thobe-hunter-green",
+              "arabian-platinum-thobe-jade-black",
+              "arabian-platinum-thobe-olive-gray",
+              "arabian-platinum-thobe-smoke-gray",
+              "arabian-platinum-thobe-soft-space-blue",
+              "platinum-panjabi-chestnut-brown",
+              "platinum-panjabi-dove-white",
+              "platinum-panjabi-graphite-gray",
+              "platinum-panjabi-latte-brown",
+              "platinum-panjabi-moss-green",
+              "platinum-panjabi-obsidian-black",
+              "platinum-panjabi-teal-blue",
+              "horsemen-punjabi-tropical-suiting-twill-fabric-taupe-brown",
+              "premium-panjabi-beach-brown",
+              "premium-panjabi-sky-blue"
+            ],
+            "addon_bg": "rgba(0,0,0,0)",
+            "checkbox_active_color": "#000000",
+            "checkbox_size": 20,
+            "image_size": 64,
+            "image_size_mb": 56,
+            "image_type": "5",
+            "title_size": 18,
+            "title_size_mb": 14,
+            "font_weight": "bold",
+            "price_size": 14,
+            "price_size_mb": 12,
+            "free_gift_info": "👉 Claim free gift",
+            "title_color": "#ffffff",
+            "price_color": "#ffffff",
+            "price_opacity": 0.7
+          }
+        },
+        "description_XHwNxM": {
+          "type": "description",
+          "settings": {}
+        },
+        "collapsible_tab_DBzyXc": {
+          "type": "collapsible_tab",
+          "disabled": true,
+          "settings": {
+            "heading": "Wash Care",
+            "icon": "check_mark",
+            "content": "<ul><li>Dry clean only.</li><li>Do not bleach.</li><li>Steam iron recommended.</li><li>Iron inside out with low to medium heat.</li><li>Do not iron over label or the buttons.</li></ul>",
+            "page": ""
+          }
+        },
+        "collapsible_tab_UKdWMV": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Shipping & Returns",
+            "icon": "truck",
+            "content": "<p>The order will be shipped out to you within 5-7 business days. If you’ve<br/> placed more than one order, your items may arrive in different <br/>packages.</p>",
+            "page": ""
+          }
+        },
+        "share_UACC64": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share"
+          }
+        }
+      },
+      "block_order": [
+        "title_6YrQz7",
+        "price_Wf6TM8",
+        "variant_picker_9qUHTK",
+        "quantity_selector_hzhn9U",
+        "product_addons_gcJUM9",
+        "buy_buttons_UMeeWm",
+        "product_addons_v2_g7eKCY",
+        "description_XHwNxM",
+        "collapsible_tab_DBzyXc",
+        "collapsible_tab_UKdWMV",
+        "share_UACC64"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "color_scheme": "",
+        "media_size": "large",
+        "constrain_to_viewport": true,
+        "media_fit": "cover",
+        "gallery_layout": "thumbnail_slider",
+        "media_position": "left",
+        "image_zoom": "hover",
+        "mobile_thumbnails": "show",
+        "hide_variants": false,
+        "enable_video_looping": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "related-products": {
+      "type": "related-products",
+      "settings": {
+        "heading": "You may also like",
+        "heading_size": "h2",
+        "products_to_show": 4,
+        "columns_desktop": 5,
+        "color_scheme": "scheme-1",
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "columns_mobile": "2",
+        "padding_top": 36,
+        "padding_bottom": 28
+      }
+    },
+    "custom_review_section_PbBT43": {
+      "type": "custom-review-section",
+      "blocks": {
+        "testimonial_BVW3tX": {
+          "type": "testimonial",
+          "settings": {
+            "name": "Customer Name",
+            "rating": 5,
+            "title": "Great product!",
+            "testimonial": "This product is amazing!"
+          }
+        },
+        "testimonial_j6dUMA": {
+          "type": "testimonial",
+          "settings": {
+            "name": "Customer Name",
+            "rating": 5,
+            "title": "Great product!",
+            "testimonial": "This product is amazing!"
+          }
+        },
+        "testimonial_ayJ9Pb": {
+          "type": "testimonial",
+          "settings": {
+            "name": "Customer Name",
+            "rating": 5,
+            "title": "Great product!",
+            "testimonial": "This product is amazing!"
+          }
+        }
+      },
+      "block_order": [
+        "testimonial_BVW3tX",
+        "testimonial_j6dUMA",
+        "testimonial_ayJ9Pb"
+      ],
+      "name": "custom-sunnah-reviews",
+      "settings": {
+        "heading": "Our supporters who love to live fresh everyday:",
+        "cta_text": "View All",
+        "cta_link": ""
+      }
+    },
+    "featured_collection_drop_GxcjfP": {
+      "type": "featured-collection-drop",
+      "blocks": {
+        "product_iUz8hC": {
+          "type": "product",
+          "settings": {
+            "product": "awesome-gala-natural-attar",
+            "custom_title": "",
+            "custom_price": "",
+            "badge_text": "ADD TO CART"
+          }
+        },
+        "product_6JJUnh": {
+          "type": "product",
+          "settings": {
+            "product": "acid-wash-oversized-drop-shoulder-t-shirt-mat-black",
+            "custom_title": "",
+            "custom_price": "",
+            "badge_text": "ADD TO CART"
+          }
+        },
+        "product_rhjg6y": {
+          "type": "product",
+          "settings": {
+            "product": "beard-oil-beard-glow-elixir",
+            "custom_title": "",
+            "custom_price": "",
+            "badge_text": "ADD TO CART"
+          }
+        }
+      },
+      "block_order": [
+        "product_iUz8hC",
+        "product_6JJUnh",
+        "product_rhjg6y"
+      ],
+      "disabled": true,
+      "settings": {
+        "section_heading": "Looking For More?",
+        "drop_title": "You May Also Like",
+        "button_text": "VIEW ALL",
+        "button_link": "shopify://collections/all"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "main_product_panjabi_supreme_LnqLLg",
+    "related-products",
+    "custom_review_section_PbBT43",
+    "featured_collection_drop_GxcjfP"
+  ]
+}

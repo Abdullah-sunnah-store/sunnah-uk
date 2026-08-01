@@ -1,0 +1,350 @@
+{% comment %}
+  Enhanced Favorite Button Snippet for Shopify Dawn Theme
+  Usage: {% render 'favorite-button', product: product %}
+{% endcomment %}
+
+{% assign product_id = product.id %}
+
+<div class="favorite-button-wrapper">
+  <button 
+    type="button" 
+    class="favorite-button {% if wishlist contains product_id %}favorited{% endif %}"
+    data-product-id="{{ product_id }}"
+    data-product-handle="{{ product.handle }}"
+    aria-label="Add to favorites"
+  >
+    <div class="button-ripple"></div>
+    
+    <span class="favorite-text">Favourite</span>
+    <svg class="favorite-icon" width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.367 1.632a4.5 4.5 0 0 0-6.365 0L10 2.632l-1.002-1a4.5 4.5 0 1 0-6.365 6.365l1.002 1.001L10 15.363l6.365-6.365 1.002-1.001a4.5 4.5 0 0 0 0-6.365z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .favorite-button-wrapper {
+    margin-top: -1rem;
+  }
+
+  .favorite-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 1.3rem 1.5rem;
+    background: #E9E4E1;
+    border-radius: 25px;
+    color: #000;
+    font-size: 1.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    transform: translateY(0);
+    border: none;
+  }
+
+  /* Hover effects */
+  .favorite-button:hover {
+    color: #fff;
+    background: #000;
+    
+  }
+
+  .favorite-button:hover .favorite-icon {
+    transform: scale(1.1);
+  }
+
+
+  /* Active/Press effect */
+  .favorite-button:active {
+    transform: translateY(0) scale(0.98);
+    transition: all 0.1s ease;
+  }
+
+  /* Favorited state */
+  .favorite-button.favorited {
+    background: linear-gradient(135deg, #fff0f0 0%, #ffe0e0 100%);
+    border-color: #ff6b6b;
+    color: #ff6b6b;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2);
+  }
+
+  .favorite-button.favorited:hover {
+    background: linear-gradient(135deg, #ffe0e0 0%, #ffd0d0 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+  }
+
+  .favorite-button.favorited .favorite-icon {
+    fill: #ff6b6b;
+    animation: heartBeat 0.6s ease;
+  }
+
+  /* Heart beat animation */
+  @keyframes heartBeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.2); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  /* Ripple effect */
+  .button-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+  }
+
+  @keyframes ripple {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  .favorite-icon {
+    width: 20px;
+    height: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .favorite-text {
+    user-select: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Loading state */
+  .favorite-button.loading {
+    pointer-events: none;
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+
+  .favorite-button.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Pulse effect for favorited state */
+  .favorite-button.favorited::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 5px;
+    background: linear-gradient(45deg, transparent, rgba(255, 107, 107, 0.1), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Success animation */
+  .favorite-button.success {
+    animation: successPulse 0.4s ease;
+  }
+
+  @keyframes successPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .favorite-button {
+      padding: 1rem 1rem;
+      font-size: 1.9rem;
+    }
+
+    .favorite-button:hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  /* Reduced motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .favorite-button,
+    .favorite-icon,
+    .favorite-text {
+      transition: none;
+    }
+    
+    .favorite-button.favorited .favorite-icon {
+      animation: none;
+    }
+    
+    .button-ripple {
+      display: none;
+    }
+  }
+ 
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const favoriteButtons = document.querySelectorAll('.favorite-button');
+  
+  favoriteButtons.forEach(button => {
+    // Add ripple effect on click
+    button.addEventListener('click', function(e) {
+      const productId = this.dataset.productId;
+      const productHandle = this.dataset.productHandle;
+      
+      // Create ripple effect
+      createRipple(e, this);
+      
+      // Add loading state
+      this.classList.add('loading');
+      
+      // Get current wishlist from localStorage
+      let wishlist = JSON.parse(localStorage.getItem('shopify_wishlist') || '[]');
+      
+      // Check if product is already in wishlist
+      const isInWishlist = wishlist.includes(parseInt(productId));
+      
+      if (isInWishlist) {
+        // Remove from wishlist
+        wishlist = wishlist.filter(id => id !== parseInt(productId));
+        this.classList.remove('favorited');
+        this.setAttribute('aria-label', 'Add to favorites');
+        
+        // Optional: Show notification
+        showNotification('Removed from favorites', 'success');
+      } else {
+        // Add to wishlist
+        wishlist.push(parseInt(productId));
+        this.classList.add('favorited');
+        this.setAttribute('aria-label', 'Remove from favorites');
+        
+        // Add success animation
+        setTimeout(() => {
+          this.classList.add('success');
+          setTimeout(() => {
+            this.classList.remove('success');
+          }, 400);
+        }, 300);
+        
+        // Optional: Show notification
+        showNotification('Added to favorites', 'success');
+      }
+      
+      // Save updated wishlist
+      localStorage.setItem('shopify_wishlist', JSON.stringify(wishlist));
+      
+      // Remove loading state
+      setTimeout(() => {
+        this.classList.remove('loading');
+      }, 300);
+      
+      // Optional: Send to analytics or server
+      // trackWishlistEvent(productId, productHandle, !isInWishlist);
+    });
+  });
+  
+  // Create ripple effect
+  function createRipple(event, element) {
+    const ripple = element.querySelector('.button-ripple');
+    const rect = element.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+    
+    ripple.style.width = size + 'px';
+    ripple.style.height = size + 'px';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    
+    ripple.classList.remove('button-ripple');
+    void ripple.offsetWidth; // Trigger reflow
+    ripple.classList.add('button-ripple');
+  }
+  
+  // Initialize button states on page load
+  function initializeFavoriteButtons() {
+    const wishlist = JSON.parse(localStorage.getItem('shopify_wishlist') || '[]');
+    
+    favoriteButtons.forEach(button => {
+      const productId = parseInt(button.dataset.productId);
+      if (wishlist.includes(productId)) {
+        button.classList.add('favorited');
+        button.setAttribute('aria-label', 'Remove from favorites');
+      }
+    });
+  }
+  
+  initializeFavoriteButtons();
+});
+
+// Enhanced notification function
+function showNotification(message, type = 'success') {
+  console.log(`${type}: ${message}`);
+  
+  // Remove existing toasts
+  const existingToasts = document.querySelectorAll('.favorite-toast');
+  existingToasts.forEach(toast => toast.remove());
+  
+  // Create new toast with enhanced styling
+  const toast = document.createElement('div');
+  toast.className = 'favorite-toast';
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: ${type === 'success' ? 'linear-gradient(135deg, #4CAF50, #45a049)' : 'linear-gradient(135deg, #f44336, #d32f2f)'};
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    z-index: 10000;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-weight: 500;
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Animate in
+  requestAnimationFrame(() => {
+    toast.style.transform = 'translateX(0)';
+  });
+  
+  // Animate out
+  setTimeout(() => {
+    toast.style.transform = 'translateX(100%)';
+    toast.style.opacity = '0';
+    setTimeout(() => {
+      if (document.body.contains(toast)) {
+        document.body.removeChild(toast);
+      }
+    }, 300);
+  }, 2500);
+}
+</script>

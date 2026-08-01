@@ -1,0 +1,713 @@
+<!-- sections/gift-sets-carousel.liquid -->
+<div class="cus-gift-sets-section">
+  <div class="cus-container">
+    <div class="cus-section-header">
+      <h2 class="cus-section-title">{{ section.settings.section_title | default: 'GIFT SETS' }}</h2>
+      <div class="cus-carousel-controls">
+        <button class="cus-carousel-btn cus-prev-btn" aria-label="Previous">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="cus-carousel-btn cus-next-btn" aria-label="Next">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="cus-carousel-wrapper">
+      <div class="cus-carousel-container" id="giftSetsCarousel">
+        <div class="cus-carousel-track">
+          {% for block in section.blocks %}
+            {% assign product = all_products[block.settings.product_handle] %}
+            {% if product != blank %}
+              <div class="cus-product-card" data-product-id="{{ product.id }}">
+                <div class="cus-product-image-wrapper">
+                  {% if product.featured_image %}
+                    <a href="{{ product.url }}" class="cus-product-link">
+                      <img src="{{ product.featured_image | img_url: '400x400' }}" alt="{{ product.title }}" class="cus-product-image" loading="lazy">
+                    </a>
+                  {% else %}
+                    <a href="{{ product.url }}" class="cus-product-link">
+                      <div class="cus-product-image-placeholder">
+                        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                          <rect width="80" height="80" fill="#f5f5f5"/>
+                          <path d="M20 60L40 40L60 60M30 35H30.01" stroke="#ccc" stroke-width="2"/>
+                        </svg>
+                      </div>
+                    </a>
+                  {% endif %}
+                  {% if block.settings.trending_badge %}
+                    <div class="cus-trending-badge">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <path d="M6 1L7.5 4.5L11 5L8.5 7.5L9 11L6 9.5L3 11L3.5 7.5L1 5L4.5 4.5L6 1Z" fill="white"/>
+                      </svg>
+                       {{ block.settings.treanding_text_gift }}
+                    </div>
+                  {% endif %}
+                  <button class="cus-add-to-cart-btn" data-product-id="{{ product.id }}" data-variant-id="{{ product.selected_or_first_available_variant.id }}">
+                    <span class="btn-text">Add to Bag</span>
+                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                      <path d="M3 3H5L7 11H13L15 5H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <circle cx="8" cy="14" r="1" stroke="currentColor" stroke-width="1.5"/>
+                      <circle cx="12" cy="14" r="1" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                  </button>
+                </div>
+                <div class="cus-product-info">
+                  <h3 class="cus-product-title">{{ product.title }}</h3>
+                  <div class="cus-product-price">
+                    {% if product.compare_at_price > product.price %}
+                      <span class="cus-price-compare">£{{ product.compare_at_price | money_without_currency }}</span>
+                    {% endif %}
+                    <span class="cus-price-current">£{{ product.price | money_without_currency }}</span>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+{% raw %}
+.cus-gift-sets-section {
+  padding: 60px 0;
+  background: #fafafa;
+}
+.cus-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.cus-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+.cus-section-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #333;
+  margin: 0;
+}
+.cus-carousel-controls {
+  display: flex;
+  gap: 8px;
+}
+.cus-carousel-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #666;
+}
+.cus-carousel-btn:hover {
+  background: #333;
+  color: white;
+  border-color: #333;
+}
+.cus-carousel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.cus-carousel-wrapper {
+  overflow: hidden;
+  position: relative;
+}
+.cus-carousel-container {
+  overflow: hidden;
+}
+.cus-carousel-track {
+  display: flex;
+  transition: transform 0.5s ease;
+  gap: 20px;
+}
+.cus-product-card {
+  flex: 0 0 280px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.cus-product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+.cus-product-image-wrapper {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+.cus-product-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+}
+.cus-product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.cus-product-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+}
+.cus-trending-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 2;
+}
+.cus-product-card:hover .cus-product-image {
+  transform: scale(1.05);
+}
+.cus-add-to-cart-btn {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  background: #000;
+  color: #fff;
+  border: 1px solid transparent;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(10px);
+  z-index: 3;
+}
+
+.cus-product-card:hover .cus-add-to-cart-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cus-add-to-cart-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  transition: transform 0.3s ease;
+}
+
+.cus-add-to-cart-btn:hover {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.cus-add-to-cart-btn:hover svg {
+  transform: scale(1.1);
+}
+
+.cus-add-to-cart-btn:active {
+  transform: translateY(0);
+}
+
+.cus-product-info {
+    padding: 20px;
+    text-align: center;
+}
+.cus-product-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px 0;
+  line-height: 1.3;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cus-product-price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+.cus-price-compare {
+  color: #999;
+  text-decoration: line-through;
+  font-size: 14px;
+}
+.cus-price-current {
+  color: #333;
+  font-weight: 700;
+  font-size: 16px;
+}
+@media (max-width: 768px) {
+  .cus-gift-sets-section {
+    padding: 40px 0;
+  }
+  .cus-container {
+    padding: 0 15px;
+  }
+  .cus-section-header {
+    margin-bottom: 30px;
+  }
+  .cus-section-title {
+    font-size: 20px;
+  }
+  .cus-product-card {
+    flex: 0 0 250px;
+  }
+  .cus-carousel-track {
+    gap: 15px;
+  }
+}
+@media (max-width: 480px) {
+  .cus-product-card {
+    flex: 0 0 220px;
+  }
+  .cus-carousel-controls {
+    display: none;
+  }
+  .cus-add-to-cart-btn {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+}
+{% endraw %}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const carousel = document.getElementById('giftSetsCarousel');
+  const track = carousel.querySelector('.cus-carousel-track');
+  const prevBtn = document.querySelector('.cus-prev-btn');
+  const nextBtn = document.querySelector('.cus-next-btn');
+
+  let cards = track.querySelectorAll('.cus-product-card');
+  let currentIndex = 0;
+  let cardsToShow = getCardsToShow();
+  let autoSlideInterval;
+  let isTransitioning = false;
+
+  function getCardsToShow() {
+    if (window.innerWidth >= 1024) return 4;
+    if (window.innerWidth >= 768) return 3;
+    if (window.innerWidth >= 480) return 2;
+    return 1;
+  }
+
+  function updateCarousel(instant = false) {
+    const cardWidth = cards[0].offsetWidth;
+    const gap = 20;
+    const offset = currentIndex * (cardWidth + gap);
+
+    if (instant) {
+      track.style.transition = 'none';
+      track.style.transform = `translateX(-${offset}px)`;
+      track.offsetHeight; // force reflow
+      track.style.transition = 'transform 0.5s ease';
+    } else {
+      track.style.transform = `translateX(-${offset}px)`;
+    }
+  }
+
+  function nextSlide() {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    currentIndex++;
+
+    updateCarousel();
+
+    setTimeout(() => {
+      if (currentIndex >= cards.length - cardsToShow) {
+        currentIndex = cardsToShow;
+        updateCarousel(true);
+      }
+      isTransitioning = false;
+    }, 500);
+  }
+
+  function prevSlide() {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    currentIndex--;
+
+    updateCarousel();
+
+    setTimeout(() => {
+      if (currentIndex < cardsToShow) {
+        currentIndex = cards.length - cardsToShow * 2;
+        updateCarousel(true);
+      }
+      isTransitioning = false;
+    }, 500);
+  }
+
+  function startAutoSlide() {
+    autoSlideInterval = setInterval(() => {
+      if (!isTransitioning) {
+        nextSlide();
+      }
+    }, 4000);
+  }
+
+  function stopAutoSlide() {
+    clearInterval(autoSlideInterval);
+  }
+
+  function createInfiniteLoop() {
+    const originalCards = Array.from(track.querySelectorAll('.cus-product-card'));
+
+    // Clone last N cards to the front
+    const prependClones = originalCards.slice(-cardsToShow).map(card => {
+      const clone = card.cloneNode(true);
+      clone.classList.add('cus-cloned');
+      return clone;
+    });
+
+    prependClones.reverse().forEach(clone => {
+      track.insertBefore(clone, track.firstChild);
+    });
+
+    // Clone first N cards to the end
+    const appendClones = originalCards.slice(0, cardsToShow).map(card => {
+      const clone = card.cloneNode(true);
+      clone.classList.add('cus-cloned');
+      return clone;
+    });
+
+    appendClones.forEach(clone => {
+      track.appendChild(clone);
+    });
+
+    // Refresh cards list
+    cards = track.querySelectorAll('.cus-product-card, .cus-cloned');
+
+    // Set initial position
+    currentIndex = cardsToShow;
+    updateCarousel(true);
+  }
+
+  nextBtn.addEventListener('click', () => {
+    nextSlide();
+    stopAutoSlide();
+    startAutoSlide();
+  });
+
+  prevBtn.addEventListener('click', () => {
+    prevSlide();
+    stopAutoSlide();
+    startAutoSlide();
+  });
+
+  carousel.addEventListener('mouseenter', stopAutoSlide);
+  carousel.addEventListener('mouseleave', startAutoSlide);
+
+  window.addEventListener('resize', () => {
+    const newCardsToShow = getCardsToShow();
+    if (newCardsToShow !== cardsToShow) {
+      cardsToShow = newCardsToShow;
+      currentIndex = cardsToShow;
+      updateCarousel(true);
+    }
+  });
+
+  // Init
+  cardsToShow = getCardsToShow();
+  createInfiniteLoop();
+  startAutoSlide();
+
+
+  // Cart drawer management functions
+  function openCartDrawer() {
+    const cartDrawer = document.querySelector('cart-drawer') || document.querySelector('[data-cart-drawer]') || document.querySelector('.cart-drawer');
+    const cartOverlay = document.querySelector('.cart-drawer-overlay') || document.querySelector('[data-cart-overlay]');
+    
+    if (cartDrawer) {
+      cartDrawer.classList.add('is-open', 'active');
+      cartDrawer.setAttribute('aria-hidden', 'false');
+      
+      // Add overlay if it doesn't exist
+      if (!cartOverlay) {
+        createCartOverlay();
+      } else {
+        cartOverlay.classList.add('active');
+      }
+      
+      // Prevent body scroll
+      document.body.classList.add('cart-drawer-open');
+      
+      // Focus trap
+      const focusableElements = cartDrawer.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if (focusableElements.length > 0) {
+        focusableElements[0].focus();
+      }
+    }
+  }
+
+  function closeCartDrawer() {
+    const cartDrawer = document.querySelector('cart-drawer') || document.querySelector('[data-cart-drawer]') || document.querySelector('.cart-drawer');
+    const cartOverlay = document.querySelector('.cart-drawer-overlay') || document.querySelector('[data-cart-overlay]');
+    
+    if (cartDrawer) {
+      cartDrawer.classList.remove('is-open', 'active');
+      cartDrawer.setAttribute('aria-hidden', 'true');
+      
+      if (cartOverlay) {
+        cartOverlay.classList.remove('active');
+      }
+      
+      // Restore body scroll
+      document.body.classList.remove('cart-drawer-open');
+    }
+  }
+
+  function createCartOverlay() {
+    const overlay = document.createElement('div');
+    overlay.className = 'cart-drawer-overlay';
+    overlay.setAttribute('data-cart-overlay', 'true');
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    `;
+    
+    // Add active state styles
+    const style = document.createElement('style');
+    style.textContent = `
+      .cart-drawer-overlay.active {
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
+      body.cart-drawer-open {
+        overflow: hidden;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(overlay);
+    
+    // Close on overlay click
+    overlay.addEventListener('click', closeCartDrawer);
+    
+    return overlay;
+  }
+
+  // Handle escape key to close drawer
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeCartDrawer();
+    }
+  });
+
+  // Add to cart functionality - Updated to handle cloned cards
+  function attachCartListeners() {
+    document.querySelectorAll('.cus-add-to-cart-btn').forEach(button => {
+      // Remove existing listeners to prevent duplicates
+      button.removeEventListener('click', handleAddToCart);
+      button.addEventListener('click', handleAddToCart);
+    });
+  }
+
+  function handleAddToCart(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (this.disabled) return;
+    
+    const variantId = this.dataset.variantId;
+    const originalText = this.querySelector('.btn-text').textContent;
+    
+    // Show loading state
+    this.disabled = true;
+    this.querySelector('.btn-text').textContent = 'Adding...';
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: variantId,
+        quantity: 1
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Show success state
+      this.querySelector('.btn-text').textContent = 'Added!';
+      
+      // Reset button after 2 seconds
+      setTimeout(() => {
+        this.querySelector('.btn-text').textContent = originalText;
+        this.disabled = false;
+      }, 2000);
+
+      // Update cart drawer content and open it
+      updateCartDrawerContent().then(() => {
+        openCartDrawer();
+      });
+    })
+    .catch(error => {
+      console.error('Error adding product to cart:', error);
+      // Show error state
+      this.querySelector('.btn-text').textContent = 'Error';
+      
+      // Reset button after 2 seconds
+      setTimeout(() => {
+        this.querySelector('.btn-text').textContent = originalText;
+        this.disabled = false;
+      }, 2000);
+    });
+  }
+
+  // Function to update cart drawer content
+  function updateCartDrawerContent() {
+    return fetch('/cart?view=drawer')
+      .then(response => response.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const newDrawerContent = tempDiv.querySelector('#CartDrawer') || tempDiv.querySelector('[data-cart-drawer-content]');
+        const currentDrawer = document.querySelector('#CartDrawer') || document.querySelector('[data-cart-drawer-content]');
+        
+        if (newDrawerContent && currentDrawer) {
+          currentDrawer.innerHTML = newDrawerContent.innerHTML;
+          
+          // Re-attach close event listeners to new elements
+          attachCartCloseListeners();
+        }
+        
+        // Update cart drawer state
+        const cartDrawer = document.querySelector('cart-drawer') || document.querySelector('[data-cart-drawer]') || document.querySelector('.cart-drawer');
+        if (cartDrawer) {
+          cartDrawer.classList.remove('is-empty');
+        }
+      })
+      .catch(error => {
+        console.error('Error updating cart drawer:', error);
+      });
+  }
+
+  // Attach close event listeners to cart drawer elements
+  function attachCartCloseListeners() {
+    // Close button listeners
+    const closeButtons = document.querySelectorAll('[data-cart-close], .cart-drawer__close, .cart-close-btn');
+    closeButtons.forEach(button => {
+      button.removeEventListener('click', closeCartDrawer); // Remove existing listeners
+      button.addEventListener('click', closeCartDrawer);
+    });
+
+    // Overlay listener
+    const overlay = document.querySelector('.cart-drawer-overlay') || document.querySelector('[data-cart-overlay]');
+    if (overlay) {
+      overlay.removeEventListener('click', closeCartDrawer); // Remove existing listeners
+      overlay.addEventListener('click', closeCartDrawer);
+    }
+  }
+
+  // Initial setup
+  updateCarousel();
+  attachCartListeners();
+  startAutoSlide();
+  attachCartCloseListeners();
+
+  // Listen for custom cart events (if your theme uses them)
+  document.addEventListener('cart:open', openCartDrawer);
+  document.addEventListener('cart:close', closeCartDrawer);
+});
+</script>
+
+{% schema %}
+{
+  "name": "Gift Sets Carousel",
+  "tag": "section",
+  "class": "cus-gift-sets-carousel-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "GIFT SETS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product_handle",
+          "label": "Product"
+        },
+        {
+          "type": "checkbox",
+          "id": "trending_badge",
+          "label": "Show Trending Badge",
+          "default": false
+        },
+    {
+      "type": "text",
+      "id": "treanding_text_gift",
+      "label": "Badge text",
+      "default": "TRENDING"
+    }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gift Sets Carousel",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}

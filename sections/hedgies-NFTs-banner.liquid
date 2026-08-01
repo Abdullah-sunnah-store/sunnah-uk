@@ -1,0 +1,295 @@
+{% schema %}
+{
+  "name": "Hedgies NFTs Banner",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Hedgies NFTs"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Being a part of the Hedgies community comes with VIP perks such as access to exclusive discounts, new merchandise, and much more!</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Shop All Hedgies"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "image_picker",
+      "id": "hedgie_image",
+      "label": "Hedgie Character Image"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#6366F1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hedgies NFTs Banner",
+      "category": "Promotional"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .page-width-2{
+  background-image: url('https://cdn.shopify.com/s/files/1/0934/9539/4644/files/Untitled-3.png?v=1748084444');
+    background-color: rgb(16, 16, 34);
+  }
+.hedgies-banner {
+  position: relative;
+  overflow: hidden;
+    background-color: rgb(16, 16, 34);
+  background: linear-gradient(15deg, #0f4c4b12 0%, #278f8b61 100%);
+  border-radius: 20px;
+  padding: 60px 40px;
+  margin: 120px auto;
+  max-width: 1000px;
+  color: #fff;
+  z-index: 1;
+}
+
+.hedgies-banner__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  gap: 32px;
+}
+
+.hedgies-banner__content {
+  max-width: 45%;
+  z-index: 2;
+}
+
+.hedgies-banner__heading {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  line-height: 1.1;
+  margin-top: 0;
+}
+
+.hedgies-banner__description {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.hedgies-banner__button {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(45deg, #17443F, #2ABCA7);
+  color: #fff;
+  padding: 15px 25px;
+  font-size: 16px;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 2px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  z-index: 0;
+   filter: drop-shadow(0 0 20px rgba(78, 97, 231, 0.3));
+  transition: transform 0.3s ease;
+}
+
+/* Remove the old ::after effect completely */
+.hedgies-banner__button::after {
+  display: none;
+}
+
+/* Add smooth infinite shine effect */
+.hedgies-banner__button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hedgies-banner__button:hover::before {
+  animation: smooth-shine 2s ease-in-out infinite;
+}
+
+.hedgies-banner__button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  color: #fff;
+}
+
+/* Icon style and transition */
+.hedgies-banner__button svg {
+  transition: transform 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+/* Ensure all content stays above shine layer */
+.hedgies-banner__button > * {
+  position: relative;
+  z-index: 2;
+}
+
+.hedgies-banner__button:hover svg {
+  transform: translateX(3px);
+}
+
+/* Shine animation keyframes */
+@keyframes smooth-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+
+.hedgies-banner__image {
+  max-width: 55%;
+  z-index: 1;
+}
+
+.hedgies-banner__image img {
+  height: auto;
+  max-width: 100%;
+  border-radius: 25px;
+}
+
+/* Stars background */
+.hedgies-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(white 1px, transparent 1px);
+  background-size: 30px 30px;
+  opacity: 0.05;
+  z-index: 0;
+}
+
+@media screen and (max-width: 900px) {
+  .hedgies-banner__inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 0;
+  }
+ .hedgies-banner {
+     margin: 40px 15px;
+  }
+  .hedgies-banner__content {
+    max-width: 100%;
+    margin-bottom: 40px;
+  }
+
+  .hedgies-banner__heading {
+    font-size: 48px;
+  }
+
+  .hedgies-banner__image {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .hedgies-banner__image img {
+  height: auto;
+  width: 100%;
+}
+}
+
+@media screen and (max-width: 600px) {
+  .hedgies-banner {
+    padding: 40px 20px;
+  }
+
+  .hedgies-banner__heading {
+    font-size: 36px;
+  }
+
+  .hedgies-banner__description {
+    font-size: 16px;
+  }
+
+  .hedgies-banner__button {
+    padding: 12px 25px;
+    font-size: 16px;
+  }
+}
+</style>
+<div class=" page-width-2">
+<div class="hedgies-banner">
+  <div class="hedgies-banner__inner">
+    <div class="hedgies-banner__content">
+      {% if section.settings.heading != blank %}
+        <h2 class="hedgies-banner__heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+      
+      {% if section.settings.description != blank %}
+        <div class="hedgies-banner__description">{{ section.settings.description }}</div>
+      {% endif %}
+      
+      {% if section.settings.button_text != blank %}
+        <a href="{{ section.settings.button_link | default: '#' }}" class="hedgies-banner__button">
+          {{ section.settings.button_text }}
+          <!-- <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4.16667 10H15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M10 4.16667L15.8333 10L10 15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg> -->
+        </a>
+      {% endif %}
+    </div>
+    
+    <div class="hedgies-banner__image">
+      {% if section.settings.hedgie_image != blank %}
+        <img src="{{ section.settings.hedgie_image | img_url: 'master' }}" 
+             loading="lazy" 
+             alt="{{ section.settings.heading }}" 
+             width="600" 
+             height="auto">
+      {% else %}
+        <img src="{{ 'hedgie-character.png' | asset_url }}" 
+             loading="lazy" 
+             alt="{{ section.settings.heading }}" 
+             width="600" 
+             height="auto">
+      {% endif %}
+    </div>
+  </div>
+</div>
+</div>

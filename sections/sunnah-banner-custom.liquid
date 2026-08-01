@@ -1,0 +1,661 @@
+<div class="page-width-2">
+  <div class="sunnah-banner">
+    <div class="sunnah-banner__container">
+      
+      <div class="sunnah-banner__logo-container">
+        <img 
+          src="{{ section.settings.logo | img_url: 'original' }}" 
+          alt="sunnah Logo" 
+          class="sunnah-banner__logo"
+          loading="lazy"
+          width="300"
+          height="300">
+      </div>
+
+      <div class="sunnah-banner__content">
+        <h2 class="sunnah-banner__title">{{ section.settings.title }}</h2>
+        <p class="sunnah-banner__text">{{ section.settings.tagline }}</p>
+        <div class="sunnah-banner__description">{{ section.settings.description | rich_text }}</div>
+
+        {% for block in section.blocks %}
+          {% if block.type == 'extra' %}
+            <div class="sunnah-banner__extra">
+              {% if block.settings.icon != blank %}
+                <div class="sunnah-banner__extra-icon">
+                  <img src="{{ block.settings.icon | image_url: width: 48 }}" alt="Icon" loading="lazy">
+                </div>
+              {% endif %}
+              <div class="sunnah-banner__extra-text">
+                <div class="sunnah-banner__extra-heading">
+                  <h4>{{ block.settings.heading }}</h4>
+                </div>
+                <div class="sunnah-banner__extra-sub-heading">
+                  <p>{{ block.settings.subheading }}</p>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+
+        <div class="sunnah-banner__button-container">
+          <div class="sunnah-banner__contact-dropdown">
+            <button class="sunnah-banner__button sunnah-banner__dropdown-toggle" onclick="toggleContactDropdown()">
+              {{ section.settings.button_text }}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="sunnah-banner__dropdown-arrow">
+                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            
+            <div class="sunnah-banner__dropdown-menu" id="contactDropdown">
+              {% if section.settings.whatsapp_number != blank %}
+                <a href="https://wa.me/{{ section.settings.whatsapp_number | remove: '+' | remove: ' ' | remove: '-' }}" 
+                   class="sunnah-banner__dropdown-item" target="_blank">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.787"/>
+                  </svg>
+                  WhatsApp
+                </a>
+              {% endif %}
+              
+              {% if section.settings.messenger_link != blank %}
+                <a href="{{ section.settings.messenger_link }}" 
+                   class="sunnah-banner__dropdown-item" target="_blank">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.373 0 0 4.975 0 11.111c0 3.497 1.745 6.616 4.472 8.652V24l4.086-2.242c1.09.301 2.246.464 3.442.464 6.627 0 12-4.974 12-11.111C24 4.975 18.627 0 12 0zm1.191 14.963l-3.055-3.26-5.963 3.26L10.732 8.1l3.13 3.26L19.77 8.1l-6.579 6.863z"/>
+                  </svg>
+                  Messenger
+                </a>
+              {% endif %}
+              
+              {% if section.settings.telegram_username != blank %}
+                <a href="https://t.me/{{ section.settings.telegram_username }}" 
+                   class="sunnah-banner__dropdown-item" target="_blank">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.820 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                  </svg>
+                  Telegram
+                </a>
+              {% endif %}
+              
+              {% if section.settings.email != blank %}
+                <a href="mailto:{{ section.settings.email }}" 
+                   class="sunnah-banner__dropdown-item">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                  Email
+                </a>
+              {% endif %}
+              
+              {% if section.settings.phone_number != blank %}
+                <a href="tel:{{ section.settings.phone_number }}" 
+                   class="sunnah-banner__dropdown-item">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                  </svg>
+                  Call
+                </a>
+              {% endif %}
+              
+              {% if section.settings.custom_link != blank %}
+                <a href="{{ section.settings.custom_link }}" 
+                   class="sunnah-banner__dropdown-item" 
+                   {% if section.settings.custom_link_external %}target="_blank"{% endif %}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15,3 21,3 21,9"/>
+                    <line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                  {{ section.settings.custom_link_text | default: 'Visit Site' }}
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleContactDropdown() {
+  const dropdown = document.getElementById('contactDropdown');
+  const button = document.querySelector('.sunnah-banner__dropdown-toggle');
+  const arrow = document.querySelector('.sunnah-banner__dropdown-arrow');
+  
+  dropdown.classList.toggle('show');
+  button.classList.toggle('active');
+  arrow.classList.toggle('rotated');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+  const dropdown = document.getElementById('contactDropdown');
+  const button = document.querySelector('.sunnah-banner__dropdown-toggle');
+  const arrow = document.querySelector('.sunnah-banner__dropdown-arrow');
+  
+  if (!event.target.closest('.sunnah-banner__contact-dropdown')) {
+    dropdown.classList.remove('show');
+    button.classList.remove('active');
+    arrow.classList.remove('rotated');
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "sunnah Banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "sunnah Logo"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Banner Title",
+      "default": "sunnah"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Aims to be the best exchange!"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>In keeping to this mission, we only offer the best apparel and accessories to help you represent your favourite crypto exchange.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Contact Button Text",
+      "default": "Get in Touch"
+    },
+    {
+      "type": "header",
+      "content": "Contact Options"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_number",
+      "label": "WhatsApp Number",
+      "info": "Include country code (e.g., +1234567890)"
+    },
+    {
+      "type": "url",
+      "id": "messenger_link",
+      "label": "Facebook Messenger Link",
+      "info": "Your Facebook Messenger link (e.g., https://m.me/yourpage)"
+    },
+    {
+      "type": "text",
+      "id": "telegram_username",
+      "label": "Telegram Username",
+      "info": "Your Telegram username (without @)"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email Address"
+    },
+    {
+      "type": "text",
+      "id": "phone_number",
+      "label": "Phone Number",
+      "info": "Phone number for direct calls"
+    },
+    {
+      "type": "url",
+      "id": "custom_link",
+      "label": "Custom Link",
+      "info": "Any additional link you want to include"
+    },
+    {
+      "type": "text",
+      "id": "custom_link_text",
+      "label": "Custom Link Text",
+      "default": "Visit Site"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_link_external",
+      "label": "Open custom link in new tab",
+      "default": true
+    }
+  ],
+  "blocks": [
+  {
+    "type": "extra",
+    "name": "Extra Info Block",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "icon",
+        "label": "Icon Image"
+      },
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading",
+        "default": "Over 95% in-house designs"
+      },
+      {
+        "type": "text",
+        "id": "subheading",
+        "label": "Subheading",
+        "default": "Unique products you won't find anywhere else."
+      }
+    ]
+  }
+],
+  "presets": [
+    {
+      "name": "sunnah Banner",
+      "category": "Promotional"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  /* sunnah Banner Styles */
+   .page-width-2{
+  background-image: url('https://cdn.shopify.com/s/files/1/0934/9539/4644/files/Untitled-3.png?v=1748084444');
+    background-color: #0c150d;
+  }
+.sunnah-banner {
+
+  border-radius: 16px;
+  color: #ffffff;
+   margin: 120px auto;
+  overflow: hidden;
+  padding: 60px 20px;
+  position: relative;
+}
+
+.sunnah-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.sunnah-banner__container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+   background: linear-gradient(219.58deg, #010417 10.26%, #2B333F 84.25%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 60px 40px;
+  gap: 32px;
+}
+
+.sunnah-banner__logo-container {
+  filter: drop-shadow(0 0 20px rgba(78, 97, 231, 0.3));
+  transition: transform 0.3s ease;
+}
+
+
+.sunnah-banner__logo {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  border-radius: 15px;
+}
+
+.sunnah-banner__content {
+  text-align: center;
+  max-width: 600px;
+}
+
+.sunnah-banner__title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin: 0 0 10px;
+  background: linear-gradient(90deg, #ffffff, #a0a8fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+}
+
+.sunnah-banner__text {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 20px;
+}
+
+.sunnah-banner__description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0 0 25px;
+  opacity: 0.9;
+}
+
+.sunnah-banner__cta-text {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+}
+
+.sunnah-banner__highlight {
+  background-color: #4361ee;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.sunnah-banner__button-container {
+  margin-top: 20px;
+  filter: drop-shadow(0 0 20px rgba(78, 97, 231, 0.3));
+  transition: transform 0.3s ease;
+}
+
+/* Contact Dropdown Styles */
+.sunnah-banner__contact-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.sunnah-banner__button {
+  background: linear-gradient(45deg, #17443F, #2ABCA7);
+  border-radius: 30px;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+  letter-spacing: 2px;
+  font-weight: 600;
+  padding: 15px 25px;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  gap: 10px;
+}
+
+.sunnah-banner__dropdown-arrow {
+  transition: transform 0.3s ease;
+}
+
+.sunnah-banner__dropdown-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+/* Remove old background fill effect */
+.sunnah-banner__button::after {
+  display: none;
+}
+
+/* Add shine effect */
+.sunnah-banner__button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.sunnah-banner__button:hover::before {
+  animation: smooth-shine 2s ease-in-out infinite;
+}
+
+.sunnah-banner__button:hover {
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+/* Ensure content is above the shine layer */
+.sunnah-banner__button > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Shine animation */
+@keyframes smooth-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Dropdown Menu Styles */
+.sunnah-banner__dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #010417 0%, #2B333F 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 15px;
+  padding: 15px 0;
+  min-width: 200px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.sunnah-banner__dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.sunnah-banner__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  color: #ffffff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+}
+
+.sunnah-banner__dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-left-color: #2ABCA7;
+  color: #2ABCA7;
+  transform: translateX(5px);
+}
+
+.sunnah-banner__dropdown-item svg {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.sunnah-banner__dropdown-item:hover svg {
+  opacity: 1;
+}
+
+.sunnah-banner__arrow {
+  transition: transform 0.2s ease;
+}
+
+.sunnah-banner__button:hover .sunnah-banner__arrow {
+  transform: translateX(4px);
+}
+
+
+/* Responsive adjustments */
+@media screen and (min-width: 768px) {
+  .sunnah-banner {
+    padding: unset;
+  }
+  
+     .sunnah-banner__content {
+        text-align: left;
+        width: 50%;
+    }
+  
+      .sunnah-banner__logo-container {
+        margin-bottom: 0;
+        width: 50%;
+        text-align: center;
+    }
+  
+  .sunnah-banner__content {
+    text-align: left;
+  }
+  
+  .sunnah-banner__button-container {
+    text-align: left;
+  }
+
+}
+  .sunnah-banner__extra {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* space between icon and text */
+  padding: 1rem;
+}
+
+.sunnah-banner__extra-icon {
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  color: #333; /* customize as needed */
+}
+
+.sunnah-banner__extra-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.sunnah-banner__extra-heading h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff; /* heading color */
+  margin: 0;
+  text-align: left;
+}
+
+.sunnah-banner__extra-sub-heading p {
+  font-size: 14px;
+  color: #fff; /* subheading color */
+  margin: 5px 0;
+  text-align: left;
+}
+
+  @media screen and (max-width: 768px) {
+      .sunnah-banner {
+
+  border-radius: 16px;
+  color: #ffffff;
+  margin: unset;
+  overflow: hidden;
+  padding: unset;
+  position: relative;
+}
+    .sunnah-banner__title {
+  font-size: 32px;
+}
+   .sunnah-banner__text {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0 0 10px;
+}
+    .sunnah-banner__extra {
+  display: flex;
+  gap: 5px;
+  padding: 5px;
+}
+    .sunnah-banner__button {
+  background: linear-gradient(45deg, #17443F, #2ABCA7);
+  border-radius: 30px;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 22px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+   .sunnah-banner__container {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 30px !important;
+    margin: 0 15px;
+   padding: 40px 20px;
+  }
+ .sunnah-banner__button-container{
+   margin-top: 15px;
+ }
+ .sunnah-banner__extra {
+    flex-direction: row;
+    align-items: center;
+  }
+    .sunnah-banner__extra-heading h4 {
+  font-size: 14px;
+}
+
+.sunnah-banner__extra-sub-heading p {
+  font-size: 12px;
+}
+
+  .sunnah-banner__extra-icon {
+    margin-bottom: 0.5rem;
+  }
+    .sunnah-banner__logo {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 15px;
+}
+
+  /* Mobile dropdown adjustments */
+  .sunnah-banner__dropdown-menu {
+    left: 0;
+    right: 0;
+    transform: none;
+    margin: 0 20px;
+  }
+  
+  .sunnah-banner__dropdown-menu.show {
+    transform: translateY(0);
+  }
+  }
+  @media screen and (max-width: 450px) {
+        .sunnah-banner__button {
+  font-size: 16px;
+}
+  }
+</style>

@@ -1,0 +1,100 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_tG3kUF": {
+          "type": "announcement",
+          "settings": {
+            "text": "You are in Online Market. Recite the dua for entering the market: Laa ilaaha illallaahu wahdahu laa shareeka lahu, lahul-mulku wa lahul-hamd, yuhyee wa yumeet, wa huwa hayyun laa yamoot, biyadihil-khayr, wa huwa alaa kulli shayin qadeer.",
+            "link": ""
+          }
+        },
+        "announcement-bar-0": {
+          "type": "announcement",
+          "disabled": true,
+          "settings": {
+            "text": "Welcome to our store",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement_tG3kUF",
+        "announcement-bar-0"
+      ],
+      "disabled": true,
+      "settings": {
+        "color_scheme": "scheme-1",
+        "show_line_separator": true,
+        "show_social": false,
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "enable_country_selector": false,
+        "enable_language_selector": false
+      }
+    },
+    "marqueetext_bWnmU8": {
+      "type": "marqueetext",
+      "disabled": true,
+      "settings": {
+        "marqueetext": "<p>You are in Online Market. Recite the dua for entering the market: <strong>Laa ilaaha illallaahu wahdahu laa shareeka lahu, lahul-mulku wa lahul-hamd, yuhyee wa yumeet, wa huwa hayyun laa yamoot, biyadihil-khayr, wa huwa alaa kulli shayin qadeer. </strong>You are in Online Market. Recite the dua for entering the market: <strong>Laa ilaaha illallaahu wahdahu laa shareeka lahu, lahul-mulku wa lahul-hamd, yuhyee wa yumeet, wa huwa hayyun laa yamoot, biyadihil-khayr, wa huwa alaa kulli shayin qadeer. </strong>You are in Online Market. Recite the dua for entering the market: <strong>Laa ilaaha illallaahu wahdahu laa shareeka lahu, lahul-mulku wa lahul-hamd, yuhyee wa yumeet, wa huwa hayyun laa yamoot, biyadihil-khayr, wa huwa alaa kulli shayin qadeer. </strong></p>"
+      }
+    },
+    "cus_gift_box_announcement_design_7HiWma": {
+      "type": "cus-gift-box-announcement-design",
+      "disabled": true,
+      "name": "Cus Gift Box A.Bar",
+      "settings": {}
+    },
+    "cus_announcement_bar_design_i4gTJn": {
+      "type": "cus-announcement-bar-design",
+      "disabled": true,
+      "name": "Cus Announcement Bar",
+      "settings": {}
+    },
+    "cus_gift_box_announcement_design_hnGdzc": {
+      "type": "cus-gift-box-announcement-design",
+      "name": "Cus Gift Box A.Bar",
+      "settings": {}
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "logo_position": "middle-left",
+        "menu": "main-menu",
+        "menu_type_desktop": "mega",
+        "sticky_header_type": "on-scroll-up",
+        "show_line_separator": true,
+        "color_scheme": "scheme-1",
+        "menu_color_scheme": "scheme-2",
+        "enable_country_selector": false,
+        "enable_language_selector": true,
+        "enable_customer_avatar": true,
+        "mobile_logo_position": "center",
+        "margin_bottom": 0,
+        "padding_top": 20,
+        "padding_bottom": 12
+      }
+    }
+  },
+  "order": [
+    "announcement-bar",
+    "marqueetext_bWnmU8",
+    "cus_gift_box_announcement_design_7HiWma",
+    "cus_announcement_bar_design_i4gTJn",
+    "cus_gift_box_announcement_design_hnGdzc",
+    "header"
+  ]
+}

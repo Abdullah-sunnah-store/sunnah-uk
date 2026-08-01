@@ -1,0 +1,65 @@
+<style>
+  .marquee-container {
+  max-width: 100%;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.marquee {
+  white-space: nowrap;
+  animation: marquee 10s linear infinite;
+}
+
+.marquee-content {
+  display: inline-block;
+}
+.nav-ticker {
+    box-sizing: border-box;
+    white-space: nowrap;
+    color: #FFF;
+    box-sizing: border-box;
+    display: inline-block;
+    font-size: 14px;
+    background-color: rgb(var(--light-n-0));
+}
+
+@keyframes marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+</style>
+ <div class="marquee-container">
+        <div class="marquee">
+            <div class="marquee-content">
+                <div id="DOW_1" class="nav-ticker">{{ section.settings.marqueetext }}</div>
+                <div id="DOW_1" class="nav-ticker">{{ section.settings.marqueetext }}</div>
+            </div>
+        </div>
+    </div>
+{% schema %}
+{
+  "name": "Marquee text",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "marqueetext",
+      "default": "<p>You are in Online Market. Recite the dua for entering the market: Laa ilaaha illallaahu wahdahu laa shareeka lahu, lahul-mulku wa lahul-hamd, yuhyee wa yumeet, wa huwa hayyun laa yamoot, biyadihil-khayr, wa huwa alaa kulli shayin qadeer.</p>",
+      "label": "Enter text"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Marquee text"
+    }
+  ]
+}
+{% endschema %}

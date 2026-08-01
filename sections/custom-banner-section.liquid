@@ -1,0 +1,608 @@
+<style>
+  #section-{{ section.id }} .custom-img-nikah-invitation-section {
+    margin: 0 auto;
+  }
+  
+  #section-{{ section.id }} .custom-img-nikah-invitation {
+    position: relative;
+    margin: 40px auto;
+    overflow: hidden;
+  }
+  
+  #section-{{ section.id }} .custom-img-nikah-invitation-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  /* Non-clickable state when no link is provided */
+  #section-{{ section.id }} .custom-img-nikah-invitation-no-link {
+    display: block;
+    cursor: default;
+    pointer-events: none;
+  }
+  
+  #section-{{ section.id }} .custom-img-invitation-media {
+    width: 100%;
+    height: 700px;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  #section-{{ section.id }} .custom-img-invitation-media:hover {
+    transform: scale(1.02);
+  }
+  
+  /* Remove hover effect when not clickable */
+  #section-{{ section.id }} .custom-img-nikah-invitation-no-link .custom-img-invitation-media:hover,
+  #section-{{ section.id }} .custom-img-nikah-invitation-no-link .custom-img-invitation-media-mobile:hover {
+    transform: none;
+  }
+  
+  #section-{{ section.id }} .custom-img-invitation-video {
+    width: 100%;
+    height: 700px;
+    object-fit: cover;
+    background-color: #000;
+    display: block;
+    /* Firefox-specific fixes */
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  #section-{{ section.id }} .custom-img-invitation-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    color: white;
+    z-index: 2;
+    /* Ensure overlay doesn't block video interactions */
+    pointer-events: none;
+  }
+  
+  #section-{{ section.id }} .custom-img-invitation-overlay * {
+    pointer-events: auto;
+  }
+  
+  #section-{{ section.id }} .custom-img-invitation-title {
+    font-size: 48px;
+    margin-bottom: -5px;
+    letter-spacing: -1px;
+    color: {{ section.settings.heading_color | default: '#fff' }};
+  }
+  
+  #section-{{ section.id }} .custom-img-invitation-subtitle {
+    font-size: 16px;
+    line-height: 1.5;
+    opacity: 0.9;
+    color: {{ section.settings.subheading_color | default: '#fff' }};
+  }
+  
+  #section-{{ section.id }} .custom-img-invitation-overlay p {
+    margin: 0;
+    color: {{ section.settings.subheading_color | default: '#fff' }};
+  }
+  
+  #section-{{ section.id }} .custom-img-explore-btn {
+    display: inline-block;
+    background: {{ section.settings.button_bg_color | default: 'rgba(255, 255, 255, 0.9)' }};
+    color: {{ section.settings.button_text_color | default: '#000' }};
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 1.6rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 2px solid {{ section.settings.button_border_color | default: 'rgba(255, 255, 255, 0.3)' }};
+    margin-top: 12px;
+    font-weight: bold;
+  }
+
+  #section-{{ section.id }} .custom-img-explore-btn:hover {
+    background: {{ section.settings.button_hover_bg_color | default: 'white' }};
+    color: {{ section.settings.button_hover_text_color | default: '#000' }};
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  #section-{{ section.id }} .custom-img-media-fallback {
+    background: linear-gradient(135deg, #D2B48C 0%, #F5DEB3 100%);
+    height: 700px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8B4513;
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 2rem;
+  }
+  
+  /* Video error handling */
+  #section-{{ section.id }} .custom-video-error {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    height: 700px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 2rem;
+  }
+  
+  /* Mobile image - hidden by default */
+  #section-{{ section.id }} .custom-img-invitation-media-mobile {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    #section-{{ section.id }} .custom-img-nikah-invitation {
+      margin: 1rem 0;
+      max-width: none;
+    }
+      #section-{{ section.id }} .custom-img-invitation-overlay p {
+    margin: 0 0 10px 0;
+    color: {{ section.settings.subheading_color | default: '#fff' }};
+  }
+    #section-{{ section.id }} .custom-img-invitation-media,
+    #section-{{ section.id }} .custom-img-invitation-video,
+    #section-{{ section.id }} .custom-img-media-fallback,
+    #section-{{ section.id }} .custom-video-error {
+      height: 600px;
+    }
+    
+    #section-{{ section.id }} .custom-img-invitation-overlay {
+      padding: 2rem;
+    }
+    
+    #section-{{ section.id }} .custom-img-invitation-title {
+      font-size: 3rem;
+    }
+    
+    #section-{{ section.id }} .custom-img-invitation-subtitle {
+      font-size: 1.4rem;
+    }
+    
+    #section-{{ section.id }} .custom-img-explore-btn {
+      font-size: 1.2rem;
+      padding: 0.6rem 1.5rem;
+      margin-top: 0;
+    }
+    
+    /* Show mobile image and hide desktop image on mobile */
+    #section-{{ section.id }} .custom-img-invitation-media-desktop {
+      display: none;
+    }
+    
+    #section-{{ section.id }} .custom-img-invitation-media-mobile {
+      display: block;
+      width: 100%;
+      height: 600px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    #section-{{ section.id }} .custom-img-invitation-media-mobile:hover {
+      transform: scale(1.02);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    #section-{{ section.id }} .custom-img-invitation-title {
+      font-size: 24px;
+    }
+    
+    #section-{{ section.id }} .custom-img-invitation-subtitle {
+      font-size: 1.4rem;
+    }
+    
+    #section-{{ section.id }} .custom-img-invitation-overlay {
+      padding: 2rem;
+    }
+  }
+</style>
+
+<div class="custom-img-nikah-invitation-section" id="section-{{ section.id }}">
+  <div class="custom-img-nikah-invitation">
+    {% comment %} Conditional Main Media Link - Check if media_link exists and is not blank {% endcomment %}
+    {% if section.settings.media_link != blank %}
+      <a href="{{ section.settings.media_link }}" 
+         class="custom-img-nikah-invitation-link"
+         {% if section.settings.open_in_new_tab %}target="_blank"{% endif %}>
+    {% else %}
+      <div class="custom-img-nikah-invitation-no-link">
+    {% endif %}
+      
+      {% comment %} Video Option with Firefox Compatibility {% endcomment %}
+      {% if section.settings.media_type == 'video' and section.settings.invitation_video %}
+        
+        <video class="custom-img-invitation-video" 
+               id="video-{{ section.id }}"
+               {% if section.settings.video_autoplay %}autoplay{% endif %}
+               {% if section.settings.video_loop %}loop{% endif %}
+               {% if section.settings.video_muted %}muted{% endif %}
+               {% unless section.settings.video_controls == false %}controls{% endunless %}
+               playsinline
+               preload="metadata"
+               {% if section.settings.video_poster %}poster="{{ section.settings.video_poster | img_url: '1200x' }}"{% endif %}>
+          
+          {% comment %} MP4 source - Primary format for Firefox {% endcomment %}
+          <source src="{{ section.settings.invitation_video }}" type="video/mp4">
+          
+          {% comment %} Fallback message {% endcomment %}
+          Your browser does not support the video tag.
+        </video>
+        
+        {% comment %} Error fallback div (initially hidden) {% endcomment %}
+        <div class="custom-video-error" id="video-error-{{ section.id }}" style="display: none;">
+          <div>
+            <h3>Video Unavailable</h3>
+            <p>Unable to load video content.<br>
+            <a href="{{ section.settings.invitation_video }}" target="_blank" style="color: white; text-decoration: underline;">Click here to view the video directly</a></p>
+          </div>
+        </div>
+        
+      {% comment %} Image Option with Mobile Support {% endcomment %}
+      {% elsif section.settings.media_type == 'image' and section.settings.invitation_image %}
+        
+        {% comment %} Desktop Image {% endcomment %}
+        <img src="{{ section.settings.invitation_image | img_url: '1200x' }}" 
+             alt="{{ section.settings.image_alt | default: 'Nikah Wedding Invitation' }}"
+             class="custom-img-invitation-media custom-img-invitation-media-desktop"
+             loading="lazy"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        
+        {% comment %} Mobile Image (if provided, otherwise fallback to desktop image) {% endcomment %}
+        {% if section.settings.invitation_image_mobile %}
+          <img src="{{ section.settings.invitation_image_mobile | img_url: '800x' }}" 
+               alt="{{ section.settings.image_alt_mobile | default: section.settings.image_alt | default: 'Nikah Wedding Invitation - Mobile' }}"
+               class="custom-img-invitation-media custom-img-invitation-media-mobile"
+               loading="lazy"
+               onerror="this.style.display='none';">
+        {% else %}
+          <img src="{{ section.settings.invitation_image | img_url: '800x' }}" 
+               alt="{{ section.settings.image_alt | default: 'Nikah Wedding Invitation' }}"
+               class="custom-img-invitation-media custom-img-invitation-media-mobile"
+               loading="lazy"
+               onerror="this.style.display='none';">
+        {% endif %}
+             
+      {% comment %} Fallback when no media is selected {% endcomment %}
+      {% else %}
+        <div class="custom-img-media-fallback">
+          <div>
+            <h3>Upload Your Nikah Invitation</h3>
+            <p>Choose an image or video to showcase your beautiful wedding invitation</p>
+          </div>
+        </div>
+      {% endif %}
+    
+    {% comment %} Close the conditional wrapper {% endcomment %}
+    {% if section.settings.media_link != blank %}
+      </a>
+    {% else %}
+      </div>
+    {% endif %}
+    
+    {% comment %} Overlay Content {% endcomment %}
+    <div class="custom-img-invitation-overlay">
+      <h2 class="custom-img-invitation-title">
+        {{ section.settings.title | default: 'Nikah Gifts' }}
+      </h2>
+      
+      <div class="custom-img-invitation-subtitle">
+        {{ section.settings.subtitle | default: '<p></p>' }}
+      </div>
+      
+      {% comment %} Custom Button Link {% endcomment %}
+      <a href="{{ section.settings.button_link | default: '/collections/wedding-gifts' }}" 
+         class="custom-img-explore-btn"
+         {% if section.settings.button_open_new_tab %}target="_blank"{% endif %}>
+        {{ section.settings.button_text | default: 'Explore Togetherness' }}
+      </a>
+    </div>
+  </div>
+</div>
+
+{% comment %} Simplified JavaScript for Firefox compatibility {% endcomment %}
+<script>
+(function() {
+  'use strict';
+  
+  // Wait for DOM to be ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeVideo);
+  } else {
+    initializeVideo();
+  }
+  
+  function initializeVideo() {
+    const video = document.getElementById('video-{{ section.id }}');
+    const errorDiv = document.getElementById('video-error-{{ section.id }}');
+    
+    if (!video) return;
+    
+    // Function to show error
+    function showError() {
+      video.style.display = 'none';
+      if (errorDiv) errorDiv.style.display = 'flex';
+    }
+    
+    // Function to handle autoplay for Firefox
+    function handleAutoplay() {
+      if (video.autoplay && video.muted) {
+        const playPromise = video.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.catch(function(error) {
+            console.log('Autoplay failed:', error);
+            // Show controls if autoplay fails
+            video.controls = true;
+          });
+        }
+      }
+    }
+    
+    // Video event listeners
+    video.addEventListener('loadeddata', function() {
+      handleAutoplay();
+    });
+    
+    video.addEventListener('canplay', function() {
+      handleAutoplay();
+    });
+    
+    video.addEventListener('error', function(e) {
+      showError();
+    });
+    
+    // Try to load the video immediately
+    try {
+      video.load();
+    } catch (e) {
+      showError();
+    }
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Custom Banner Section",
+  "tag": "section",
+  "class": "custom-img-nikah-invitation-wrapper",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media Type Selection"
+    },
+    {
+      "type": "select",
+      "id": "media_type",
+      "label": "Media Type",
+      "options": [
+        {
+          "value": "image",
+          "label": "Image"
+        },
+        {
+          "value": "video",
+          "label": "Video"
+        }
+      ],
+      "default": "image",
+      "info": "Choose whether to display an image or video"
+    },
+    {
+      "type": "header",
+      "content": "Desktop Image Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "invitation_image",
+      "label": "Desktop Invitation Image",
+      "info": "Upload your wedding invitation image for desktop devices (shown when Media Type is set to Image)"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Desktop Image Alt Text",
+      "default": "Nikah Wedding Invitation"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Image Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "invitation_image_mobile",
+      "label": "Mobile Invitation Image (Optional)",
+      "info": "Upload a different image optimized for mobile devices. If not provided, the desktop image will be used."
+    },
+    {
+      "type": "text",
+      "id": "image_alt_mobile",
+      "label": "Mobile Image Alt Text",
+      "default": "Nikah Wedding Invitation - Mobile",
+      "info": "Alt text for mobile image (optional - will use desktop alt text if not provided)"
+    },
+    {
+      "type": "header",
+      "content": "Video Settings"
+    },
+    {
+      "type": "text",
+      "id": "invitation_video",
+      "label": "Video URL",
+      "info": "Enter the URL of your MP4 video file. For best Firefox compatibility, ensure the video is properly encoded with H.264 codec."
+    },
+    {
+      "type": "image_picker",
+      "id": "video_poster",
+      "label": "Video Poster Image",
+      "info": "Thumbnail image shown before video loads (highly recommended for Firefox)"
+    },
+    {
+      "type": "checkbox",
+      "id": "video_autoplay",
+      "label": "Autoplay Video",
+      "default": false,
+      "info": "Video will play automatically. Must enable 'Mute Video' for Firefox autoplay to work."
+    },
+    {
+      "type": "checkbox",
+      "id": "video_loop",
+      "label": "Loop Video",
+      "default": true,
+      "info": "Video will repeat continuously"
+    },
+    {
+      "type": "checkbox",
+      "id": "video_muted",
+      "label": "Mute Video",
+      "default": true,
+      "info": "Video will be muted by default (required for autoplay in Firefox)"
+    },
+    {
+      "type": "checkbox",
+      "id": "video_controls",
+      "label": "Show Video Controls",
+      "default": true,
+      "info": "Display play/pause and volume controls (recommended for Firefox)"
+    },
+    {
+      "type": "header",
+      "content": "Link Settings"
+    },
+    {
+      "type": "url",
+      "id": "media_link",
+      "label": "Media Click Link",
+      "info": "Where should the media link to when clicked? Leave blank to make media non-clickable. (e.g., /collections/wedding-invitations)"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "Open media link in new tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Text Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Nikah Gifts"
+    },
+    {
+      "type": "richtext",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "<p></p>"
+    },
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#ffffff",
+      "info": "Choose the color for the main heading"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Color", 
+      "default": "#ffffff",
+      "info": "Choose the color for the subtitle text"
+    },
+    {
+      "type": "header",
+      "content": "Button Settings"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Explore Togetherness"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link",
+      "info": "Where should the button link to? (e.g., /collections/wedding-gifts)"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_open_new_tab",
+      "label": "Open button link in new tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Button Color Settings"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background Color",
+      "default": "rgba(255, 255, 255, 0.9)",
+      "info": "Background color of the button"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#000000",
+      "info": "Text color of the button"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "rgba(255, 255, 255, 0.3)",
+      "info": "Border color of the button"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg_color",
+      "label": "Button Hover Background Color",
+      "default": "#ffffff",
+      "info": "Background color when hovering over the button"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button Hover Text Color",
+      "default": "#000000",
+      "info": "Text color when hovering over the button"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Banner Section",
+      "settings": {
+        "media_type": "image",
+        "title": "Nikah Gifts",
+        "subtitle": "<p></p>",
+        "button_text": "Explore Togetherness",
+        "heading_color": "#ffffff",
+        "subheading_color": "#ffffff",
+        "button_bg_color": "rgba(255, 255, 255, 0.9)",
+        "button_text_color": "#000000",
+        "button_border_color": "rgba(255, 255, 255, 0.3)",
+        "button_hover_bg_color": "#ffffff",
+        "button_hover_text_color": "#000000"
+      }
+    }
+  ]
+}
+{% endschema %}
