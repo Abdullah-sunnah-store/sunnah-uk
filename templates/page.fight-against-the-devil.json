@@ -1,0 +1,30 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "fatd_landing": {
+      "type": "fatd-landing",
+      "name": "FATD landing",
+      "settings": {
+        "cta_label": "Get the book",
+        "price": "£8.99",
+        "hero_kicker": "There is no raqi coming.",
+        "hero_sub": "When something is wrong in your home, the help is usually far away, expensive, or someone you can't verify. This book teaches you to do it yourself.",
+        "hero_title": "Fight Against The Devil",
+        "hero_tagline": "A practical guide to ruqyah and prophetic medicine you can use at home tonight.",
+        "hero_note": "Instant download · 185 pages · Read on any device",
+        "cover_alt": "Cover of the book Fight Against The Devil",
+        "stat_number": "7,900+",
+        "stat_label": "people saved our ruqyah posts this month.",
+        "checkout_note": "Secure checkout · Apple Pay and Google Pay · Delivered to your inbox in seconds"
+      }
+    }
+  },
+  "order": ["main", "fatd_landing"]
+}
