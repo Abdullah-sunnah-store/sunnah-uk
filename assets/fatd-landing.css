@@ -19,6 +19,9 @@
   color: var(--fatd-fg);
   font-family: var(--fatd-sans);
   font-size: 17px;
+  /* don't inherit the merchant's --font-body-weight/style from base.css */
+  font-weight: 400;
+  font-style: normal;
   line-height: 1.625;
   -webkit-font-smoothing: antialiased;
   padding-bottom: 80px; /* room for the mobile sticky bar */
@@ -32,11 +35,29 @@
 .fatd *::before,
 .fatd *::after { box-sizing: border-box; }
 
-/* Reset via :where() so it carries no specificity — the .fatd__* rules below
-   set margins and must win over it. */
+/* Margins go through :where() (zero specificity) so the .fatd__* rules below
+   still win. */
 .fatd :where(p, h1, h2, h3, blockquote, ul, figure) { margin: 0; }
-.fatd :where(h1, h2, h3) { font-weight: 600; letter-spacing: -0.01em; }
 .fatd :where(img) { display: block; max-width: 100%; height: auto; }
+
+/* Heading colour/weight/tracking must NOT rely on inheritance: the theme's
+   base.css styles `h1..h5` directly (color: rgb(var(--color-foreground)),
+   font-weight, letter-spacing), and any element selector beats an inherited
+   value. `.fatd :is(...)` is (0,1,1) so it wins. Font-size, line-height and
+   font-family stay on the .fatd__* classes — don't add them here. */
+.fatd :is(h1, h2, h3) {
+  color: var(--fatd-fg);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  word-break: normal;
+  /* base.css:3699 has `h1, h2 { font-family: 'Garet' !important }` applied
+     store-wide. !important can only be beaten by !important, so this is
+     required to keep the display serif inside this section. */
+  font-family: var(--fatd-serif) !important;
+}
+
+.fatd__section--teal :is(h1, h2, h3),
+.fatd__section--deep :is(h1, h2, h3) { color: var(--fatd-primary-fg); }
 
 /* ---------- layout ---------- */
 
@@ -62,6 +83,17 @@
 }
 
 /* ---------- typography ---------- */
+
+/* Section headers are centred; the blocks below them stay centred as blocks but
+   keep their text left-aligned so long copy stays readable. */
+.fatd__eyebrow,
+.fatd__h2 { text-align: center; }
+
+.fatd__prose,
+.fatd__checks,
+.fatd__quote,
+.fatd__callout,
+.fatd__faq { margin-inline: auto; }
 
 .fatd__eyebrow {
   font-size: 12px;
@@ -95,7 +127,8 @@
 .fatd__emphasis {
   font-family: var(--fatd-serif);
   font-weight: 600;
-  margin-top: 32px;
+  margin: 32px auto 0;
+  max-width: 672px;
 }
 
 /* ---------- buttons ---------- */
@@ -230,7 +263,7 @@
 
 /* ---------- checklist ---------- */
 
-.fatd__checks { margin: 32px 0 0; padding: 0; list-style: none; max-width: 672px; }
+.fatd__checks { margin: 32px auto 0; padding: 0; list-style: none; max-width: 672px; }
 
 .fatd__checks li {
   display: flex;
@@ -242,12 +275,15 @@
 .fatd__checks svg { flex: none; margin-top: 3.2px; width: 20px; height: 20px; opacity: 0.85; }
 
 .fatd__quote {
-  margin: 36px 0 0;
+  margin: 36px auto 0;
   padding-left: 16px;
   border-left: 2px solid rgba(244, 236, 216, 0.5);
   font-family: var(--fatd-serif);
   font-size: 16.8px;
   font-weight: 600;
+  /* base.css styles `blockquote` with italic + its own colour */
+  font-style: normal;
+  color: var(--fatd-primary-fg);
   max-width: 672px;
 }
 
