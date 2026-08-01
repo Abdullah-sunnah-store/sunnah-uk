@@ -11,7 +11,7 @@
   --fatd-accent: #0a4c58;
   --fatd-muted-fg: #5f5a4e;
   --fatd-border: #d9cca9;
-  --fatd-radius: 0.5rem;
+  --fatd-radius: 8px;
   --fatd-serif: "Fraunces", ui-serif, Georgia, serif;
   --fatd-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
 
@@ -21,7 +21,7 @@
   font-size: 17px;
   line-height: 1.625;
   -webkit-font-smoothing: antialiased;
-  padding-bottom: 5rem; /* room for the mobile sticky bar */
+  padding-bottom: 80px; /* room for the mobile sticky bar */
 }
 
 @media (min-width: 640px) {
@@ -40,22 +40,31 @@
 
 /* ---------- layout ---------- */
 
-.fatd__section { padding: 4rem 1.25rem; }
-.fatd__inner { max-width: 64rem; margin: 0 auto; }
-.fatd__prose { max-width: 42rem; }
+.fatd__section { padding: 64px 20px; }
+.fatd__inner { max-width: 1024px; margin: 0 auto; }
+.fatd__prose { max-width: 672px; }
+
+/* Wide mode: align with the theme's own content width (same var the header and
+   every .page-width section uses), so the page lines up with the store chrome.
+   --page-width is declared in rem against the theme's 62.5% root, so it
+   resolves correctly regardless of this file being in px. */
+.fatd--wide .fatd__inner:not(.fatd__narrative):not(.fatd__prose) {
+  max-width: var(--page-width, 1600px);
+}
+.fatd--wide .fatd__hero-media img { max-width: 440px; }
 
 .fatd__section--alt { background: var(--fatd-bg-alt); }
 .fatd__section--teal { background: var(--fatd-primary); color: var(--fatd-primary-fg); }
 .fatd__section--deep { background: var(--fatd-accent); color: var(--fatd-primary-fg); }
 
 @media (min-width: 640px) {
-  .fatd__section { padding: 5rem 1.5rem; }
+  .fatd__section { padding: 80px 24px; }
 }
 
 /* ---------- typography ---------- */
 
 .fatd__eyebrow {
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -67,26 +76,26 @@
 
 .fatd__h2 {
   font-family: var(--fatd-serif);
-  font-size: 1.875rem;
+  font-size: 30px;
   line-height: 1.2;
-  margin-top: 0.75rem;
+  margin-top: 12px;
   text-wrap: balance;
 }
 
 @media (min-width: 640px) {
-  .fatd__h2 { font-size: 2.25rem; }
+  .fatd__h2 { font-size: 36px; }
 }
 
-.fatd__lead { margin-top: 1.25rem; color: var(--fatd-muted-fg); text-wrap: pretty; }
+.fatd__lead { margin-top: 20px; color: var(--fatd-muted-fg); text-wrap: pretty; }
 .fatd__section--teal .fatd__lead,
 .fatd__section--deep .fatd__lead { color: rgba(244, 236, 216, 0.85); }
 
-.fatd__lead + .fatd__lead { margin-top: 1rem; }
+.fatd__lead + .fatd__lead { margin-top: 16px; }
 
 .fatd__emphasis {
   font-family: var(--fatd-serif);
   font-weight: 600;
-  margin-top: 2rem;
+  margin-top: 32px;
 }
 
 /* ---------- buttons ---------- */
@@ -94,14 +103,14 @@
 .fatd__btn {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.5rem;
-  padding: 1rem 1.75rem;
+  gap: 8px;
+  padding: 16px 28px;
   border: 0;
   border-radius: var(--fatd-radius);
   background: var(--fatd-primary);
   color: var(--fatd-primary-fg);
   font-family: var(--fatd-sans);
-  font-size: 1.0625rem;
+  font-size: 17px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
@@ -118,8 +127,8 @@
 .fatd__btn-price { font-weight: 400; opacity: 0.9; }
 
 .fatd__btn-note {
-  margin-top: 1rem;
-  font-size: 0.8125rem;
+  margin-top: 16px;
+  font-size: 13px;
   color: var(--fatd-muted-fg);
 }
 
@@ -128,20 +137,20 @@
 
 /* ---------- hero ---------- */
 
-.fatd__hero { padding-top: 2.5rem; padding-bottom: 3.5rem; }
+.fatd__hero { padding-top: 40px; padding-bottom: 56px; }
 
 @media (min-width: 640px) {
-  .fatd__hero { padding-top: 3.5rem; padding-bottom: 3.5rem; }
+  .fatd__hero { padding-top: 56px; padding-bottom: 56px; }
 }
 
 .fatd__hero-grid {
   display: grid;
-  gap: 2rem;
+  gap: 32px;
   align-items: center;
 }
 
 @media (min-width: 768px) {
-  .fatd__hero-grid { grid-template-columns: 1fr 1fr; gap: 3rem; }
+  .fatd__hero-grid { grid-template-columns: 1fr 1fr; gap: 48px; }
 }
 
 .fatd__hero-media { display: flex; justify-content: center; }
@@ -149,7 +158,7 @@
 .fatd__hero-media img {
   width: 58%;
   max-width: 340px;
-  border-radius: 0.375rem;
+  border-radius: 6px;
   box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.45);
 }
 
@@ -160,46 +169,46 @@
 
 .fatd__hero-kicker {
   font-family: var(--fatd-serif);
-  font-size: 1.5rem;
+  font-size: 24px;
   font-weight: 600;
   line-height: 1.35;
   color: var(--fatd-primary);
   text-wrap: balance;
 }
 
-.fatd__hero-sub { margin-top: 1rem; max-width: 34rem; color: var(--fatd-muted-fg); }
+.fatd__hero-sub { margin-top: 16px; max-width: 544px; color: var(--fatd-muted-fg); }
 
 .fatd__h1 {
   font-family: var(--fatd-serif);
-  font-size: 2.25rem;
+  font-size: 36px;
   line-height: 1.05;
-  margin-top: 2rem;
+  margin-top: 32px;
   text-wrap: balance;
 }
 
-.fatd__hero-tagline { margin-top: 1rem; max-width: 28rem; color: var(--fatd-muted-fg); }
-.fatd__hero-cta { margin-top: 2rem; }
+.fatd__hero-tagline { margin-top: 16px; max-width: 448px; color: var(--fatd-muted-fg); }
+.fatd__hero-cta { margin-top: 32px; }
 
 @media (min-width: 640px) {
-  .fatd__hero-kicker { font-size: 1.875rem; }
-  .fatd__h1 { font-size: 3.25rem; }
+  .fatd__hero-kicker { font-size: 30px; }
+  .fatd__h1 { font-size: 52px; }
 }
 
 /* ---------- centred narrative block ---------- */
 
-.fatd__narrative { max-width: 42rem; margin: 0 auto; }
+.fatd__narrative { max-width: 672px; margin: 0 auto; }
 .fatd__narrative .fatd__lead:first-child { margin-top: 0; }
 .fatd__center { text-align: center; }
 .fatd__center .fatd__prose { margin-inline: auto; }
-.fatd__cta-row { margin-top: 2.5rem; text-align: center; }
+.fatd__cta-row { margin-top: 40px; text-align: center; }
 
 /* ---------- spreads ---------- */
 
 .fatd__spreads {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  margin-top: 2.5rem;
+  gap: 12px;
+  margin-top: 40px;
 }
 
 @media (min-width: 768px) {
@@ -208,46 +217,46 @@
 
 .fatd__spreads img {
   width: 100%;
-  border-radius: 0.375rem;
+  border-radius: 6px;
   box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.5);
 }
 
 .fatd__caption {
-  margin-top: 0.875rem;
+  margin-top: 14px;
   text-align: center;
-  font-size: 0.8125rem;
+  font-size: 13px;
   color: var(--fatd-muted-fg);
 }
 
 /* ---------- checklist ---------- */
 
-.fatd__checks { margin: 2rem 0 0; padding: 0; list-style: none; max-width: 42rem; }
+.fatd__checks { margin: 32px 0 0; padding: 0; list-style: none; max-width: 672px; }
 
 .fatd__checks li {
   display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
+  gap: 12px;
+  margin-top: 16px;
   color: rgba(244, 236, 216, 0.85);
 }
 
-.fatd__checks svg { flex: none; margin-top: 0.2rem; width: 1.25rem; height: 1.25rem; opacity: 0.85; }
+.fatd__checks svg { flex: none; margin-top: 3.2px; width: 20px; height: 20px; opacity: 0.85; }
 
 .fatd__quote {
-  margin: 2.25rem 0 0;
-  padding-left: 1rem;
+  margin: 36px 0 0;
+  padding-left: 16px;
   border-left: 2px solid rgba(244, 236, 216, 0.5);
   font-family: var(--fatd-serif);
-  font-size: 1.05rem;
+  font-size: 16.8px;
   font-weight: 600;
-  max-width: 42rem;
+  max-width: 672px;
 }
 
 /* ---------- feature cards ---------- */
 
 .fatd__cards {
   display: grid;
-  gap: 1rem;
-  margin-top: 2.5rem;
+  gap: 16px;
+  margin-top: 40px;
   text-align: left;
 }
 
@@ -256,7 +265,7 @@
 }
 
 .fatd__card {
-  padding: 1.5rem;
+  padding: 24px;
   background: var(--fatd-card);
   border: 1px solid var(--fatd-border);
   border-radius: var(--fatd-radius);
@@ -266,71 +275,71 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 0.375rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
   background: #e2ddd0;
   color: var(--fatd-primary);
 }
 
-.fatd__card-icon svg { width: 1.15rem; height: 1.15rem; }
+.fatd__card-icon svg { width: 18.4px; height: 18.4px; }
 
 .fatd__card h3 {
   font-family: var(--fatd-serif);
-  font-size: 1.0625rem;
-  margin-top: 1.5rem;
+  font-size: 17px;
+  margin-top: 24px;
 }
 
-.fatd__card p { margin-top: 0.5rem; color: var(--fatd-muted-fg); font-size: 0.9375rem; }
+.fatd__card p { margin-top: 8px; color: var(--fatd-muted-fg); font-size: 15px; }
 
 /* ---------- callout ---------- */
 
 .fatd__callout {
-  margin-top: 2rem;
-  padding: 1.25rem 1.5rem;
+  margin-top: 32px;
+  padding: 20px 24px;
   background: var(--fatd-card);
   border: 1px solid var(--fatd-border);
   border-radius: var(--fatd-radius);
   font-family: var(--fatd-serif);
-  font-size: 1.05rem;
-  max-width: 42rem;
+  font-size: 16.8px;
+  max-width: 672px;
 }
 
 /* ---------- authors ---------- */
 
-.fatd__authors { display: grid; gap: 1rem; margin-top: 2.5rem; }
+.fatd__authors { display: grid; gap: 16px; margin-top: 40px; }
 
 @media (min-width: 640px) {
   .fatd__authors { grid-template-columns: repeat(2, 1fr); }
 }
 
-.fatd__author-head { display: flex; align-items: center; gap: 0.875rem; }
+.fatd__author-head { display: flex; align-items: center; gap: 14px; }
 
 .fatd__avatar {
   display: flex;
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 3rem;
-  height: 3rem;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: var(--fatd-primary);
   color: var(--fatd-primary-fg);
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 14px;
   letter-spacing: 0.02em;
 }
 
-.fatd__author-name { font-family: var(--fatd-serif); font-size: 1.0625rem; font-weight: 600; }
-.fatd__author-role { font-size: 0.8125rem; color: var(--fatd-primary); }
-.fatd__author-bio { margin-top: 1.25rem; color: var(--fatd-muted-fg); font-size: 0.9375rem; }
+.fatd__author-name { font-family: var(--fatd-serif); font-size: 17px; font-weight: 600; }
+.fatd__author-role { font-size: 13px; color: var(--fatd-primary); }
+.fatd__author-bio { margin-top: 20px; color: var(--fatd-muted-fg); font-size: 15px; }
 
 /* ---------- stat ---------- */
 
 .fatd__stat {
-  max-width: 32rem;
-  margin: 1.5rem auto 0;
-  padding: 2rem 1.5rem;
+  max-width: 512px;
+  margin: 24px auto 0;
+  padding: 32px 24px;
   background: var(--fatd-card);
   border: 1px solid var(--fatd-border);
   border-radius: var(--fatd-radius);
@@ -341,65 +350,65 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: #e2ddd0;
   color: var(--fatd-fg);
 }
 
-.fatd__stat-icon svg { width: 1.15rem; height: 1.15rem; }
+.fatd__stat-icon svg { width: 18.4px; height: 18.4px; }
 
 .fatd__stat-number {
   font-family: var(--fatd-serif);
-  font-size: 2.25rem;
+  font-size: 36px;
   font-weight: 600;
   color: var(--fatd-primary);
-  margin-top: 1rem;
+  margin-top: 16px;
 }
 
-.fatd__stat-label { margin-top: 0.5rem; }
-.fatd__stat-note { margin-top: 0.5rem; font-size: 0.8125rem; color: var(--fatd-muted-fg); }
+.fatd__stat-label { margin-top: 8px; }
+.fatd__stat-note { margin-top: 8px; font-size: 13px; color: var(--fatd-muted-fg); }
 
 /* ---------- offer ---------- */
 
 .fatd__offer {
-  max-width: 30rem;
+  max-width: 480px;
   margin: 0 auto;
-  padding: 2.25rem 2rem;
+  padding: 36px 32px;
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(244, 236, 216, 0.18);
-  border-radius: 0.75rem;
+  border-radius: 12px;
   text-align: center;
 }
 
-.fatd__offer h2 { font-family: var(--fatd-serif); font-size: 1.75rem; }
+.fatd__offer h2 { font-family: var(--fatd-serif); font-size: 28px; }
 
 .fatd__offer-price {
   font-family: var(--fatd-serif);
-  font-size: 2.5rem;
+  font-size: 40px;
   font-weight: 600;
   line-height: 1.1;
 }
 
-.fatd__offer-list { margin: 1.75rem 0 0; padding: 0; list-style: none; text-align: left; }
+.fatd__offer-list { margin: 28px 0 0; padding: 0; list-style: none; text-align: left; }
 
 .fatd__offer-list li {
   display: flex;
-  gap: 0.75rem;
-  margin-top: 0.75rem;
-  font-size: 0.9375rem;
+  gap: 12px;
+  margin-top: 12px;
+  font-size: 15px;
   color: rgba(244, 236, 216, 0.9);
 }
 
-.fatd__offer-list svg { flex: none; margin-top: 0.3rem; width: 1rem; height: 1rem; }
-.fatd__offer .fatd__btn { margin-top: 1.75rem; }
+.fatd__offer-list svg { flex: none; margin-top: 4.8px; width: 16px; height: 16px; }
+.fatd__offer .fatd__btn { margin-top: 28px; }
 
 /* ---------- faq ---------- */
 
 .fatd__faq {
-  margin-top: 2rem;
-  max-width: 42rem;
+  margin-top: 32px;
+  max-width: 672px;
   background: var(--fatd-card);
   border: 1px solid var(--fatd-border);
   border-radius: var(--fatd-radius);
@@ -412,17 +421,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 1.125rem 1.25rem;
+  gap: 16px;
+  padding: 18px 20px;
   cursor: pointer;
-  font-size: 0.9375rem;
+  font-size: 15px;
   list-style: none;
 }
 
 .fatd__faq summary::-webkit-details-marker { display: none; }
-.fatd__faq summary::after { content: "+"; font-size: 1.25rem; color: var(--fatd-muted-fg); line-height: 1; }
+.fatd__faq summary::after { content: "+"; font-size: 20px; color: var(--fatd-muted-fg); line-height: 1; }
 .fatd__faq details[open] summary::after { content: "\00d7"; }
-.fatd__faq p { padding: 0 1.25rem 1.25rem; color: var(--fatd-muted-fg); font-size: 0.9375rem; }
+.fatd__faq p { padding: 0 20px 20px; color: var(--fatd-muted-fg); font-size: 15px; }
 
 /* ---------- final cta ---------- */
 
@@ -430,17 +439,17 @@
 
 .fatd__final h2 {
   font-family: var(--fatd-serif);
-  font-size: 1.875rem;
+  font-size: 30px;
   color: var(--fatd-primary);
   text-wrap: balance;
 }
 
 @media (min-width: 640px) {
-  .fatd__final h2 { font-size: 2.25rem; }
+  .fatd__final h2 { font-size: 36px; }
 }
 
-.fatd__final-meta { margin-top: 0.75rem; color: var(--fatd-muted-fg); }
-.fatd__final .fatd__btn { margin-top: 1.75rem; }
+.fatd__final-meta { margin-top: 12px; color: var(--fatd-muted-fg); }
+.fatd__final .fatd__btn { margin-top: 28px; }
 
 /* ---------- newsletter ---------- */
 
@@ -450,61 +459,61 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: rgba(244, 236, 216, 0.14);
   color: var(--fatd-primary-fg);
 }
 
-.fatd__newsletter-icon svg { width: 1.15rem; height: 1.15rem; }
+.fatd__newsletter-icon svg { width: 18.4px; height: 18.4px; }
 
 .fatd__newsletter h2 {
   font-family: var(--fatd-serif);
-  font-size: 1.75rem;
-  margin-top: 1.25rem;
+  font-size: 28px;
+  margin-top: 20px;
   text-wrap: balance;
 }
 
-.fatd__newsletter-sub { margin-top: 0.75rem; color: rgba(244, 236, 216, 0.85); }
+.fatd__newsletter-sub { margin-top: 12px; color: rgba(244, 236, 216, 0.85); }
 
 .fatd__form {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.75rem;
-  margin-top: 1.75rem;
+  gap: 12px;
+  margin-top: 28px;
 }
 
 .fatd__form input[type="email"] {
-  flex: 1 1 16rem;
-  max-width: 18rem;
-  padding: 0.85rem 1rem;
+  flex: 1 1 256px;
+  max-width: 288px;
+  padding: 13.6px 16px;
   border: 1px solid rgba(244, 236, 216, 0.35);
   border-radius: var(--fatd-radius);
   background: transparent;
   color: var(--fatd-primary-fg);
   font-family: inherit;
-  font-size: 0.9375rem;
+  font-size: 15px;
 }
 
 .fatd__form input[type="email"]::placeholder { color: rgba(244, 236, 216, 0.55); }
 .fatd__form input[type="email"]:focus-visible { outline: 2px solid rgba(244, 236, 216, 0.6); outline-offset: 1px; }
 
-.fatd__form-message { margin-top: 1rem; font-size: 0.875rem; }
+.fatd__form-message { margin-top: 16px; font-size: 14px; }
 .fatd__form-message--error { color: #ffd9d4; }
 
 /* ---------- footer ---------- */
 
 .fatd__footer {
-  padding: 2.5rem 1.25rem;
+  padding: 40px 20px;
   background: #f9f4e6;
   text-align: center;
-  font-size: 0.8125rem;
+  font-size: 13px;
   color: var(--fatd-muted-fg);
 }
 
-.fatd__footer p + p { margin-top: 0.4rem; }
+.fatd__footer p + p { margin-top: 6.4px; }
 
 /* ---------- mobile sticky bar ---------- */
 
@@ -517,15 +526,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
+  gap: 16px;
+  padding: 12px 16px;
   background: var(--fatd-card);
   border-top: 1px solid var(--fatd-border);
 }
 
-.fatd__sticky-label { font-size: 0.8125rem; color: var(--fatd-muted-fg); text-align: left; }
+.fatd__sticky-label { font-size: 13px; color: var(--fatd-muted-fg); text-align: left; }
 .fatd__sticky-title { display: block; font-weight: 600; color: var(--fatd-fg); }
-.fatd__sticky .fatd__btn { padding: 0.7rem 1.1rem; font-size: 0.875rem; }
+.fatd__sticky .fatd__btn { padding: 11.2px 17.6px; font-size: 14px; }
 
 @media (min-width: 640px) {
   .fatd__sticky { display: none; }

@@ -12,6 +12,7 @@
       "type": "fatd-landing",
       "name": "FATD landing",
       "settings": {
+        "content_width": "theme",
         "cta_label": "Get the book",
         "price": "£8.99",
         "hero_kicker": "There is no raqi coming.",

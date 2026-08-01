@@ -23,7 +23,7 @@
   <a class="fatd__btn" href="{{ buy_url }}">{{ cta }} <span class="fatd__btn-price">— {{ price }}</span></a>
 {%- endcapture -%}
 
-<div class="fatd">
+<div class="fatd{% if section.settings.content_width == 'theme' %} fatd--wide{% endif %}">
   <section class="fatd__section fatd__hero">
     <div class="fatd__inner fatd__hero-grid">
       <div class="fatd__hero-media">
@@ -390,6 +390,17 @@
   "name": "FATD landing",
   "tag": "section",
   "settings": [
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "Content width",
+      "options": [
+        { "value": "theme", "label": "Match theme page width" },
+        { "value": "design", "label": "Narrow (original design, 1024px)" }
+      ],
+      "default": "theme",
+      "info": "\"Match theme page width\" lines the page up with the header and the rest of the store."
+    },
     {
       "type": "header",
       "content": "Buy link"
