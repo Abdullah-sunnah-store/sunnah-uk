@@ -24,11 +24,6 @@
   font-style: normal;
   line-height: 1.625;
   -webkit-font-smoothing: antialiased;
-  padding-bottom: 80px; /* room for the mobile sticky bar */
-}
-
-@media (min-width: 640px) {
-  .fatd { padding-bottom: 0; }
 }
 
 .fatd *,
@@ -588,7 +583,9 @@
   .fatd__section > .fatd__inner { text-align: center; }
   .fatd__cards { text-align: center; }
   .fatd__card-icon { margin-inline: auto; }
-  .fatd__author-head { justify-content: center; }
+  /* the author avatar + name row stays left: centring it strands the avatar
+     beside a name that wraps mid-phrase */
+  .fatd__author-head { justify-content: flex-start; text-align: left; }
   .fatd__hero-sub,
   .fatd__hero-tagline { margin-inline: auto; }
 
