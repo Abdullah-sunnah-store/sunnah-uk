@@ -18,8 +18,8 @@
   background: var(--fatd-bg);
   color: var(--fatd-fg);
   font-family: var(--fatd-sans);
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 17px;
+  line-height: 1.625;
   -webkit-font-smoothing: antialiased;
   padding-bottom: 5rem; /* room for the mobile sticky bar */
 }
@@ -32,9 +32,11 @@
 .fatd *::before,
 .fatd *::after { box-sizing: border-box; }
 
-.fatd p { margin: 0; }
-.fatd h1, .fatd h2, .fatd h3 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
-.fatd img { display: block; max-width: 100%; height: auto; }
+/* Reset via :where() so it carries no specificity — the .fatd__* rules below
+   set margins and must win over it. */
+.fatd :where(p, h1, h2, h3, blockquote, ul, figure) { margin: 0; }
+.fatd :where(h1, h2, h3) { font-weight: 600; letter-spacing: -0.01em; }
+.fatd :where(img) { display: block; max-width: 100%; height: auto; }
 
 /* ---------- layout ---------- */
 
@@ -84,7 +86,7 @@
 .fatd__emphasis {
   font-family: var(--fatd-serif);
   font-weight: 600;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 }
 
 /* ---------- buttons ---------- */
@@ -93,13 +95,13 @@
   display: inline-flex;
   align-items: baseline;
   gap: 0.5rem;
-  padding: 0.9rem 1.6rem;
+  padding: 1rem 1.75rem;
   border: 0;
   border-radius: var(--fatd-radius);
   background: var(--fatd-primary);
   color: var(--fatd-primary-fg);
   font-family: var(--fatd-sans);
-  font-size: 0.95rem;
+  font-size: 1.0625rem;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
@@ -116,7 +118,7 @@
 .fatd__btn-price { font-weight: 400; opacity: 0.9; }
 
 .fatd__btn-note {
-  margin-top: 0.9rem;
+  margin-top: 1rem;
   font-size: 0.8125rem;
   color: var(--fatd-muted-fg);
 }
@@ -126,7 +128,11 @@
 
 /* ---------- hero ---------- */
 
-.fatd__hero { padding-top: 2.5rem; }
+.fatd__hero { padding-top: 2.5rem; padding-bottom: 3.5rem; }
+
+@media (min-width: 640px) {
+  .fatd__hero { padding-top: 3.5rem; padding-bottom: 3.5rem; }
+}
 
 .fatd__hero-grid {
   display: grid;
@@ -166,17 +172,17 @@
 .fatd__h1 {
   font-family: var(--fatd-serif);
   font-size: 2.25rem;
-  line-height: 1.1;
+  line-height: 1.05;
   margin-top: 2rem;
   text-wrap: balance;
 }
 
-.fatd__hero-tagline { margin-top: 1rem; max-width: 30rem; color: var(--fatd-muted-fg); }
+.fatd__hero-tagline { margin-top: 1rem; max-width: 28rem; color: var(--fatd-muted-fg); }
 .fatd__hero-cta { margin-top: 2rem; }
 
 @media (min-width: 640px) {
   .fatd__hero-kicker { font-size: 1.875rem; }
-  .fatd__h1 { font-size: 3.5rem; }
+  .fatd__h1 { font-size: 3.25rem; }
 }
 
 /* ---------- centred narrative block ---------- */
