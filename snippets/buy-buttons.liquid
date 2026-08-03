@@ -5,7 +5,28 @@
      font-weight: 600;
      border-radius: 25px !important;
   }
- 
+
+  /* Dynamic checkout ("Buy with Shop") — match the Add To Bag pill.
+     The branded button renders inside a Shopify web component, so the radius
+     goes on the wrapper (clipped with overflow) as well as the custom
+     properties the component exposes. */
+ #shopify-section-{{section.id}} .shopify-payment-button {
+     --shop-pay-button-border-radius: 25px;
+     --shopify-accelerated-checkout-button-border-radius: 25px;
+  }
+
+ #shopify-section-{{section.id}} .shopify-payment-button__button,
+ #shopify-section-{{section.id}} .shopify-payment-button shop-pay-button,
+ #shopify-section-{{section.id}} .shopify-payment-button shopify-accelerated-checkout {
+     border-radius: 25px !important;
+     overflow: hidden;
+  }
+
+ #shopify-section-{{section.id}} .shopify-payment-button__button--unbranded {
+     background: #000 !important;
+     color: #fff !important;
+     font-weight: 600;
+  }
 </style>
 
 

@@ -156,6 +156,8 @@
 .fatd__btn--light:hover { background: #fff; }
 
 .fatd__btn-price { font-weight: 400; opacity: 0.9; }
+.fatd__btn-price-was { opacity: 0.7; text-decoration-thickness: 1px; }
+.fatd__btn-price-now { font-weight: 600; }
 
 .fatd__btn-note {
   margin-top: 16px;

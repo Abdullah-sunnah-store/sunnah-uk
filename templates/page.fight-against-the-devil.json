@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
@@ -13,6 +22,8 @@
       "name": "FATD landing",
       "settings": {
         "content_width": "theme",
+        "product": "fight-against-the-devil",
+        "buy_link": "shopify://pages/fight-against-the-devil",
         "cta_label": "Get the book",
         "price": "£8.99",
         "hero_kicker": "There is no raqi coming.",
@@ -20,6 +31,7 @@
         "hero_title": "Fight Against The Devil",
         "hero_tagline": "A practical guide to ruqyah and prophetic medicine you can use at home tonight.",
         "hero_note": "Instant download · 185 pages · Read on any device",
+        "cover_image": "shopify://shop_images/acdfdb04-2bed-4a04-9c6a-ceadb91caa1b.jpg",
         "cover_alt": "Cover of the book Fight Against The Devil",
         "stat_number": "7,900+",
         "stat_label": "people saved our ruqyah posts this month.",
@@ -27,5 +39,8 @@
       }
     }
   },
-  "order": ["main", "fatd_landing"]
+  "order": [
+    "main",
+    "fatd_landing"
+  ]
 }

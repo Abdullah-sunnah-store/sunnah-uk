@@ -9,18 +9,37 @@
 {%- liquid
   assign buy_url = section.settings.buy_link
   if section.settings.product != blank
-    assign buy_url = section.settings.product.url
+    assign buy_variant = section.settings.product.selected_or_first_available_variant
+    if buy_variant != blank
+      comment
+        Cart permalink — adds the variant and drops the buyer straight on checkout,
+        skipping the product and cart pages.
+      endcomment
+      assign buy_url = routes.cart_url | append: '/' | append: buy_variant.id | append: ':1'
+    else
+      assign buy_url = section.settings.product.url
+    endif
   endif
   if buy_url == blank
     assign buy_url = '#'
   endif
 
   assign price = section.settings.price
+  assign compare_price = section.settings.compare_price
   assign cta = section.settings.cta_label
 -%}
 
+{%- capture price_block -%}
+  <span class="fatd__btn-price">—
+    {%- if compare_price != blank %}
+      <s class="fatd__btn-price-was">{{ compare_price }}</s>
+    {%- endif %}
+    <span class="fatd__btn-price-now">{{ price }}</span>
+  </span>
+{%- endcapture -%}
+
 {%- capture buy_button -%}
-  <a class="fatd__btn" href="{{ buy_url }}">{{ cta }} <span class="fatd__btn-price">— {{ price }}</span></a>
+  <a class="fatd__btn" href="{{ buy_url }}">{{ cta }} {{ price_block }}</a>
 {%- endcapture -%}
 
 <div class="fatd{% if section.settings.content_width == 'theme' %} fatd--wide{% endif %}">
@@ -287,7 +306,7 @@
         </ul>
 
         <a class="fatd__btn fatd__btn--light" href="{{ buy_url }}">
-          {{ cta }} <span class="fatd__btn-price">— {{ price }}</span>
+          {{ cta }} {{ price_block }}
         </a>
         <p class="fatd__btn-note">{{ section.settings.checkout_note }}</p>
       </div>
@@ -427,6 +446,13 @@
       "id": "price",
       "label": "Price",
       "default": "£8.99"
+    },
+    {
+      "type": "text",
+      "id": "compare_price",
+      "label": "Compare-at price",
+      "default": "£16.99",
+      "info": "Shown struck through before the price. Leave empty to hide it."
     },
     {
       "type": "header",
