@@ -42,7 +42,7 @@
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
-            "show_dynamic_checkout": false,
+            "show_dynamic_checkout": true,
             "show_gift_card_recipient": false
           }
         },
@@ -307,6 +307,7 @@
         "testimonial_QEjaEa",
         "testimonial_HewJFP"
       ],
+      "disabled": true,
       "name": "custom-sunnah-reviews",
       "settings": {
         "heading": "Our supporters:",

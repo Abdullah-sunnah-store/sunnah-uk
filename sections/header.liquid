@@ -31,6 +31,19 @@
   border-bottom: unset !important;
 }
 
+/* Hide the country/region selector in the header */
+.country-dropdown {
+  display: none !important;
+}
+
+/* A <style> block pasted inside a product description declares an unscoped
+   `details > summary::after { content: "+" }`. It leaks out of the description
+   and puts +/− next to every header menu item, so neutralise it here. */
+.header details > summary::after,
+.menu-drawer details > summary::after {
+  content: none !important;
+}
+
 /* Country Dropdown Styles */
 .country-dropdown {
   position: relative;

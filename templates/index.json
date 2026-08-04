@@ -326,6 +326,7 @@
     },
     "soulful_latte_blog_MXmgBH": {
       "type": "soulful-latte-blog",
+      "disabled": true,
       "name": "Soulful Latte Blog",
       "settings": {
         "blog": "news",
@@ -395,6 +396,7 @@
         "single_image_cL7rTG",
         "single_image_3tQ4RP"
       ],
+      "disabled": true,
       "name": "Hair Reviews Section",
       "settings": {
         "title": "Real People, Real Community Reviews",

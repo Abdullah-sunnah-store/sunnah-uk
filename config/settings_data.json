@@ -24,7 +24,7 @@
     "animations_hover_elements": "none",
     "buttons_border_thickness": 1,
     "buttons_border_opacity": 100,
-    "buttons_radius": 4,
+    "buttons_radius": 24,
     "buttons_shadow_opacity": 0,
     "buttons_shadow_horizontal_offset": 0,
     "buttons_shadow_vertical_offset": 4,
@@ -173,7 +173,7 @@
         ],
         "settings": {
           "popup_title": "ARE YOU IN THE RIGHT PLACE?",
-          "show_popup": true,
+          "show_popup": false,
           "popup_delay": 2
         }
       }
