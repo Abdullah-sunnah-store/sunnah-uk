@@ -1,0 +1,676 @@
+{% comment %}
+  Gift Box Hero
+  A fully dynamic landing/hero section for the custom gift box experience.
+  Everything (text, colours, the 3 process steps, and the "Your Box" preview
+  items) is editable from the theme editor.
+
+  The "Your Box" preview shows real, merchant-selected PRODUCTS with their live
+  prices. Clicking the button stashes those products in localStorage and sends
+  the visitor to the gift-box builder page, where they are pre-added to the box.
+{% endcomment %}
+
+{%- liquid
+  assign max_items = section.settings.max_items
+  assign filled = 0
+  assign total = 0
+-%}
+
+{%- comment -%} Build the pre-select payload + running totals once, up front. {%- endcomment -%}
+{%- capture preselect_json -%}
+[
+{%- assign first = true -%}
+{%- for block in section.blocks -%}
+  {%- if block.type == 'box_item' and block.settings.product != blank and filled < max_items -%}
+    {%- assign p = block.settings.product -%}
+    {%- assign fv = null -%}
+    {%- for v in p.variants -%}
+      {%- if v.available and fv == null -%}{%- assign fv = v -%}{%- endif -%}
+    {%- endfor -%}
+    {%- if fv == null -%}{%- assign fv = p.variants.first -%}{%- endif -%}
+    {%- assign vp = fv.price | divided_by: 100.0 | round -%}
+    {%- assign vc = 0 -%}
+    {%- if fv.compare_at_price > fv.price -%}{%- assign vc = fv.compare_at_price | divided_by: 100.0 | round -%}{%- endif -%}
+    {%- assign total = total | plus: vp -%}
+    {%- assign filled = filled | plus: 1 -%}
+    {%- assign col_handle = p.collections.first.handle | default: 'preselected' -%}
+    {%- capture item_title -%}{{ p.title }} - {{ fv.title }}{%- endcapture -%}
+    {%- capture item_img -%}{% if fv.image %}{{ fv.image | image_url: width: 200 }}{% else %}{{ p.featured_image | image_url: width: 200 }}{% endif %}{%- endcapture -%}
+    {%- unless first -%},{%- endunless -%}{%- assign first = false -%}
+    {"id":{{ fv.id }},"title":{{ item_title | json }},"image":{{ item_img | json }},"price":{{ vp }},"comparePrice":{{ vc }},"collection":{{ col_handle | json }},"productId":{{ p.id }}}
+  {%- endif -%}
+{%- endfor -%}
+]
+{%- endcapture -%}
+
+{%- liquid
+  assign empty_slots = max_items | minus: filled
+  if empty_slots < 0
+    assign empty_slots = 0
+  endif
+-%}
+
+<style>
+  #shopify-section-{{ section.id }} {
+    --gbh-bg: {{ section.settings.section_bg }};
+    --gbh-heading: {{ section.settings.heading_color }};
+    --gbh-text: {{ section.settings.text_color }};
+    --gbh-accent: {{ section.settings.accent_color }};
+    --gbh-btn-text: {{ section.settings.button_text_color }};
+    --gbh-card-bg: {{ section.settings.card_bg }};
+    --gbh-card-border: {{ section.settings.card_border_color }};
+    --gbh-slot-bg: {{ section.settings.slot_bg }};
+    --gbh-slot-border: {{ section.settings.slot_border_color }};
+  }
+
+  .gbh {
+    background: var(--gbh-bg);
+    color: var(--gbh-text);
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .gbh__inner {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding-inline: 24px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 56px;
+    align-items: center;
+  }
+
+  /* ---------- Left column ---------- */
+  .gbh__eyebrow {
+    color: var(--gbh-accent);
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin: 0 0 24px;
+  }
+
+  .gbh__heading {
+    color: var(--gbh-heading);
+    font-family: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    font-weight: {{ section.settings.heading_font.weight }};
+    font-size: clamp(2rem, 5vw, 3.5rem); /* 32px → 56px */
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    margin: 0 0 24px;
+  }
+
+  .gbh__heading p { margin: 0; }
+  .gbh__heading em { font-style: italic; }
+
+  .gbh__description {
+    color: var(--gbh-text);
+    font-size: clamp(1rem, 1.4vw, 1.0625rem); /* 16px → 17px */
+    line-height: 1.6;
+    letter-spacing: 0;
+    max-width: 480px;
+    margin: 0 0 34px;
+  }
+
+  .gbh__description p { margin: 0 0 10px; }
+  .gbh__description p:last-child { margin-bottom: 0; }
+
+  /* ---------- Steps ---------- */
+  .gbh__steps {
+    display: flex;
+    gap: 36px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .gbh__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+  .gbh__step-num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--gbh-accent);
+    color: var(--gbh-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem; /* 14px */
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+
+  .gbh__step-label {
+    font-size: 0.9375rem; /* 15px */
+    line-height: 1.5;
+    color: var(--gbh-text);
+  }
+
+  /* ---------- Button ---------- */
+  .gbh__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--gbh-accent);
+    color: var(--gbh-btn-text);
+    text-decoration: none;
+    font-size: 0.875rem; /* 14px */
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 17px 32px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .gbh__btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* ---------- Right column / Box preview ---------- */
+  .gbh__card {
+    background: var(--gbh-card-bg);
+    border: 1px solid var(--gbh-card-border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+
+  .gbh__card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    gap: 12px;
+  }
+
+  .gbh__card-label {
+    color: var(--gbh-accent);
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .gbh__card-tier {
+    color: var(--gbh-text);
+    font-size: 0.8125rem; /* 13px */
+    line-height: 1.4;
+    opacity: 0.9;
+  }
+
+  .gbh__slots {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.slots_per_row }}, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .gbh__slot {
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gbh-slot-bg);
+    border: 1px solid var(--gbh-slot-border);
+    overflow: hidden;
+  }
+
+  .gbh__slot--filled { border-color: var(--gbh-accent); padding: 0; }
+
+  .gbh__slot-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .gbh__slot--empty {
+    border-style: dashed;
+    color: var(--gbh-text);
+    opacity: 0.55;
+    font-size: 26px;
+    font-weight: 300;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s, border-color 0.2s;
+  }
+
+  a.gbh__slot--empty:hover,
+  a.gbh__slot--empty:focus-visible {
+    opacity: 0.9;
+    border-color: var(--gbh-accent);
+  }
+
+  .gbh__card-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid var(--gbh-card-border);
+    padding-top: 16px;
+  }
+
+  .gbh__card-count { font-size: 0.875rem; color: var(--gbh-text); opacity: 0.9; } /* 14px */
+
+  .gbh__card-price {
+    color: var(--gbh-accent);
+    font-family: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    font-size: clamp(1.375rem, 3vw, 1.625rem); /* 22px → 26px */
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------- Responsive ---------- */
+
+  /* Tablet & below — stack to a single column, content first, box card below */
+  @media (max-width: 900px) {
+    .gbh__inner {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .gbh__content { order: 1; }
+    .gbh__card { order: 2; }
+    .gbh__description { max-width: none; }
+  }
+
+  /* Mobile */
+  @media (max-width: 749px) {
+    /* Cap vertical padding on mobile (never larger than the merchant's setting) */
+    .gbh {
+      padding-top: min({{ section.settings.padding_top }}px, 56px);
+      padding-bottom: min({{ section.settings.padding_bottom }}px, 56px);
+    }
+    .gbh__inner {
+      padding-inline: 20px;
+      gap: 28px;
+    }
+    /* Keep the three steps in one evenly-spread row, each centered */
+    .gbh__steps {
+      gap: 5px;
+      flex-wrap: nowrap;
+    }
+    .gbh__step {
+      max-width: none;
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+  }
+
+  /* Small phones — slightly tighter so labels never overflow */
+  @media (max-width: 420px) {
+    .gbh__steps { gap: 12px; }
+    .gbh__step-label { font-size: 0.8125rem; } /* 13px */
+    .gbh__slots { gap: 10px; }
+    .gbh__card { padding: 20px; }
+  }
+</style>
+
+<div class="gbh">
+  <div class="gbh__inner">
+
+    {% comment %} Left column {% endcomment %}
+    <div class="gbh__content">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="gbh__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <div class="gbh__heading">{{ section.settings.heading }}</div>
+      {%- endif -%}
+
+      {%- if section.settings.description != blank -%}
+        <div class="gbh__description">{{ section.settings.description }}</div>
+      {%- endif -%}
+
+      {%- assign steps = section.blocks | where: 'type', 'step' -%}
+      {%- if steps.size > 0 -%}
+        <div class="gbh__steps">
+          {%- for block in steps -%}
+            <div class="gbh__step" {{ block.shopify_attributes }}>
+              <div class="gbh__step-num">{{ forloop.index }}</div>
+              <div class="gbh__step-label">{{ block.settings.label }}</div>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.button_label != blank -%}
+        <a
+          href="{{ section.settings.button_link | default: '#' }}"
+          class="gbh__btn"
+          data-gbh-build
+        >
+          {{ section.settings.button_label }}
+          {%- if section.settings.show_button_arrow -%}<span aria-hidden="true">&rarr;</span>{%- endif -%}
+        </a>
+      {%- endif -%}
+    </div>
+
+    {% comment %} Right column — Your Box preview {% endcomment %}
+    <div class="gbh__card">
+      <div class="gbh__card-head">
+        {%- if section.settings.box_label != blank -%}
+          <span class="gbh__card-label">{{ section.settings.box_label }}</span>
+        {%- endif -%}
+        {%- if section.settings.tier_text != blank -%}
+          <span class="gbh__card-tier">{{ section.settings.tier_text }}</span>
+        {%- endif -%}
+      </div>
+
+      <div class="gbh__slots">
+        {%- assign shown = 0 -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'box_item' and block.settings.product != blank and shown < max_items -%}
+            {%- assign shown = shown | plus: 1 -%}
+            {%- assign p = block.settings.product -%}
+            {%- assign fv = null -%}
+            {%- for v in p.variants -%}
+              {%- if v.available and fv == null -%}{%- assign fv = v -%}{%- endif -%}
+            {%- endfor -%}
+            {%- if fv == null -%}{%- assign fv = p.variants.first -%}{%- endif -%}
+            <div class="gbh__slot gbh__slot--filled" {{ block.shopify_attributes }}>
+              {%- if fv.image -%}
+                {{ fv.image | image_url: width: 200 | image_tag: class: 'gbh__slot-img', loading: 'lazy', alt: p.title }}
+              {%- else -%}
+                {{ p.featured_image | image_url: width: 200 | image_tag: class: 'gbh__slot-img', loading: 'lazy', alt: p.title }}
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if empty_slots > 0 -%}
+          {%- for i in (1..empty_slots) -%}
+            <a
+              href="{{ section.settings.button_link | default: '#' }}"
+              class="gbh__slot gbh__slot--empty"
+              data-gbh-build
+              aria-label="{{ section.settings.button_label | default: 'Build your box' }}"
+            >+</a>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+
+      <div class="gbh__card-foot">
+        <span class="gbh__card-count">
+          {{- section.settings.count_text
+            | replace: '[filled]', filled
+            | replace: '[max]', max_items -}}
+        </span>
+        <span class="gbh__card-price">{{ section.settings.currency_symbol }}{{ total }}</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% comment %} Pre-select payload handed to the builder page {% endcomment %}
+<script type="application/json" id="gbh-preselect-{{ section.id }}">{{ preselect_json }}</script>
+
+<script>
+  (function () {
+    var root = document.getElementById('shopify-section-{{ section.id }}') || document;
+    var triggers = root.querySelectorAll('[data-gbh-build]');
+    var data = document.getElementById('gbh-preselect-{{ section.id }}');
+    if (!triggers.length || !data) return;
+    triggers.forEach(function (trigger) {
+      trigger.addEventListener('click', function () {
+        try {
+          localStorage.setItem('cgbPreselectedProducts', data.textContent.trim());
+        } catch (e) { /* storage unavailable — builder just starts empty */ }
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Gift Box Hero",
+  "tag": "section",
+  "class": "section section--mobile-full-width",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "A Sunnah Store Original"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Use italics for the emphasised word.",
+      "default": "<p>Build a gift as <em>personal</em> as the person.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Choose your box. Fill it with the pieces you love. We wrap it beautifully and deliver it ready to give — the most intentional gift you can send.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Start building your box"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Builder page link",
+      "info": "Link to the page that has the Custom Gift Box builder section. Selected products below are pre-added there."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button_arrow",
+      "label": "Show arrow on button",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "\"Your Box\" preview"
+    },
+    {
+      "type": "text",
+      "id": "box_label",
+      "label": "Card label",
+      "default": "Your Box"
+    },
+    {
+      "type": "text",
+      "id": "tier_text",
+      "label": "Tier text",
+      "default": "Noor tier · up to 6 items"
+    },
+    {
+      "type": "range",
+      "id": "max_items",
+      "label": "Max items (slots)",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "slots_per_row",
+      "label": "Slots per row",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "count_text",
+      "label": "Count text",
+      "info": "Use [filled] and [max] as placeholders.",
+      "default": "[filled] of [max] items added"
+    },
+    {
+      "type": "text",
+      "id": "currency_symbol",
+      "label": "Currency symbol",
+      "default": "৳"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Background",
+      "default": "#1C4A3A"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#F5F0E8"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text",
+      "default": "#cdd8cf"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent / button",
+      "default": "#D4A830"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#1C4A3A"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#1C4A3A"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card border",
+      "default": "#1C4A3A"
+    },
+    {
+      "type": "color",
+      "id": "slot_bg",
+      "label": "Slot background",
+      "default": "#1C4A3A"
+    },
+    {
+      "type": "color",
+      "id": "slot_border_color",
+      "label": "Slot border",
+      "default": "#1C4A3A"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "cormorant_n7"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Content max width",
+      "min": 900,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Process step",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Step label",
+          "default": "Choose your box"
+        }
+      ]
+    },
+    {
+      "type": "box_item",
+      "name": "Box item (product)",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product",
+          "info": "This product is shown in the preview and pre-added to the box when the button is clicked."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gift Box Hero",
+      "blocks": [
+        { "type": "step", "settings": { "label": "Choose your box" } },
+        { "type": "step", "settings": { "label": "Fill it with gifts" } },
+        { "type": "step", "settings": { "label": "We wrap & deliver" } },
+        { "type": "box_item" },
+        { "type": "box_item" },
+        { "type": "box_item" },
+        { "type": "box_item" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,801 @@
+{%- liquid
+  assign heading      = section.settings.heading
+  assign heading_tag  = section.settings.heading_tag
+  assign heading_size = section.settings.heading_font_size | append: 'px'
+  assign pill_bg      = section.settings.pill_background
+  assign thumb_size   = section.settings.thumbnail_size | append: 'px'
+  assign label_size   = section.settings.label_font_size | append: 'px'
+  assign label_weight = section.settings.label_font_weight
+  assign card_gap     = section.settings.card_gap | append: 'px'
+  assign max_chars    = section.settings.label_max_chars
+  assign show_heading = section.settings.show_heading
+  assign show_arrows  = section.settings.show_arrows
+  assign show_thumbs  = section.settings.show_thumbnails
+
+  assign active_pill_bg      = section.settings.active_pill_bg      | default: '#08291E'
+  assign active_label_color  = section.settings.active_label_color  | default: '#ffffff'
+  assign active_thumb_radius = section.settings.active_thumb_radius | default: 8
+  assign active_style        = section.settings.active_style         | default: 'filled'
+  assign active_border_color = section.settings.active_border_color | default: '#08291E'
+  assign active_border_width = section.settings.active_border_width | default: 2
+  assign pill_radius         = section.settings.pill_border_radius   | default: 10
+  assign label_color         = section.settings.label_color          | default: 'inherit'
+
+  comment
+    Pull collections from the current collection's metafield custom.relevant_collections
+    (type: list.collection_reference). Falls back to manual blocks.
+  endcomment
+  assign meta_collections = collection.metafields.custom.relevant_collections.value
+  assign use_metafield = false
+  if meta_collections != blank and meta_collections.size > 0
+    assign use_metafield = true
+  endif
+-%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+
+<div
+  class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} coll-pills spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  {%- comment -%} Header row: title left, arrows right {%- endcomment -%}
+  {%- if show_heading or show_arrows -%}
+    <div class="coll-pills__header">
+      {%- if show_heading and heading != blank -%}
+        <{{ heading_tag }}
+          class="coll-pills__heading"
+          style="font-size: {{ heading_size }}; font-weight: {{ section.settings.heading_font_weight }}; color: {{ section.settings.heading_color }}; font-style: {{ section.settings.heading_style }};"
+        >
+          {{- heading -}}
+        </{{ heading_tag }}>
+      {%- else -%}
+        <span></span>
+      {%- endif -%}
+
+      {%- if show_arrows -%}
+        <div class="coll-pills__header-arrows">
+          <button
+            class="coll-pills__arrow coll-pills__arrow--prev"
+            type="button"
+            aria-label="Previous"
+            data-pills-prev="{{ section.id }}"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button
+            class="coll-pills__arrow coll-pills__arrow--next"
+            type="button"
+            aria-label="Next"
+            data-pills-next="{{ section.id }}"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Pill track {%- endcomment -%}
+  <div
+    class="coll-pills__track"
+    id="coll-pills-track-{{ section.id }}"
+    style="--pills-gap: {{ card_gap }};"
+  >
+    {%- if use_metafield -%}
+      {%- comment -%} --- Metafield source --- {%- endcomment -%}
+      {%- for coll in meta_collections -%}
+        {%- liquid
+          assign item_label = coll.title
+          assign display_image = coll.featured_image
+          assign href = coll.url
+          assign truncated_label = item_label | truncate: max_chars
+          assign is_active = false
+          if collection.handle == coll.handle
+            assign is_active = true
+          endif
+        -%}
+        <div class="coll-pills__pill{% if is_active %} coll-pills__pill--active{% endif %}"
+          style="border-radius: {{ pill_radius }}px;">
+          <a class="coll-pills__pill-inner" href="{{ href }}" style="--thumb-size: {{ thumb_size }};"
+            {% if is_active %}aria-current="page"{% endif %}>
+            {%- if show_thumbs -%}
+              <div class="coll-pills__thumb">
+                {%- if display_image != blank -%}
+                  {{ display_image | image_url: width: 200 | image_tag:
+                    loading: 'lazy',
+                    widths: '80, 120, 200',
+                    class: 'coll-pills__thumb-img',
+                    alt: item_label
+                  }}
+                {%- else -%}
+                  <div class="coll-pills__thumb-placeholder">
+                    {{- 'image' | placeholder_svg_tag: 'coll-pills__placeholder-svg' -}}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+            <span
+              class="coll-pills__label"
+              style="font-size: {{ label_size }}; font-weight: {{ label_weight }}; color: {{ label_color }};"
+              title="{{ item_label }}"
+            >
+              {{- truncated_label -}}
+            </span>
+          </a>
+        </div>
+      {%- endfor -%}
+
+    {%- elsif section.blocks.size > 0 -%}
+      {%- comment -%} --- Manual blocks fallback --- {%- endcomment -%}
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign item_image      = block.settings.image
+          assign item_label      = block.settings.label
+          assign item_link       = block.settings.link
+          assign item_collection = block.settings.collection
+          assign href = item_link
+          if item_collection != blank and item_link == blank
+            assign href = item_collection.url
+          endif
+          if item_label == blank and item_collection != blank
+            assign item_label = item_collection.title
+          endif
+          assign display_image = item_image
+          if display_image == blank and item_collection != blank
+            assign display_image = item_collection.featured_image
+          endif
+          assign truncated_label = item_label | truncate: max_chars
+          assign is_active = false
+          if item_collection != blank and collection.handle == item_collection.handle
+            assign is_active = true
+          endif
+          if item_link != blank and item_link == request.path
+            assign is_active = true
+          endif
+        -%}
+        <div class="coll-pills__pill{% if is_active %} coll-pills__pill--active{% endif %}"
+          {{ block.shopify_attributes }}
+          style="border-radius: {{ pill_radius }}px;">
+          <a
+            class="coll-pills__pill-inner"
+            {% if href != blank %}href="{{ href }}"{% endif %}
+            style="--thumb-size: {{ thumb_size }};"
+            {% if is_active %}aria-current="page"{% endif %}
+          >
+            {%- if show_thumbs -%}
+              <div class="coll-pills__thumb">
+                {%- if display_image != blank -%}
+                  {{ display_image | image_url: width: 200 | image_tag:
+                    loading: 'lazy',
+                    widths: '80, 120, 200',
+                    class: 'coll-pills__thumb-img',
+                    alt: item_label
+                  }}
+                {%- else -%}
+                  <div class="coll-pills__thumb-placeholder">
+                    {{- 'image' | placeholder_svg_tag: 'coll-pills__placeholder-svg' -}}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+            <span
+              class="coll-pills__label"
+              style="font-size: {{ label_size }}; font-weight: {{ label_weight }}; color: {{ label_color }};"
+              title="{{ item_label }}"
+            >
+              {{- truncated_label -}}
+            </span>
+          </a>
+        </div>
+      {%- endfor -%}
+
+    {%- else -%}
+      {%- comment -%} --- Editor placeholder --- {%- endcomment -%}
+      {%- assign sample_labels = 'baby gifts (0-12 mo.),school-aged gifts,preschooler gifts,toddler gifts (1-3),tween gifts (8-12),gifts for all ages' | split: ',' -%}
+      {%- for label in sample_labels -%}
+        <div class="coll-pills__pill{% if forloop.first %} coll-pills__pill--active{% endif %}"
+          style="border-radius: {{ pill_radius }}px;">
+          <div class="coll-pills__pill-inner" style="--thumb-size: {{ thumb_size }};">
+            {%- if show_thumbs -%}
+              <div class="coll-pills__thumb">
+                <div class="coll-pills__thumb-placeholder">
+                  {{- 'image' | placeholder_svg_tag: 'coll-pills__placeholder-svg' -}}
+                </div>
+              </div>
+            {%- endif -%}
+            <span class="coll-pills__label" style="font-size: {{ label_size }}; font-weight: {{ label_weight }}; color: {{ label_color }};">
+              {{- label -}}
+            </span>
+          </div>
+        </div>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</div>
+
+<script>
+(function () {
+  var sectionId = '{{ section.id }}';
+  var track   = document.getElementById('coll-pills-track-' + sectionId);
+  var prevBtn = document.querySelector('[data-pills-prev="' + sectionId + '"]');
+  var nextBtn = document.querySelector('[data-pills-next="' + sectionId + '"]');
+  if (!track) return;
+
+  /* ── Scroll active pill into view on load ── */
+  var activePill = track.querySelector('.coll-pills__pill--active');
+  if (activePill) {
+    setTimeout(function () {
+      var trackLeft  = track.getBoundingClientRect().left;
+      var pillLeft   = activePill.getBoundingClientRect().left;
+      var scrollTo   = track.scrollLeft + (pillLeft - trackLeft) - (track.clientWidth / 2) + (activePill.offsetWidth / 2);
+      track.scrollTo({ left: Math.max(0, scrollTo), behavior: 'smooth' });
+    }, 120);
+  }
+
+  function scrollAmount() {
+    var pill = track.querySelector('.coll-pills__pill');
+    if (!pill) return 240;
+    var gap = parseFloat(getComputedStyle(track).gap) || 0;
+    return (pill.offsetWidth + gap) * 2;
+  }
+
+  prevBtn && prevBtn.addEventListener('click', function () {
+    track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+  });
+  nextBtn && nextBtn.addEventListener('click', function () {
+    track.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+  });
+
+  function updateArrows() {
+    if (!prevBtn || !nextBtn) return;
+    var atStart = track.scrollLeft <= 4;
+    var atEnd   = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+    prevBtn.style.opacity = atStart ? '0.3' : '1';
+    prevBtn.style.pointerEvents = atStart ? 'none' : '';
+    nextBtn.style.opacity = atEnd ? '0.3' : '1';
+    nextBtn.style.pointerEvents = atEnd ? 'none' : '';
+  }
+
+  track.addEventListener('scroll', updateArrows, { passive: true });
+  updateArrows();
+})();
+</script>
+
+{% style %}
+  /* ── Layout ── */
+  #shopify-section-{{ section.id }} .coll-pills__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.6rem;
+    margin-bottom: 1.6rem;
+  }
+  #shopify-section-{{ section.id }} .coll-pills__heading {
+    margin: 0;
+    line-height: 1.3;
+    flex: 1;
+  }
+  #shopify-section-{{ section.id }} .coll-pills__header-arrows {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
+  }
+  #shopify-section-{{ section.id }} .coll-pills__arrow {
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: opacity 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .coll-pills__arrow:hover { opacity: 0.7; }
+
+  /* ── Track ── */
+  #shopify-section-{{ section.id }} .coll-pills__track {
+    display: flex;
+    gap: var(--pills-gap, 12px);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  #shopify-section-{{ section.id }} .coll-pills__track::-webkit-scrollbar { display: none; }
+
+  /* ── Pill (default) ── */
+  #shopify-section-{{ section.id }} .coll-pills__pill {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    overflow: hidden;
+    background: transparent !important;
+    border: {% if show_thumbs %}1px solid #e3e1e1{% else %}none{% endif %};
+    transition: opacity 0.2s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  }
+  #shopify-section-{{ section.id }} .coll-pills__pill { transition: opacity 0.2s ease, box-shadow 0.2s ease; }
+
+  {%- if show_thumbs == false -%}
+  /* Text-only tabs: keep pills square so the underline stays straight (no rounded "bracket" ends) */
+  #shopify-section-{{ section.id }} .coll-pills__pill { border-radius: 0 !important; }
+  {%- endif -%}
+
+  /* Hover effect on non-active tabs: match the selected tab (accent color + underline) */
+  #shopify-section-{{ section.id }} .coll-pills__pill:not(.coll-pills__pill--active):hover {
+    box-shadow: inset 0 -3px 0 {{ active_border_color }};
+    border-radius: 0 !important;
+  }
+  #shopify-section-{{ section.id }} .coll-pills__pill:not(.coll-pills__pill--active):hover .coll-pills__label {
+    color: {{ active_border_color }} !important;
+    transition: color 0.2s ease;
+  }
+
+  #shopify-section-{{ section.id }} .coll-pills__pill-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.4rem 1.4rem 0.4rem 0.4rem;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  {%- if show_thumbs == false -%}
+  #shopify-section-{{ section.id }} .coll-pills__pill-inner { padding: 0.8rem 1.6rem; }
+  {%- endif -%}
+
+  /* ── Thumbnail ── */
+  #shopify-section-{{ section.id }} .coll-pills__thumb {
+    width: var(--thumb-size, 56px);
+    height: var(--thumb-size, 56px);
+    border-radius: {{ section.settings.thumb_border_radius | default: 8 }}px;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(28, 28, 26, 0.04);
+  }
+  #shopify-section-{{ section.id }} .coll-pills__thumb-img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  #shopify-section-{{ section.id }} .coll-pills__thumb-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #shopify-section-{{ section.id }} .coll-pills__placeholder-svg { width: 60%; height: 60%; opacity: 0.3; }
+  #shopify-section-{{ section.id }} .coll-pills__label { line-height: 1.3; }
+
+  /* ══ ACTIVE PILL STYLES ══════════════════════════════════ */
+
+  {%- if active_style == 'filled' -%}
+    /* Filled background */
+    #shopify-section-{{ section.id }} .coll-pills__pill--active {
+      background: {{ active_pill_bg }} !important;
+      border-color: transparent !important;
+      {% if section.settings.active_shadow %}box-shadow: 0 4px 14px rgba(28, 28, 26, 0.15);{% endif %}
+    }
+    #shopify-section-{{ section.id }} .coll-pills__pill--active .coll-pills__label {
+      color: {{ active_label_color }} !important;
+    }
+    #shopify-section-{{ section.id }} .coll-pills__pill--active .coll-pills__thumb {
+      border-radius: {{ active_thumb_radius }}px;
+    }
+
+  {%- elsif active_style == 'outline' -%}
+    /* Outline / border only */
+    #shopify-section-{{ section.id }} .coll-pills__pill--active {
+      border-color: {{ active_border_color }} !important;
+      background: transparent !important;
+      {% if section.settings.active_shadow %}box-shadow: 0 4px 14px rgba(28, 28, 26, 0.10);{% endif %}
+    }
+    #shopify-section-{{ section.id }} .coll-pills__pill--active .coll-pills__label {
+      color: {{ active_border_color }} !important;
+      font-weight: {{ section.settings.active_label_weight | default: '600' }};
+    }
+
+  {%- elsif active_style == 'filled-outline' -%}
+    /* Filled + border */
+    #shopify-section-{{ section.id }} .coll-pills__pill--active {
+      background: {{ active_pill_bg }} !important;
+      border-color: {{ active_border_color }} !important;
+      {% if section.settings.active_shadow %}box-shadow: 0 4px 14px rgba(28, 28, 26, 0.15);{% endif %}
+    }
+    #shopify-section-{{ section.id }} .coll-pills__pill--active .coll-pills__label {
+      color: {{ active_label_color }} !important;
+    }
+    #shopify-section-{{ section.id }} .coll-pills__pill--active .coll-pills__thumb {
+      border-radius: {{ active_thumb_radius }}px;
+    }
+
+  {%- elsif active_style == 'underline' -%}
+    /* Underline only */
+    #shopify-section-{{ section.id }} .coll-pills__pill--active {
+      border-color: transparent !important;
+      box-shadow: inset 0 -3px 0 {{ active_border_color }};
+      border-radius: 0 !important;
+    }
+    #shopify-section-{{ section.id }} .coll-pills__pill--active .coll-pills__label {
+      color: {{ active_border_color }} !important;
+      font-weight: {{ section.settings.active_label_weight | default: '600' }};
+    }
+
+  {%- elsif active_style == 'dot' -%}
+    /* Dot indicator below pill */
+    #shopify-section-{{ section.id }} .coll-pills__pill--active {
+      border-color: transparent !important;
+      position: relative;
+    }
+    #shopify-section-{{ section.id }} .coll-pills__pill--active::after {
+      content: '';
+      display: block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: {{ active_border_color }};
+      margin: 5px auto 0;
+    }
+    #shopify-section-{{ section.id }} .coll-pills__pill--active .coll-pills__label {
+      color: {{ active_border_color }} !important;
+      font-weight: {{ section.settings.active_label_weight | default: '600' }};
+    }
+  {%- endif -%}
+
+  /* Active pill — stop hover dimming */
+  #shopify-section-{{ section.id }} .coll-pills__pill--active {
+    opacity: 1 !important;
+  }
+  {%- if active_style == 'outline' or active_style == 'filled-outline' -%}
+  #shopify-section-{{ section.id }} .coll-pills__pill--active {
+    border: 2px solid #1C4A3A !important;
+  }
+  {%- endif -%}
+
+  /* ── Responsive ── */
+  @media screen and (max-width: 767px) {
+    #shopify-section-{{ section.id }} .coll-pills__header-arrows { display: none; }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Collection Pills",
+  "tag": "section",
+  "class": "shopify-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Visibility"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_heading",
+      "label": "Show heading",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_thumbnails",
+      "label": "Show thumbnails",
+      "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "shop by age"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Heading font size (px)",
+      "min": 14, "max": 60, "step": 1, "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "heading_font_weight",
+      "label": "Heading font weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "heading_style",
+      "label": "Heading style",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "italic", "label": "Italic" }
+      ],
+      "default": "italic"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#5a9e7c"
+    },
+
+    {
+      "type": "header",
+      "content": "Collections source",
+      "info": "Collections are pulled automatically from the current collection's metafield 'custom.relevant_collections'. Add manual blocks as a fallback."
+    },
+
+    {
+      "type": "header",
+      "content": "Pills — Default State"
+    },
+    {
+      "type": "color",
+      "id": "pill_background",
+      "label": "Pill background color",
+      "default": "#dff0ea"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label color",
+      "default": "#1C1C1A"
+    },
+    {
+      "type": "range",
+      "id": "pill_border_radius",
+      "label": "Pill border radius (px)",
+      "min": 0, "max": 60, "step": 2,
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_size",
+      "label": "Thumbnail size (px)",
+      "min": 32, "max": 96, "step": 4, "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "thumb_border_radius",
+      "label": "Thumbnail border radius (px)",
+      "min": 0, "max": 48, "step": 2,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Gap between pills (px)",
+      "min": 4, "max": 32, "step": 2, "unit": "px",
+      "default": 12
+    },
+
+    {
+      "type": "header",
+      "content": "Label"
+    },
+    {
+      "type": "range",
+      "id": "label_font_size",
+      "label": "Label font size (px)",
+      "min": 10, "max": 22, "step": 1, "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "label_font_weight",
+      "label": "Label font weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "label_max_chars",
+      "label": "Truncate label after (characters)",
+      "min": 10, "max": 60, "step": 1,
+      "default": 20
+    },
+
+    {
+      "type": "header",
+      "content": "✦ Active / Selected Pill"
+    },
+    {
+      "type": "paragraph",
+      "content": "Controls how the currently active collection pill looks. The active pill is detected automatically by matching the current collection URL or collection handle."
+    },
+    {
+      "type": "select",
+      "id": "active_style",
+      "label": "Active style",
+      "options": [
+        { "value": "filled",         "label": "Filled background" },
+        { "value": "outline",        "label": "Outline / border only" },
+        { "value": "filled-outline", "label": "Filled + border" },
+        { "value": "underline",      "label": "Underline bar" },
+        { "value": "dot",            "label": "Dot indicator below" }
+      ],
+      "default": "filled",
+      "info": "Choose how the selected pill is visually marked."
+    },
+    {
+      "type": "color",
+      "id": "active_pill_bg",
+      "label": "Active background color",
+      "default": "#08291E",
+      "info": "Used in Filled and Filled + border styles."
+    },
+    {
+      "type": "color",
+      "id": "active_label_color",
+      "label": "Active label color",
+      "default": "#ffffff",
+      "info": "Text color on the active pill."
+    },
+    {
+      "type": "color",
+      "id": "active_border_color",
+      "label": "Active border / accent color",
+      "default": "#08291E",
+      "info": "Used for border, underline bar, and dot indicator."
+    },
+    {
+      "type": "range",
+      "id": "active_border_width",
+      "label": "Active border width (px)",
+      "min": 1, "max": 6, "step": 1,
+      "default": 2,
+      "info": "Only visible in Outline and Filled + border styles."
+    },
+    {
+      "type": "select",
+      "id": "active_label_weight",
+      "label": "Active label font weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600",
+      "info": "Applied in Outline, Underline, and Dot styles."
+    },
+    {
+      "type": "range",
+      "id": "active_thumb_radius",
+      "label": "Active thumbnail radius (px)",
+      "min": 0, "max": 48, "step": 2,
+      "default": 8,
+      "info": "Thumbnail corner radius when pill is active."
+    },
+    {
+      "type": "checkbox",
+      "id": "active_shadow",
+      "label": "Show shadow on active pill",
+      "default": false
+    },
+
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "page-width", "label": "Page width" },
+        { "value": "full-width", "label": "Full width" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Padding top",
+      "min": 0, "max": 100, "step": 4, "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Padding bottom",
+      "min": 0, "max": 100, "step": 4, "unit": "px",
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Collection pill",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Used only when the current collection has no 'custom.relevant_collections' metafield."
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom thumbnail (overrides collection image)"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Custom label (overrides collection title)"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Custom link (overrides collection link)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Pills",
+      "blocks": [
+        { "type": "item", "settings": { "label": "baby gifts (0-12 mo.)" } },
+        { "type": "item", "settings": { "label": "school-aged gifts" } },
+        { "type": "item", "settings": { "label": "preschooler gifts" } },
+        { "type": "item", "settings": { "label": "toddler gifts (1-3)" } },
+        { "type": "item", "settings": { "label": "tween gifts (8-12)" } },
+        { "type": "item", "settings": { "label": "gifts for all ages" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

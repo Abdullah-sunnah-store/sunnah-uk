@@ -1,0 +1,766 @@
+{% comment %}
+  Gift Category Slider — Enhanced Dynamic Edition
+  - Section max-width control
+  - Full spacing (padding + margin) per side
+  - Card size: fixed px OR fluid %
+  - Mobile columns, gap, padding overrides
+  - Autoplay with speed control
+  - Dot indicators
+  - Image zoom toggle, overlay label option
+  - Card shadow depth & hover lift
+  - Badge per card
+  - Heading tag selector
+  - Animation speed control
+{% endcomment %}
+
+{% liquid
+  assign sec = section.settings
+
+  assign pt = sec.padding_top    | default: 40
+  assign pb = sec.padding_bottom | default: 40
+  assign pl = sec.padding_left   | default: 40
+  assign pr = sec.padding_right  | default: 40
+  assign mt = sec.margin_top     | default: 0
+  assign mb = sec.margin_bottom  | default: 0
+
+  assign section_bg  = sec.section_bg_color | default: '#F5F0E8'
+  assign title_align = sec.title_position   | default: 'left'
+  assign show_nav    = sec.show_nav_buttons
+  assign nav_pos     = sec.nav_position     | default: 'header'
+
+  assign card_border_w     = sec.card_border_width  | default: 0
+  assign card_border_color = sec.card_border_color  | default: '#dddddd'
+  assign card_bg           = sec.card_bg_color      | default: 'transparent'
+  assign card_radius       = sec.card_border_radius | default: 10
+
+  assign cards_vis = sec.cards_visible | default: 4
+  assign card_gap  = sec.card_gap      | default: 16
+
+  assign anim_ms   = sec.animation_speed | default: 400
+
+  assign mob_cols    = sec.mobile_columns   | default: 2
+  assign mob_gap     = sec.mobile_card_gap  | default: 12
+  assign mob_pt      = sec.mobile_padding_top    | default: 24
+  assign mob_pb      = sec.mobile_padding_bottom | default: 24
+  assign mob_pl      = sec.mobile_padding_left   | default: 16
+  assign mob_pr      = sec.mobile_padding_right  | default: 16
+
+  assign max_w = sec.section_max_width | default: 1280
+  assign use_full = sec.section_full_width | default: false
+
+  assign label_style = sec.card_label_style | default: 'below'
+%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<div class="gcs-wrapper" id="gcs-{{ section.id }}"
+  data-autoplay="{{ sec.autoplay | default: false }}"
+  data-autoplay-speed="{{ sec.autoplay_speed | default: 4 | times: 1000 }}"
+  data-anim="{{ anim_ms }}"
+  style="
+    background-color:{{ section_bg }};
+    padding:{{ pt }}px {{ pr }}px {{ pb }}px {{ pl }}px;
+    margin-top:{{ mt }}px;
+    margin-bottom:{{ mb }}px;
+  ">
+
+  <div class="gcs-inner" style="max-width:{% if use_full %}100%{% else %}{{ max_w }}px{% endif %};margin:0 auto;">
+
+    <!-- Header row -->
+    <div class="gcs-header"
+      style="justify-content:{% if title_align == 'center' %}center{% elsif title_align == 'right' %}flex-end{% else %}space-between{% endif %};">
+
+      {% if sec.section_title != blank or sec.section_subtitle != blank %}
+        <div class="gcs-heading-group" style="flex:1 1 auto;text-align:{{ title_align }};">
+          {% if sec.section_subtitle != blank %}
+            <p class="gcs-eyebrow" style="color:{{ sec.subtitle_color | default: '#1C4A3A' }};text-align:{{ title_align }};">
+              {{ sec.section_subtitle }}
+            </p>
+          {% endif %}
+          {% if sec.section_title != blank %}
+            <{{ sec.title_tag | default: 'h2' }} class="gcs-title"
+              style="
+                color:{{ sec.title_color | default: '#1C1C1A' }};
+                font-size:var(--font-h2--size);
+                font-weight:var(--font-h2--weight);
+                font-family:var(--font-heading--family);
+                text-align:{{ title_align }};
+                letter-spacing:var(--font-h2--letter-spacing);
+                line-height:var(--font-h2--line-height);
+              ">
+              {{ sec.section_title }}
+            </{{ sec.title_tag | default: 'h2' }}>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if show_nav and nav_pos == 'header' %}
+        <div class="gcs-nav">
+          <button class="gcs-nav-btn" id="gcs-prev-{{ section.id }}" aria-label="Previous"
+            style="
+              width:{{ sec.nav_btn_size | default: 38 }}px;
+              height:{{ sec.nav_btn_size | default: 38 }}px;
+              border-radius:{{ sec.nav_btn_radius | default: 50 }}%;
+              background:{{ sec.nav_bg_color | default: '#ffffff' }};
+              border-color:{{ sec.nav_border_color | default: '#cccccc' }};
+              color:{{ sec.nav_icon_color | default: '#333333' }};
+            ">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="gcs-nav-btn" id="gcs-next-{{ section.id }}" aria-label="Next"
+            style="
+              width:{{ sec.nav_btn_size | default: 38 }}px;
+              height:{{ sec.nav_btn_size | default: 38 }}px;
+              border-radius:{{ sec.nav_btn_radius | default: 50 }}%;
+              background:{{ sec.nav_bg_color | default: '#ffffff' }};
+              border-color:{{ sec.nav_border_color | default: '#cccccc' }};
+              color:{{ sec.nav_icon_color | default: '#333333' }};
+            ">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2L10 7L5 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Track -->
+    <div class="gcs-track-outer">
+      <div class="gcs-track" id="gcs-track-{{ section.id }}">
+        {% for block in section.blocks %}
+          {% if block.type == 'card' %}
+            <div class="gcs-card{% if label_style == 'overlay' %} gcs-card--overlay{% endif %}" {{ block.shopify_attributes }}
+              style="
+                background:{{ card_bg }};
+                border:{{ card_border_w }}px solid {{ card_border_color }};
+                border-radius:{{ card_radius }}px;
+                overflow:hidden;
+              ">
+
+              {% if block.settings.card_badge != blank %}
+                <span class="gcs-badge"
+                  style="background:{{ sec.badge_bg | default: '#e53e3e' }};color:{{ sec.badge_text_color | default: '#ffffff' }};">
+                  {{ block.settings.card_badge }}
+                </span>
+              {% endif %}
+
+              <a href="{{ block.settings.card_url | default: '#' }}" class="gcs-card-link"
+                {% if block.settings.card_new_tab %}target="_blank" rel="noopener"{% endif %}>
+
+                <div class="gcs-card-image"
+                  style="
+                    background:{{ sec.card_image_bg | default: '#F5F0E8' }};
+                    border-radius:{% if card_border_w > 0 %}0{% else %}{{ card_radius }}px{% endif %};
+                    aspect-ratio:{{ sec.card_aspect_ratio | default: '4/5' }};
+                  ">
+                  {% if block.settings.card_image != blank %}
+                    <img
+                      src="{{ block.settings.card_image | img_url: '400x500', crop: 'center' }}"
+                      alt="{{ block.settings.card_label | escape }}"
+                      loading="lazy">
+                  {% else %}
+                    {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                  {% endif %}
+
+                  {% if label_style == 'overlay' and block.settings.card_label != blank %}
+                    <div class="gcs-overlay-label"
+                      style="background:{{ sec.overlay_bg | default: 'rgba(28, 28, 26, 0.38)' }};">
+                      <p class="gcs-card-label"
+                        style="color:{{ sec.card_label_color | default: '#ffffff' }};font-size:{{ sec.card_label_font_size | default: 14 }}px;font-weight:{{ sec.card_label_weight | default: 500 }};text-align:{{ sec.card_label_align | default: 'center' }};">
+                        {{ block.settings.card_label }}
+                      </p>
+                    </div>
+                  {% endif %}
+                </div>
+
+                {% if label_style == 'below' and block.settings.card_label != blank %}
+                  <div style="text-align:{{ sec.card_label_align | default: 'center' }};padding:{% if card_border_w > 0 %}12px 12px 12px{% else %}10px 0 0{% endif %};">
+                    <span class="gcs-card-label"
+                      style="
+                        color:{{ sec.card_label_color | default: '#1C1C1A' }};
+                        font-size:{{ sec.card_label_font_size | default: 14 }}px;
+                        font-weight:{{ sec.card_label_weight | default: 400 }};
+                      ">
+                      {{ block.settings.card_label }}
+                    </span>
+                  </div>
+                {% endif %}
+
+              </a>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Dots -->
+    {% if sec.show_dots %}
+      <div class="gcs-dots" id="gcs-dots-{{ section.id }}" aria-hidden="true"></div>
+    {% endif %}
+
+    <!-- Bottom nav -->
+    {% if show_nav and nav_pos == 'bottom' %}
+      <div class="gcs-nav gcs-nav--bottom">
+        <button class="gcs-nav-btn" id="gcs-prev-{{ section.id }}" aria-label="Previous"
+          style="
+            width:{{ sec.nav_btn_size | default: 38 }}px;
+            height:{{ sec.nav_btn_size | default: 38 }}px;
+            border-radius:{{ sec.nav_btn_radius | default: 50 }}%;
+            background:{{ sec.nav_bg_color | default: '#ffffff' }};
+            border-color:{{ sec.nav_border_color | default: '#cccccc' }};
+            color:{{ sec.nav_icon_color | default: '#333333' }};
+          ">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="gcs-nav-btn" id="gcs-next-{{ section.id }}" aria-label="Next"
+          style="
+            width:{{ sec.nav_btn_size | default: 38 }}px;
+            height:{{ sec.nav_btn_size | default: 38 }}px;
+            border-radius:{{ sec.nav_btn_radius | default: 50 }}%;
+            background:{{ sec.nav_bg_color | default: '#ffffff' }};
+            border-color:{{ sec.nav_border_color | default: '#cccccc' }};
+            color:{{ sec.nav_icon_color | default: '#333333' }};
+          ">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2L10 7L5 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<style>
+  #gcs-{{ section.id }} * { box-sizing: border-box; }
+
+  #gcs-{{ section.id }} .gcs-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: {{ sec.title_gap | default: 24 }}px;
+  }
+  #gcs-{{ section.id }} .gcs-title {
+    margin: 0;
+    flex: 1 1 auto;
+  }
+  #gcs-{{ section.id }} .gcs-heading-group { min-width: 0; }
+  #gcs-{{ section.id }} .gcs-eyebrow {
+    margin: 0 0 6px;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    text-transform: uppercase;
+    line-height: 1.3;
+    font-family: var(--font-body--family);
+  }
+
+  /* Nav */
+  #gcs-{{ section.id }} .gcs-nav {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  #gcs-{{ section.id }} .gcs-nav--bottom {
+    justify-content: center;
+    margin-top: 24px;
+  }
+  #gcs-{{ section.id }} .gcs-nav-btn {
+    border: 1px solid;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: filter 0.2s, transform 0.2s;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  #gcs-{{ section.id }} .gcs-nav-btn:hover:not(:disabled) {
+    filter: brightness(0.88);
+    transform: scale(1.06);
+  }
+  #gcs-{{ section.id }} .gcs-nav-btn:disabled { opacity: 0.28; cursor: default; }
+
+  /* Track */
+  #gcs-{{ section.id }} .gcs-track-outer { overflow: hidden; width: 100%; }
+  #gcs-{{ section.id }} .gcs-track {
+    display: flex;
+    gap: {{ card_gap }}px;
+    transition: transform {{ anim_ms }}ms cubic-bezier(0.25,0.46,0.45,0.94);
+    will-change: transform;
+  }
+
+  /* Card fluid sizing */
+  #gcs-{{ section.id }} .gcs-card {
+    flex: 0 0 calc((100% - ({{ cards_vis }} - 1) * {{ card_gap }}px) / {{ cards_vis }});
+    min-width: 0;
+    position: relative;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+
+  {% if sec.card_hover_border_color != blank %}
+    #gcs-{{ section.id }} .gcs-card:hover { border-color: {{ sec.card_hover_border_color }} !important; }
+  {% endif %}
+
+  {% if sec.card_hover_shadow %}
+    #gcs-{{ section.id }} .gcs-card:hover {
+      box-shadow: 0 {{ sec.card_shadow_depth | default: 6 }}px {{ sec.card_shadow_depth | default: 6 | times: 3 }}px rgba(0,0,0,{{ sec.card_shadow_opacity | default: 10 | times: 0.01 }});
+    }
+  {% endif %}
+
+  {% if sec.card_hover_lift %}
+    #gcs-{{ section.id }} .gcs-card:hover { transform: translateY(-{{ sec.card_hover_lift_px | default: 4 }}px); }
+  {% endif %}
+
+  #gcs-{{ section.id }} .gcs-card-link { text-decoration: none; display: block; }
+
+  /* Image */
+  #gcs-{{ section.id }} .gcs-card-image {
+    width: 100%;
+    overflow: hidden;
+    display: block;
+    position: relative;
+  }
+  #gcs-{{ section.id }} .gcs-card-image img,
+  #gcs-{{ section.id }} .gcs-card-image svg {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform {{ sec.zoom_speed | default: 350 }}ms ease;
+  }
+  {% if sec.image_zoom_on_hover %}
+    #gcs-{{ section.id }} .gcs-card-link:hover .gcs-card-image img {
+      transform: scale({{ sec.image_zoom_scale | default: 104 | times: 0.01 }});
+    }
+  {% endif %}
+
+  /* Overlay label */
+  #gcs-{{ section.id }} .gcs-overlay-label {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 28px 12px 12px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: {% if sec.card_label_align == 'center' %}center{% elsif sec.card_label_align == 'right' %}flex-end{% else %}flex-start{% endif %};
+  }
+
+  /* Badge */
+  #gcs-{{ section.id }} .gcs-badge {
+    position: absolute;
+    top: 10px; left: 10px;
+    z-index: 2;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 99px;
+    text-transform: none;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+  }
+
+  /* Labels */
+  #gcs-{{ section.id }} .gcs-card-label {
+    margin: 0;
+    line-height: 1.4;
+    display: inline-block;
+    position: relative;
+    text-decoration: none;
+  }
+  #gcs-{{ section.id }} .gcs-card-label::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: {{ sec.card_label_underline_thickness | default: 1 }}px;
+    background-color: {{ sec.card_label_underline_color | default: '#1C1C1A' }};
+  }
+
+  /* Dots */
+  #gcs-{{ section.id }} .gcs-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 20px;
+  }
+  #gcs-{{ section.id }} .gcs-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    background: {{ sec.dot_inactive_color | default: '#cccccc' }};
+    transition: background 0.2s, transform 0.2s;
+  }
+  #gcs-{{ section.id }} .gcs-dot--active {
+    background: {{ sec.dot_active_color | default: '#333333' }};
+    transform: scale(1.4);
+  }
+
+  /* ── Tablet ── */
+  @media (max-width: 900px) {
+    #gcs-{{ section.id }} .gcs-card {
+      flex: 0 0 calc((100% - {{ card_gap }}px) / 2);
+    }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 540px) {
+    #gcs-{{ section.id }} .gcs-wrapper,
+    #gcs-{{ section.id }} {
+      padding: {{ mob_pt }}px {{ mob_pr }}px {{ mob_pb }}px {{ mob_pl }}px !important;
+    }
+    #gcs-{{ section.id }} .gcs-track {
+      gap: {{ mob_gap }}px;
+    }
+    #gcs-{{ section.id }} .gcs-card {
+      flex: 0 0 calc((100% - ({{ mob_cols }} - 1) * {{ mob_gap }}px) / {{ mob_cols }});
+    }
+    {% if sec.mobile_hide_nav %}
+      #gcs-{{ section.id }} .gcs-nav { display: none !important; }
+    {% endif %}
+    {% if sec.mobile_show_dots %}
+      #gcs-{{ section.id }} .gcs-dots { display: flex !important; }
+    {% endif %}
+    {% if sec.mobile_hide_sublabel %}
+      #gcs-{{ section.id }} .gcs-card-label { display: none; }
+    {% endif %}
+    /* .gcs-title size handled by theme heading scale */
+  }
+</style>
+
+<script>
+(function() {
+  var wrapper  = document.getElementById('gcs-{{ section.id }}');
+  var track    = document.getElementById('gcs-track-{{ section.id }}');
+  var dotsWrap = document.getElementById('gcs-dots-{{ section.id }}');
+  if (!track) return;
+
+  var cards      = Array.from(track.querySelectorAll('.gcs-card'));
+  var gap        = {{ card_gap }};
+  var visible    = {{ cards_vis }};
+  var animMs     = parseInt(wrapper.dataset.animSpeed) || {{ anim_ms }};
+  var doAutoplay = wrapper.dataset.autoplay === 'true';
+  var apMs       = parseInt(wrapper.dataset.autoplaySpeed) || 4000;
+  var mobCols    = {{ mob_cols }};
+  var mobGap     = {{ mob_gap }};
+
+  var current = 0;
+  var timer   = null;
+
+  function isMobile() { return window.innerWidth <= 540; }
+
+  function currentGap()     { return isMobile() ? mobGap : gap; }
+  function currentVisible() {
+    if (isMobile()) return mobCols;
+    if (window.innerWidth <= 900) return Math.min(2, visible);
+    return visible;
+  }
+
+  function maxOff() { return Math.max(0, cards.length - currentVisible()); }
+
+  function cardWidth() {
+    return cards[0] ? cards[0].getBoundingClientRect().width + currentGap() : 0;
+  }
+
+  /* ── dots ── */
+  function buildDots() {
+    if (!dotsWrap) return;
+    dotsWrap.innerHTML = '';
+    var total = maxOff() + 1;
+    for (var i = 0; i < total; i++) {
+      var d = document.createElement('button');
+      d.className = 'gcs-dot' + (i === current ? ' gcs-dot--active' : '');
+      d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+      d.dataset.i = i;
+      d.addEventListener('click', function() { goTo(parseInt(this.dataset.i)); resetTimer(); });
+      dotsWrap.appendChild(d);
+    }
+  }
+
+  function syncDots() {
+    if (!dotsWrap) return;
+    dotsWrap.querySelectorAll('.gcs-dot').forEach(function(d, i) {
+      d.classList.toggle('gcs-dot--active', i === current);
+    });
+  }
+
+  function render() {
+    track.style.transform = 'translateX(-' + (current * cardWidth()) + 'px)';
+    document.querySelectorAll('#gcs-prev-{{ section.id }}').forEach(function(b) {
+      b.disabled = current === 0;
+    });
+    document.querySelectorAll('#gcs-next-{{ section.id }}').forEach(function(b) {
+      b.disabled = current >= maxOff();
+    });
+    syncDots();
+  }
+
+  function goTo(i) {
+    current = Math.max(0, Math.min(i, maxOff()));
+    render();
+  }
+
+  document.querySelectorAll('#gcs-prev-{{ section.id }}').forEach(function(b) {
+    b.addEventListener('click', function() { goTo(current - 1); resetTimer(); });
+  });
+  document.querySelectorAll('#gcs-next-{{ section.id }}').forEach(function(b) {
+    b.addEventListener('click', function() { goTo(current + 1); resetTimer(); });
+  });
+
+  /* ── autoplay ── */
+  function startTimer() {
+    if (!doAutoplay) return;
+    timer = setInterval(function() {
+      goTo(current >= maxOff() ? 0 : current + 1);
+    }, apMs);
+  }
+  function resetTimer() { clearInterval(timer); startTimer(); }
+
+  /* ── touch swipe ── */
+  var touchX = null;
+  track.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener('touchend', function(e) {
+    if (touchX === null) return;
+    var diff = touchX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) { goTo(diff > 0 ? current + 1 : current - 1); resetTimer(); }
+    touchX = null;
+  });
+
+  /* ── keyboard ── */
+  document.addEventListener('keydown', function(e) {
+    if (!wrapper.matches(':hover')) return;
+    if (e.key === 'ArrowLeft')  { goTo(current - 1); resetTimer(); }
+    if (e.key === 'ArrowRight') { goTo(current + 1); resetTimer(); }
+  });
+
+  /* ── init & resize ── */
+  buildDots();
+  render();
+  startTimer();
+
+  var raf;
+  window.addEventListener('resize', function() {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(function() {
+      current = Math.min(current, maxOff());
+      buildDots();
+      render();
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Gift Category Slider",
+  "tag": "section",
+  "class": "gift-category-slider",
+  "settings": [
+
+    { "type": "header", "content": "Section Width" },
+    {
+      "type": "checkbox",
+      "id": "section_full_width",
+      "label": "Full width (ignore max-width)",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "section_max_width",
+      "label": "Section max width (px)",
+      "min": 480, "max": 1920, "step": 40,
+      "default": 1280,
+      "info": "Ignored when Full width is enabled."
+    },
+
+    { "type": "header", "content": "Section Background & Spacing" },
+    { "type": "color",  "id": "section_bg_color",   "label": "Section background", "default": "#F5F0E8" },
+    { "type": "range",  "id": "padding_top",         "label": "Padding top (px)",    "min": 0, "max": 160, "step": 4, "default": 40 },
+    { "type": "range",  "id": "padding_bottom",      "label": "Padding bottom (px)", "min": 0, "max": 160, "step": 4, "default": 40 },
+    { "type": "range",  "id": "padding_left",        "label": "Padding left (px)",   "min": 0, "max": 160, "step": 4, "default": 40 },
+    { "type": "range",  "id": "padding_right",       "label": "Padding right (px)",  "min": 0, "max": 160, "step": 4, "default": 40 },
+    { "type": "range",  "id": "margin_top",          "label": "Margin top (px)",     "min": 0, "max": 120, "step": 4, "default": 0 },
+    { "type": "range",  "id": "margin_bottom",       "label": "Margin bottom (px)",  "min": 0, "max": 120, "step": 4, "default": 0 },
+
+    { "type": "header", "content": "Title" },
+    { "type": "text",   "id": "section_title",       "label": "Title text", "default": "Find gifts for every occasion" },
+    { "type": "text",   "id": "section_subtitle",    "label": "Eyebrow text (above title)", "default": "Shop by Occasion" },
+    {
+      "type": "select", "id": "title_tag", "label": "Heading tag",
+      "options": [
+        {"value":"h1","label":"H1"},{"value":"h2","label":"H2"},
+        {"value":"h3","label":"H3"},{"value":"p","label":"Paragraph"}
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select", "id": "title_position", "label": "Title position",
+      "options": [{"value":"left","label":"Left"},{"value":"center","label":"Center"},{"value":"right","label":"Right"}],
+      "default": "left"
+    },
+    { "type": "color",  "id": "title_color",          "label": "Title color",           "default": "#1C1C1A" },
+    { "type": "color",  "id": "subtitle_color",       "label": "Eyebrow color",         "default": "#1C4A3A" },
+    { "type": "range",  "id": "title_font_size",       "label": "Font size (px)",        "min": 14, "max": 72, "step": 1,  "default": 22 },
+    { "type": "range",  "id": "title_letter_spacing",  "label": "Letter spacing (×0.01em)","min": -5,"max": 20,"step": 1,  "default": 0 },
+    { "type": "range",  "id": "title_line_height",     "label": "Line height (×0.01)",   "min": 100,"max": 200,"step": 5,  "default": 130 },
+    {
+      "type": "select", "id": "title_font_weight", "label": "Font weight",
+      "options": [{"value":"300","label":"Light"},{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"}],
+      "default": "400"
+    },
+    {
+      "type": "select", "id": "title_font_style", "label": "Font family",
+      "options": [{"value":"inherit","label":"Theme default"},{"value":"'Cormorant', serif","label":"Cormorant"},{"value":"serif","label":"Serif"},{"value":"sans-serif","label":"Sans-serif"},{"value":"monospace","label":"Monospace"}],
+      "default": "'Cormorant', serif"
+    },
+    { "type": "range",  "id": "title_gap",            "label": "Space below title (px)", "min": 0, "max": 80, "step": 4, "default": 24 },
+
+    { "type": "header", "content": "Navigation Buttons" },
+    { "type": "checkbox","id": "show_nav_buttons",    "label": "Show navigation buttons", "default": true },
+    {
+      "type": "select", "id": "nav_position", "label": "Button position",
+      "options": [{"value":"header","label":"Top-right (inline with title)"},{"value":"bottom","label":"Bottom center"}],
+      "default": "header"
+    },
+    { "type": "range",  "id": "nav_btn_size",         "label": "Button size (px)",        "min": 28, "max": 64, "step": 2, "default": 38 },
+    { "type": "range",  "id": "nav_btn_radius",       "label": "Button corner radius (%)", "min": 0, "max": 50, "step": 5, "default": 50, "info": "50 = circle, 0 = square" },
+    { "type": "color",  "id": "nav_bg_color",         "label": "Button background",       "default": "#ffffff" },
+    { "type": "color",  "id": "nav_border_color",     "label": "Button border color",     "default": "#cccccc" },
+    { "type": "color",  "id": "nav_icon_color",       "label": "Button icon color",       "default": "#333333" },
+
+    { "type": "header", "content": "Dot Indicators" },
+    { "type": "checkbox","id": "show_dots",            "label": "Show dots",               "default": false },
+    { "type": "color",  "id": "dot_inactive_color",   "label": "Dot inactive color",      "default": "#cccccc" },
+    { "type": "color",  "id": "dot_active_color",     "label": "Dot active color",        "default": "#333333" },
+
+    { "type": "header", "content": "Autoplay" },
+    { "type": "checkbox","id": "autoplay",             "label": "Enable autoplay",         "default": false },
+    { "type": "range",  "id": "autoplay_speed",       "label": "Interval (seconds)",      "min": 2, "max": 12, "step": 1, "default": 4 },
+
+    { "type": "header", "content": "Slide Animation" },
+    {
+      "type": "range",
+      "id": "animation_speed",
+      "label": "Slide animation duration (ms)",
+      "min": 100, "max": 900, "step": 50,
+      "default": 400
+    },
+
+    { "type": "header", "content": "Cards Layout" },
+    { "type": "range",  "id": "cards_visible",        "label": "Cards visible (desktop)", "min": 1, "max": 8, "step": 1, "default": 4 },
+    { "type": "range",  "id": "card_gap",             "label": "Gap between cards (px)",  "min": 0, "max": 60, "step": 4, "default": 16 },
+    {
+      "type": "select", "id": "card_aspect_ratio",    "label": "Image aspect ratio",
+      "options": [
+        {"value":"1/1","label":"Square (1:1)"},
+        {"value":"4/5","label":"Portrait (4:5)"},
+        {"value":"3/4","label":"Tall (3:4)"},
+        {"value":"16/9","label":"Wide (16:9)"},
+        {"value":"3/2","label":"Landscape (3:2)"}
+      ],
+      "default": "4/5"
+    },
+
+    { "type": "header", "content": "Card Border & Background" },
+    { "type": "color",  "id": "card_bg_color",           "label": "Card background",           "default": "#ffffff" },
+    { "type": "range",  "id": "card_border_width",       "label": "Border width (px)",          "min": 0, "max": 10, "step": 1, "default": 0 },
+    { "type": "color",  "id": "card_border_color",       "label": "Border color",               "default": "#dddddd" },
+    { "type": "color",  "id": "card_hover_border_color", "label": "Border color on hover",      "default": "#999999" },
+    { "type": "range",  "id": "card_border_radius",      "label": "Border radius (px)",         "min": 0, "max": 40, "step": 2, "default": 10 },
+    { "type": "color",  "id": "card_image_bg",           "label": "Image placeholder bg",       "default": "#F5F0E8" },
+
+    { "type": "header", "content": "Card Hover Effects" },
+    { "type": "checkbox","id": "card_hover_shadow",      "label": "Shadow on hover",            "default": false },
+    { "type": "range",   "id": "card_shadow_depth",      "label": "Shadow depth (px)",          "min": 2, "max": 30, "step": 2, "default": 6 },
+    { "type": "range",   "id": "card_shadow_opacity",    "label": "Shadow opacity (%)",         "min": 2, "max": 40, "step": 2, "default": 10 },
+    { "type": "checkbox","id": "card_hover_lift",        "label": "Lift card on hover",         "default": false },
+    { "type": "range",   "id": "card_hover_lift_px",     "label": "Lift amount (px)",           "min": 1, "max": 20, "step": 1, "default": 4 },
+
+    { "type": "header", "content": "Image Zoom" },
+    { "type": "checkbox","id": "image_zoom_on_hover",    "label": "Zoom image on hover",        "default": true },
+    { "type": "range",   "id": "image_zoom_scale",       "label": "Zoom scale (×0.01)",         "min": 101, "max": 130, "step": 1, "default": 104, "info": "e.g. 104 = scale(1.04)" },
+    { "type": "range",   "id": "zoom_speed",             "label": "Zoom duration (ms)",         "min": 100, "max": 800, "step": 50, "default": 350 },
+
+    { "type": "header", "content": "Card Label" },
+    {
+      "type": "select", "id": "card_label_style", "label": "Label position",
+      "options": [{"value":"below","label":"Below image"},{"value":"overlay","label":"Overlay on image"}],
+      "default": "below"
+    },
+    { "type": "color",  "id": "overlay_bg",              "label": "Overlay gradient bg",        "default": "rgba(28, 28, 26, 0.38)", "info": "Only used in Overlay mode." },
+    { "type": "color",  "id": "card_label_color",        "label": "Label color",                "default": "#1C1C1A" },
+    { "type": "color",  "id": "card_label_underline_color", "label": "Label underline color",   "default": "#1C1C1A" },
+    { "type": "range",  "id": "card_label_underline_thickness", "label": "Underline thickness (px)", "min": 0, "max": 6, "step": 1, "default": 1 },
+    { "type": "range",  "id": "card_label_font_size",    "label": "Label font size (px)",       "min": 10, "max": 32, "step": 1, "default": 14 },
+    {
+      "type": "select", "id": "card_label_weight",       "label": "Label font weight",
+      "options": [{"value":"300","label":"Light"},{"value":"400","label":"Regular"},{"value":"500","label":"Medium"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"}],
+      "default": "400"
+    },
+    {
+      "type": "select", "id": "card_label_align",        "label": "Label alignment",
+      "options": [{"value":"left","label":"Left"},{"value":"center","label":"Center"},{"value":"right","label":"Right"}],
+      "default": "left"
+    },
+
+    { "type": "header", "content": "Badge" },
+    { "type": "color",  "id": "badge_bg",                "label": "Badge background",           "default": "#e53e3e" },
+    { "type": "color",  "id": "badge_text_color",        "label": "Badge text color",           "default": "#ffffff" },
+
+    { "type": "header", "content": "📱 Mobile Settings" },
+    {
+      "type": "paragraph",
+      "content": "Applies on screens ≤ 540px."
+    },
+    {
+      "type": "range",  "id": "mobile_columns",          "label": "Cards per row (mobile)",
+      "min": 1, "max": 3, "step": 1, "default": 2
+    },
+    {
+      "type": "range",  "id": "mobile_card_gap",         "label": "Gap between cards (px)",
+      "min": 4, "max": 32, "step": 2, "default": 12
+    },
+    { "type": "range",  "id": "mobile_padding_top",      "label": "Padding top (px)",    "min": 0, "max": 80, "step": 4, "default": 24 },
+    { "type": "range",  "id": "mobile_padding_bottom",   "label": "Padding bottom (px)", "min": 0, "max": 80, "step": 4, "default": 24 },
+    { "type": "range",  "id": "mobile_padding_left",     "label": "Padding left (px)",   "min": 0, "max": 40, "step": 4, "default": 16 },
+    { "type": "range",  "id": "mobile_padding_right",    "label": "Padding right (px)",  "min": 0, "max": 40, "step": 4, "default": 16 },
+    { "type": "range",  "id": "mobile_title_size",       "label": "Title font size (px)", "min": 12, "max": 48, "step": 1, "default": 18 },
+    { "type": "checkbox","id": "mobile_hide_nav",        "label": "Hide arrows on mobile", "default": false },
+    { "type": "checkbox","id": "mobile_show_dots",       "label": "Show dots on mobile",   "default": true },
+    { "type": "checkbox","id": "mobile_hide_sublabel",   "label": "Hide labels on mobile", "default": false }
+  ],
+
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Category Card",
+      "settings": [
+        { "type": "image_picker", "id": "card_image",   "label": "Card image" },
+        { "type": "text",         "id": "card_label",   "label": "Card label",    "default": "Shop by Occasion" },
+        { "type": "text",         "id": "card_badge",   "label": "Badge text",    "info": "e.g. New, Hot, Sale — leave blank to hide" },
+        { "type": "url",          "id": "card_url",     "label": "Card link URL" },
+        { "type": "checkbox",     "id": "card_new_tab", "label": "Open in new tab", "default": false }
+      ]
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Gift Category Slider",
+      "settings": {
+        "show_nav_buttons": true,
+        "show_dots": false,
+        "autoplay": false,
+        "image_zoom_on_hover": true,
+        "mobile_columns": 2,
+        "mobile_show_dots": true
+      },
+      "blocks": [
+        { "type": "card", "settings": { "card_label": "Shop by Occasion" } },
+        { "type": "card", "settings": { "card_label": "Shop by Recipient" } },
+        { "type": "card", "settings": { "card_label": "Shop by Budget" } },
+        { "type": "card", "settings": { "card_label": "Category and Interest" } },
+        { "type": "card", "settings": { "card_label": "New Arrivals", "card_badge": "New" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

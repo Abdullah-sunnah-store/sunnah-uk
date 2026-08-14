@@ -1,0 +1,332 @@
+<!-- Ihsan AI Gift Counsellor Widget -->
+<style>
+  #ihsan-trigger {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 52px;
+    height: 52px;
+    background: var(--color-primary-button-background, #1C4A3A);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9998;
+    box-shadow: 0 4px 20px rgba(28, 28, 26, 0.22);
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  #ihsan-trigger:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 24px rgba(28, 28, 26, 0.28);
+  }
+  #ihsan-trigger .ihsan-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+  #ihsan-trigger .ihsan-tooltip {
+    position: absolute;
+    right: 60px;
+    background: var(--color-primary-button-background, #1C4A3A);
+    color: var(--color-primary-button-text, #fff);
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  #ihsan-trigger:hover .ihsan-tooltip {
+    opacity: 1;
+  }
+
+  #ihsan-panel {
+    display: none;
+    position: fixed;
+    bottom: 90px;
+    right: 24px;
+    width: 360px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(28, 28, 26, 0.18);
+    z-index: 9997;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: var(--font-body--family);
+  }
+  #ihsan-panel.ihsan-open {
+    display: flex;
+  }
+
+  #ihsan-header {
+    background: var(--color-primary-button-background, #1C4A3A);
+    color: var(--color-primary-button-text, #fff);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  #ihsan-header .ihsan-avatar {
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  #ihsan-header .ihsan-info { flex: 1; }
+  #ihsan-header .ihsan-name { font-weight: 700; font-size: 15px; }
+  #ihsan-header .ihsan-sub { font-size: 11px; opacity: 0.75; margin-top: 1px; }
+  #ihsan-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    opacity: 0.8;
+  }
+  #ihsan-close:hover { opacity: 1; }
+
+  #ihsan-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 260px;
+    max-height: 360px;
+    background: #f9f9f7;
+  }
+  .ihsan-msg {
+    max-width: 85%;
+    padding: 9px 13px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+  }
+  .ihsan-msg.bot {
+    background: #fff;
+    border: 1px solid #e8e8e4;
+    color: #222;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .ihsan-msg.user {
+    background: var(--color-primary-button-background, #1C4A3A);
+    color: var(--color-primary-button-text, #fff);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+  .ihsan-typing {
+    align-self: flex-start;
+    font-size: 13px;
+    color: #888;
+    font-style: italic;
+    padding: 4px 2px;
+  }
+
+  #ihsan-footer {
+    padding: 12px 14px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 8px;
+    background: #fff;
+  }
+  #ihsan-input {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 14px;
+    outline: none;
+    font-family: var(--font-body--family);
+    resize: none;
+    transition: border-color 0.2s;
+  }
+  #ihsan-input:focus { border-color: var(--color-primary-button-background, #1C4A3A); }
+  #ihsan-send {
+    background: var(--color-primary-button-background, #1C4A3A);
+    color: var(--color-primary-button-text, #fff);
+    border: none;
+    border-radius: var(--style-border-radius-buttons-primary, 8px);
+    padding: 9px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: var(--button-font-family-primary);
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  #ihsan-send:hover { background: var(--color-primary-button-hover-background, #1C4A3A); }
+  #ihsan-send:disabled { background: #aaa; cursor: not-allowed; }
+
+  @media (max-width: 480px) {
+    #ihsan-panel {
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      border-radius: 16px 16px 0 0;
+      z-index: 9999;
+      max-height: 80vh;
+    }
+    #ihsan-messages {
+      min-height: 0;
+      max-height: calc(80vh - 130px);
+      flex: 1;
+    }
+    #ihsan-trigger {
+      bottom: 20px;
+      right: 16px;
+    }
+    #ihsan-footer {
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+  }
+</style>
+
+<!-- Floating trigger button -->
+<button id="ihsan-trigger" aria-label="Open Gift Counsellor">
+  <span class="ihsan-icon">✨</span>
+  <span class="ihsan-tooltip">Gift Help</span>
+</button>
+
+<!-- Chat panel -->
+<div id="ihsan-panel" role="dialog" aria-label="Ihsan Gift Counsellor">
+  <div id="ihsan-header">
+    <div class="ihsan-avatar">✨</div>
+    <div class="ihsan-info">
+      <div class="ihsan-name">Ihsan</div>
+      <div class="ihsan-sub">Gift Counsellor · The Sunnah Store</div>
+    </div>
+    <button id="ihsan-close" aria-label="Close">×</button>
+  </div>
+  <div id="ihsan-messages"></div>
+  <div id="ihsan-footer">
+    <input id="ihsan-input" type="text" placeholder="Ask for gift ideas…" autocomplete="off" />
+    <button id="ihsan-send">Send</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var PROXY_URL = 'https://project-ltfoj.vercel.app/api/chat';
+  var messages = [];
+  var isOpen = false;
+
+  var trigger = document.getElementById('ihsan-trigger');
+  var panel   = document.getElementById('ihsan-panel');
+  var closeBtn= document.getElementById('ihsan-close');
+  var msgBox  = document.getElementById('ihsan-messages');
+  var input   = document.getElementById('ihsan-input');
+  var sendBtn = document.getElementById('ihsan-send');
+
+  function openPanel() {
+    isOpen = true;
+    panel.classList.add('ihsan-open');
+    if (window.innerWidth <= 480) trigger.style.display = 'none';
+    if (messages.length === 0) addBotMessage("As-salamu alaykum! 👋 I'm Ihsan, your gift counsellor. Who are you shopping for today?");
+    input.focus();
+  }
+
+  function closePanel() {
+    isOpen = false;
+    panel.classList.remove('ihsan-open');
+    trigger.style.display = '';
+  }
+
+  function addBotMessage(text) {
+    var el = document.createElement('div');
+    el.className = 'ihsan-msg bot';
+    el.textContent = text;
+    msgBox.appendChild(el);
+    scrollBottom();
+  }
+
+  function addUserMessage(text) {
+    var el = document.createElement('div');
+    el.className = 'ihsan-msg user';
+    el.textContent = text;
+    msgBox.appendChild(el);
+    scrollBottom();
+  }
+
+  function showTyping() {
+    var el = document.createElement('div');
+    el.className = 'ihsan-typing';
+    el.id = 'ihsan-typing';
+    el.textContent = 'Ihsan is thinking…';
+    msgBox.appendChild(el);
+    scrollBottom();
+    return el;
+  }
+
+  function removeTyping() {
+    var el = document.getElementById('ihsan-typing');
+    if (el) el.remove();
+  }
+
+  function scrollBottom() {
+    msgBox.scrollTop = msgBox.scrollHeight;
+  }
+
+  function sendMessage() {
+    var text = input.value.trim();
+    if (!text) return;
+
+    addUserMessage(text);
+    messages.push({ role: 'user', content: text });
+    input.value = '';
+    sendBtn.disabled = true;
+
+    var typing = showTyping();
+
+    fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: messages })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      removeTyping();
+      var reply = (data.content && data.content[0] && data.content[0].text)
+        ? data.content[0].text
+        : 'Sorry, I had trouble responding. Please try again.';
+      messages.push({ role: 'assistant', content: reply });
+      addBotMessage(reply);
+    })
+    .catch(function () {
+      removeTyping();
+      addBotMessage('Sorry, something went wrong. Please try again in a moment.');
+    })
+    .finally(function () {
+      sendBtn.disabled = false;
+      input.focus();
+    });
+  }
+
+  trigger.addEventListener('click', function () {
+    isOpen ? closePanel() : openPanel();
+  });
+
+  closeBtn.addEventListener('click', closePanel);
+
+  sendBtn.addEventListener('click', sendMessage);
+
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+})();
+</script>

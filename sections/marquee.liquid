@@ -6,24 +6,19 @@
   fetchpriority="low"
 ></script>
 
-{% liquid
-  assign gap_between_elements = section.settings.gap_between_elements
-  if section.settings.background_color != blank
-    render 'contrast-override', background_color: section.settings.background_color, section_id: section.id
-  endif
-%}
+{% assign gap_between_elements = section.settings.gap_between_elements %}
 
-<div
-  class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
-></div>
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <marquee-component
-  class="section spacing-style gap-style{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+  class="section spacing-style gap-style color-{{ section.settings.color_scheme }}"
   style="
     {%- render 'spacing-style', settings: section.settings %};
     {% render 'gap-style', value: gap_between_elements, name: 'marquee-gap' %}
     --marquee-direction: {{ section.settings.movement_direction }};
+    --marquee-quote-color: {{ section.settings.quote_color }};
+    --marquee-source-color: {{ section.settings.source_color }};
   "
-  data-speed-factor="25"
+  data-speed-factor="{{ section.settings.speed }}"
   data-movement-direction="{{ section.settings.movement_direction }}"
 >
   <div
@@ -66,6 +61,15 @@
 
   .marquee__content :is(p, h1, h2, h3, h4, h5, h6) {
     white-space: nowrap;
+  }
+
+  /* Quote source (e.g. (Bukhari)) and quote text use editor-controlled colors */
+  marquee-component .marquee__content p {
+    color: var(--marquee-source-color, #b8860b);
+  }
+
+  marquee-component .marquee__content em {
+    color: var(--marquee-quote-color, #ffffff);
   }
 
   .marquee__content .marquee__repeated-items * {
@@ -135,10 +139,35 @@
       "default": "normal"
     },
     {
+      "type": "range",
+      "id": "speed",
+      "label": "t:settings.speed",
+      "min": 5,
+      "max": 100,
+      "step": 5,
+      "default": 25
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Quote colors"
+    },
+    {
       "type": "color",
-      "id": "background_color",
-      "label": "t:settings.background_color",
-      "placeholder": "t:settings.default"
+      "id": "quote_color",
+      "label": "Quote text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "source_color",
+      "label": "Source text color",
+      "default": "#b8860b"
     },
     {
       "type": "header",

@@ -97,7 +97,7 @@ class ProductRecommendations extends Component {
 
         if (result.data?.trim().length) {
           this.dataset.recommendationsPerformed = 'true';
-          morphSection(sectionId, result.data, { mode: 'hydration', injectStylesheet: true });
+          morphSection(sectionId, result.data, 'hydration', { injectStylesheet: true });
         } else {
           this.#handleError(new Error('No recommendations available'));
         }

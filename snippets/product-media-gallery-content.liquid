@@ -182,11 +182,6 @@
   ></script>
 {%- endif -%}
 
-{%- if block_settings.constrain_to_viewport -%}
-  {% # `.constrain-height` consumes `--header-height` at first paint (product-media-container-styles.liquid) %}
-  {% render 'measure-header-heights', only_on_desktop: true %}
-{%- endif -%}
-
 {% style %}
   {% unless block_settings.aspect_ratio == 'adapt' %}
     .product-media-container {
@@ -355,7 +350,7 @@
         media-gallery--extend
       {% endif %}
     "
-    style="{% render 'spacing-style', settings: block_settings %} --thumbnail-width: {{ block_settings.thumbnail_width }}px; --media-radius: {{ block_settings.media_radius }}px;{% if block_settings.icons_style contains 'large' %} --slideshow-icon-padding: 0px;{% endif %}--image-gap: {{ block_settings.image_gap }}px;{% unless block_settings.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ block_settings.aspect_ratio }};{% endunless %}"
+    style="{% render 'spacing-style', settings: block_settings %} --thumbnail-width: {{ block_settings.thumbnail_width }}px; --media-radius: {{ block_settings.media_radius }}px;{% if block_settings.icons_style contains 'large' %} --slideshow-icon-padding: 0px;{% endif %}--image-gap: {{ block_settings.image_gap }}px;{% unless block_settings.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ block_settings.aspect_ratio }};{% endunless %}{% if block_settings.image_max_height_px > 0 %} --constrained-height: {{ block_settings.image_max_height_px }}px;{% elsif block_settings.image_max_height_vh < 100 %} --constrained-height: {{ block_settings.image_max_height_vh }}vh;{% endif %}"
     data-presentation="{{ media_presentation }}"
     {{ block_shopify_attributes }}
   >
@@ -458,7 +453,7 @@
           <li
             ref="media[]"
             class="{{ product_media_container_class }} product-media-container--{{ media.media_type }} {% unless block_settings.aspect_ratio == 'adapt' %}product-media-container--force-aspect{% endunless %}"
-            style="{% if block_settings.aspect_ratio == 'adapt' %} --media-preview-ratio: {{ media.preview_image.aspect_ratio | default: 1.0 }};{% endif %} --media-radius: {{ block_settings.media_radius }}px;"
+            style="{% if block_settings.aspect_ratio == 'adapt' %} --media-preview-ratio: {{ media.preview_image.aspect_ratio | default: 1.0 }};{% endif %} --media-radius: {{ block_settings.media_radius }}px;{% if block_settings.image_max_height_px > 0 %} max-height: {{ block_settings.image_max_height_px }}px;{% elsif block_settings.image_max_height_vh < 100 %} max-height: {{ block_settings.image_max_height_vh }}vh;{% endif %}"
             {% if settings.transition_to_main_product and forloop.first %}
               data-view-transition-type="product-image-transition"
             {% endif %}
@@ -475,7 +470,8 @@
                 {% if block_settings.zoom %}
                   on:pointerenter="/preloadImage/{{ forloop.index0 }}"
                 {% endif %}
-              ></button>
+              >
+              </button>
             {%- endif -%}
             {%- liquid
               if needs_both_sizes and forloop.first
@@ -642,7 +638,6 @@
   </media-gallery>
 {% endif %}
 
-{% render 'product-media-container-styles' %}
 {% render 'product-media-gallery-content-styles' %}
 
 {% stylesheet %}

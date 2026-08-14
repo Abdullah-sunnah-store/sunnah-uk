@@ -1,0 +1,105 @@
+{%- liquid
+  if closest.product == blank
+    assign vendor_text = 'Vendor'
+  else
+    assign vendor_text = closest.product.vendor
+  endif
+-%}
+
+{%- unless vendor_text == blank -%}
+  <p
+    class="product-vendor-block spacing-style"
+    style="
+      margin: 0;
+      font-size: {{ block.settings.font_size | default: 11 }}px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: {{ block.settings.color | default: '#1C4A3A' }};
+      font-family: var(--font-body--family);
+      {% render 'spacing-style', settings: block.settings %}
+    "
+    {{ block.shopify_attributes }}
+  >
+    {{- vendor_text -}}
+  </p>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Product vendor",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows the product's vendor / brand name (e.g. above the title)."
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "min": 9,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "Color",
+      "default": "#1C4A3A"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "Left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "Right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product vendor",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

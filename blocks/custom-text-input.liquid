@@ -1,0 +1,239 @@
+{% liquid
+  assign show_input = false
+  assign target_handle = block.settings.target_product_handle | strip
+  assign target_collections_raw = block.settings.target_collection_handle | split: ','
+  assign target_collections = ''
+
+  for item in target_collections_raw
+    assign cleaned = item | strip
+    assign target_collections = target_collections | append: cleaned | append: ','
+  endfor
+
+  if target_handle == blank and block.settings.target_collection_handle == blank
+    assign show_input = true
+
+  elsif target_handle != blank and closest.product.handle == target_handle
+    assign show_input = true
+
+  elsif block.settings.target_collection_handle != blank
+    for collection in closest.product.collections
+      if target_collections contains collection.handle
+        assign show_input = true
+        break
+      endif
+    endfor
+  endif
+%}
+
+{% if show_input %}
+  <div class="product-form__input custom-property-input" {{ block.shopify_attributes }}>
+    <label class="form__label" for="CustomProperty-{{ block.id }}">
+      {{ block.settings.label | default: 'Custom Text' }}
+      {% if block.settings.required %}
+        <span class="required">*</span>
+      {% endif %}
+    </label>
+
+    {% if block.settings.input_type == 'text' %}
+      <input
+        class="field__input"
+        type="text"
+        id="CustomProperty-{{ block.id }}"
+        placeholder="{{ block.settings.placeholder }}"
+        {% if block.settings.required %}required{% endif %}
+        {% if block.settings.max_length > 0 %}maxlength="{{ block.settings.max_length }}"{% endif %}
+      >
+    {% elsif block.settings.input_type == 'textarea' %}
+      <textarea
+        class="field__input field__input--textarea"
+        id="CustomProperty-{{ block.id }}"
+        placeholder="{{ block.settings.placeholder }}"
+        rows="{{ block.settings.textarea_rows | default: 3 }}"
+        {% if block.settings.required %}required{% endif %}
+        {% if block.settings.max_length > 0 %}maxlength="{{ block.settings.max_length }}"{% endif %}
+      ></textarea>
+    {% elsif block.settings.input_type == 'select' %}
+      <select
+        class="field__input"
+        id="CustomProperty-{{ block.id }}"
+        {% if block.settings.required %}required{% endif %}
+      >
+        <option value="">{{ block.settings.placeholder | default: 'Select an option' }}</option>
+        {% assign options = block.settings.select_options | split: ',' %}
+        {% for option in options %}
+          {% assign option_trimmed = option | strip %}
+          {% if option_trimmed != blank %}
+            <option value="{{ option_trimmed }}">{{ option_trimmed }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    {% endif %}
+
+    {% if block.settings.help_text != blank %}
+      <div class="field__help-text">{{ block.settings.help_text }}</div>
+    {% endif %}
+  </div>
+
+  <script>
+    (function() {
+      var blockId = {{ block.id | json }};
+      var propertyName = {{ block.settings.property_name | default: 'Custom Text' | json }};
+      var inputEl = document.getElementById('CustomProperty-' + blockId);
+
+      function syncToForm() {
+        var form = document.querySelector('form[action="/cart/add"]');
+        if (!form || !inputEl) return;
+
+        var hiddenId = 'hidden-property-' + blockId;
+        var hidden = document.getElementById(hiddenId);
+        if (!hidden) {
+          hidden = document.createElement('input');
+          hidden.type = 'hidden';
+          hidden.name = 'properties[' + propertyName + ']';
+          hidden.id = hiddenId;
+          form.appendChild(hidden);
+        }
+        hidden.value = inputEl.value;
+      }
+
+      if (inputEl) {
+        inputEl.addEventListener('input', syncToForm);
+        // Also sync on change for select dropdowns
+        inputEl.addEventListener('change', syncToForm);
+        // Initial sync
+        syncToForm();
+
+        // Re-sync when variant changes in case form re-renders
+        document.addEventListener('variant:changed', syncToForm);
+      }
+    })();
+  </script>
+{% endif %}
+
+{% stylesheet %}
+  .custom-property-input {
+    margin: 1rem 0;
+  }
+  .custom-property-input .form__label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: calc(var(--font-paragraph--size, 1.5rem) * 0.85);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #B8860B;
+  }
+  .custom-property-input .required {
+    color: #d32f2f;
+    margin-left: 2px;
+  }
+  .custom-property-input .field__input {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.2);
+    border-radius: var(--style-border-radius-inputs, 4px);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-size: var(--font-paragraph--size, 1.4rem);
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+  }
+  .custom-property-input .field__input:focus {
+    outline: none;
+    border-color: var(--color-foreground);
+    box-shadow: 0 0 0 2px rgb(var(--color-foreground-rgb) / 0.1);
+  }
+  .custom-property-input .field__input--textarea {
+    resize: vertical;
+    min-height: 8rem;
+  }
+  .custom-property-input .field__help-text {
+    margin-top: 0.5rem;
+    font-size: calc(var(--font-paragraph--size, 1.5rem) * 0.85);
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+    font-style: italic;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Custom Text Input",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Field Label",
+      "default": "Custom Text"
+    },
+    {
+      "type": "text",
+      "id": "property_name",
+      "label": "Property Name",
+      "default": "Custom Text",
+      "info": "Appears in order details"
+    },
+    {
+      "type": "select",
+      "id": "input_type",
+      "label": "Input Type",
+      "options": [
+        { "value": "text", "label": "Text Input" },
+        { "value": "textarea", "label": "Text Area" },
+        { "value": "select", "label": "Dropdown Select" }
+      ],
+      "default": "text"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Placeholder Text",
+      "default": "Your Custom Text or Drive link"
+    },
+    {
+      "type": "checkbox",
+      "id": "required",
+      "label": "Make Required",
+      "default": false
+    },
+    {
+      "type": "number",
+      "id": "max_length",
+      "label": "Maximum Character Length",
+      "default": 0,
+      "info": "Leave as 0 for no limit"
+    },
+    {
+      "type": "range",
+      "id": "textarea_rows",
+      "label": "Textarea Rows",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "textarea",
+      "id": "select_options",
+      "label": "Select Options",
+      "info": "Comma-separated. Example: Option 1, Option 2, Option 3"
+    },
+    {
+      "type": "text",
+      "id": "help_text",
+      "label": "Help Text"
+    },
+    {
+      "type": "text",
+      "id": "target_product_handle",
+      "label": "Target Product Handle",
+      "info": "Show only for this product. Leave blank for all."
+    },
+    {
+      "type": "text",
+      "id": "target_collection_handle",
+      "label": "Target Collection Handle",
+      "info": "Show only for products in this collection. Leave blank for all."
+    }
+  ]
+}
+{% endschema %}

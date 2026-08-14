@@ -64,7 +64,7 @@
       "id": "overlay_color",
       "label": "t:settings.overlay_color",
       "alpha": true,
-      "default": "#00000026",
+      "default": "#1C1C1A26",
       "visible_if": "{{ block.settings.toggle_overlay }}"
     },
     {
@@ -141,13 +141,6 @@
       "unit": "%",
       "label": "t:settings.opacity",
       "default": 100,
-      "visible_if": "{{ block.settings.border != 'none' }}"
-    },
-    {
-      "type": "color",
-      "id": "border_color",
-      "label": "t:settings.color",
-      "placeholder": "t:settings.default",
       "visible_if": "{{ block.settings.border != 'none' }}"
     },
     {

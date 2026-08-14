@@ -1,0 +1,473 @@
+{% comment %}
+  Collection Hero Banner — Fully Dynamic Shopify Section
+  • Left: eyebrow + serif heading + body + highlighted stats row
+  • Right: 2×2 grid of rounded icon tiles (emoji or image)
+  • All spacing, colors, typography fully schema-driven
+{% endcomment %}
+
+{% liquid
+  assign sec = section.settings
+
+  assign pt = sec.padding_top    | default: 56
+  assign pb = sec.padding_bottom | default: 56
+  assign pl = sec.padding_left   | default: 48
+  assign pr = sec.padding_right  | default: 48
+  assign mt = sec.margin_top     | default: 0
+  assign mb = sec.margin_bottom  | default: 0
+
+  assign section_bg   = sec.section_bg_color   | default: '#1C4A3A'
+  assign accent_color = sec.accent_color       | default: '#D4A830'
+  assign heading_color = sec.heading_color     | default: '#F5F0E8'
+  assign body_color    = sec.body_color        | default: '#b8c4bb'
+  assign tile_bg       = sec.tile_bg_color     | default: '#1C4A3A'
+  assign tile_radius   = sec.tile_border_radius | default: 10
+  assign content_max_w = sec.content_max_width | default: 1280
+%}
+
+<div
+  class="chb-wrapper"
+  id="chb-{{ section.id }}"
+  style="
+    background-color: {{ section_bg }};
+    padding: {{ pt }}px {{ pr }}px {{ pb }}px {{ pl }}px;
+    margin-top: {{ mt }}px;
+    margin-bottom: {{ mb }}px;
+  "
+>
+  {% if sec.show_stripes %}
+    <div class="chb-stripes" aria-hidden="true"></div>
+  {% endif %}
+
+  <div class="chb-inner" style="max-width: {{ content_max_w }}px;">
+
+    {% comment %} ── LEFT: Content ── {% endcomment %}
+    <div class="chb-content">
+
+      {% if sec.eyebrow != blank %}
+        <p class="chb-eyebrow" style="color: {{ accent_color }};">{{ sec.eyebrow }}</p>
+      {% endif %}
+
+      {% if sec.heading != blank %}
+        <h2 class="chb-heading" style="color: {{ heading_color }}; font-size: var(--font-h2--size);">
+          {{ sec.heading }}
+        </h2>
+      {% endif %}
+
+      {% if sec.body != blank %}
+        <div class="chb-body" style="color: {{ body_color }};">{{ sec.body }}</div>
+      {% endif %}
+
+      {% assign stat_blocks = section.blocks | where: 'type', 'stat' %}
+      {% if stat_blocks.size > 0 %}
+        <div class="chb-stats">
+          {% for block in stat_blocks %}
+            <p class="chb-stat" {{ block.shopify_attributes }}>
+              <span class="chb-stat-highlight" style="color: {{ accent_color }};">{{ block.settings.highlight }}</span>
+              {% if block.settings.label != blank %}
+                <span class="chb-stat-label" style="color: {{ body_color }};">{{ block.settings.label }}</span>
+              {% endif %}
+            </p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+    </div>
+
+    {% comment %} ── RIGHT: Dynamic product tiles ── {% endcomment %}
+    {% assign product_blocks = section.blocks | where: 'type', 'product' %}
+    {% if product_blocks.size > 0 %}
+      <div class="chb-tiles">
+        {% for block in product_blocks %}
+          {% assign product = block.settings.product %}
+          {% if product != blank %}
+            <a
+              class="chb-tile"
+              href="{{ product.url }}"
+              style="background: {{ tile_bg }}; border-radius: {{ tile_radius }}px;"
+              {{ block.shopify_attributes }}
+            >
+              {% if product.featured_image != blank %}
+                <img
+                  class="chb-tile-img"
+                  src="{{ product.featured_image | image_url: width: 300 }}"
+                  alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                  loading="lazy"
+                  width="150" height="150"
+                >
+              {% else %}
+                {{ 'product-1' | placeholder_svg_tag: 'chb-tile-placeholder' }}
+              {% endif %}
+
+              <span class="chb-tile-overlay">
+                <span class="chb-tile-title">{{ product.title }}</span>
+                <span class="chb-tile-price" style="color: {{ accent_color }};">
+                  {% if product.price_varies %}{{ 'products.product.from_text' | t | default: 'From' }} {% endif %}{% render 'format-price', price: product.price %}
+                </span>
+              </span>
+            </a>
+          {% else %}
+            <div class="chb-tile" style="background: {{ tile_bg }}; border-radius: {{ tile_radius }}px;" {{ block.shopify_attributes }}>
+              {{ 'product-1' | placeholder_svg_tag: 'chb-tile-placeholder' }}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<style>
+  #chb-{{ section.id }}.chb-wrapper {
+    position: relative;
+    overflow: hidden;
+  }
+
+  #chb-{{ section.id }} .chb-stripes {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      135deg,
+      rgba(255,255,255,0.025) 0px,
+      rgba(255,255,255,0.025) 1px,
+      transparent 1px,
+      transparent 22px
+    );
+  }
+
+  #chb-{{ section.id }} .chb-inner {
+    position: relative;
+    z-index: 1;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 48px;
+  }
+
+  #chb-{{ section.id }} .chb-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 640px;
+  }
+
+  #chb-{{ section.id }} .chb-eyebrow {
+    margin: 0 0 18px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: none;
+  }
+
+  #chb-{{ section.id }} .chb-heading {
+    margin: 0 0 20px;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-h2--weight);
+    line-height: var(--font-h2--line-height);
+    letter-spacing: var(--font-h2--letter-spacing);
+  }
+
+  #chb-{{ section.id }} .chb-body {
+    margin: 0 0 26px;
+    font-size: {{ sec.body_font_size | default: 16 }}px;
+    line-height: 1.6;
+    max-width: 560px;
+  }
+  #chb-{{ section.id }} .chb-body p { margin: 0; }
+
+  #chb-{{ section.id }} .chb-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    align-items: baseline;
+  }
+  #chb-{{ section.id }} .chb-stat {
+    margin: 0;
+    font-size: 14px;
+  }
+  #chb-{{ section.id }} .chb-stat-highlight {
+    font-weight: 700;
+    margin-right: 5px;
+  }
+
+  #chb-{{ section.id }} .chb-tiles {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  #chb-{{ section.id }} .chb-tile {
+    position: relative;
+    width: {{ sec.tile_size | default: 132 }}px;
+    height: {{ sec.tile_size | default: 132 }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    text-decoration: none;
+    transition: transform 0.25s ease;
+  }
+  #chb-{{ section.id }} .chb-tile:hover {
+    transform: translateY(-3px);
+  }
+  #chb-{{ section.id }} .chb-tile-img,
+  #chb-{{ section.id }} .chb-tile svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease, filter 0.3s ease;
+  }
+  #chb-{{ section.id }} .chb-tile:hover .chb-tile-img,
+  #chb-{{ section.id }} .chb-tile:hover svg {
+    transform: scale(1.08);
+    filter: brightness(0.45);
+  }
+
+  #chb-{{ section.id }} .chb-tile-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+  #chb-{{ section.id }} .chb-tile:hover .chb-tile-overlay {
+    opacity: 1;
+  }
+  #chb-{{ section.id }} .chb-tile-title {
+    color: #F5F0E8;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  #chb-{{ section.id }} .chb-tile-price {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  @media (max-width: 900px) {
+    #chb-{{ section.id }} .chb-inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 32px;
+    }
+    #chb-{{ section.id }} .chb-tiles { align-self: flex-start; }
+  }
+
+  @media (max-width: 480px) {
+    #chb-{{ section.id }} .chb-tiles { width: 100%; }
+    #chb-{{ section.id }} .chb-tile { width: 100%; height: auto; aspect-ratio: 1 / 1; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Collection Hero Banner",
+  "tag": "section",
+  "class": "collection-hero-banner",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background & Spacing"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section background color",
+      "default": "#1C4A3A"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stripes",
+      "label": "Show diagonal stripe texture",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width (px)",
+      "min": 800, "max": 1600, "step": 20, "default": 1280
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (px)",
+      "min": 0, "max": 160, "step": 4, "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (px)",
+      "min": 0, "max": 160, "step": 4, "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "Padding left (px)",
+      "min": 0, "max": 120, "step": 4, "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "Padding right (px)",
+      "min": 0, "max": 120, "step": 4, "default": 48
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top (px)",
+      "min": 0, "max": 120, "step": 4, "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom (px)",
+      "min": 0, "max": 120, "step": 4, "default": 0
+    },
+
+    {
+      "type": "header",
+      "content": "Eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Horsemen Collection · Sacred Walls"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent / highlight color",
+      "default": "#D4A830"
+    },
+
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Islamic Art & Calligraphy Frames"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#F5F0E8"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Heading font size (px)",
+      "min": 24, "max": 80, "step": 1, "default": 52
+    },
+
+    {
+      "type": "header",
+      "content": "Body Text"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Body text",
+      "default": "<p>Chosen for the believing home. Every frame in this collection has been curated by The Sunnah Store team — crafted to last, gifted with intention, and verified for authenticity.</p>"
+    },
+    {
+      "type": "color",
+      "id": "body_color",
+      "label": "Body text color",
+      "default": "#b8c4bb"
+    },
+    {
+      "type": "range",
+      "id": "body_font_size",
+      "label": "Body font size (px)",
+      "min": 12, "max": 24, "step": 1, "default": 16
+    },
+
+    {
+      "type": "header",
+      "content": "Product Tiles",
+      "info": "Each Product Tile shows the product image. On hover it reveals the product name and price."
+    },
+    {
+      "type": "color",
+      "id": "tile_bg_color",
+      "label": "Tile background color",
+      "default": "#1C4A3A"
+    },
+    {
+      "type": "range",
+      "id": "tile_border_radius",
+      "label": "Tile border radius (px)",
+      "min": 0, "max": 30, "step": 2, "default": 10
+    },
+    {
+      "type": "range",
+      "id": "tile_size",
+      "label": "Tile size (px)",
+      "min": 80, "max": 220, "step": 4, "default": 132
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        {
+          "type": "text",
+          "id": "highlight",
+          "label": "Highlighted word(s)",
+          "default": "66"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "pieces curated"
+        }
+      ]
+    },
+    {
+      "type": "product",
+      "name": "Product Tile",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Hero Banner",
+      "blocks": [
+        { "type": "stat", "settings": { "highlight": "66", "label": "pieces curated" } },
+        { "type": "stat", "settings": { "highlight": "Free", "label": "gift wrapping" } },
+        { "type": "stat", "settings": { "highlight": "Bespoke", "label": "commissions available" } },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -6,50 +6,35 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "main": {
       "type": "product-information",
       "blocks": {
-        "disclosures_g9mWze": {
-          "type": "disclosures",
-          "name": "t:names.disclosures",
-          "settings": {
-            "heading": "Disclosures",
-            "heading_preset": "h5",
-            "open_by_default": false,
-            "icon": "caret",
-            "disclosure_heading_preset": "h6",
-            "text_color": "",
-            "dividers": true,
-            "divider_color": "{{ settings.color_palette.color2 }}",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
         "media-gallery": {
           "type": "_product-media-gallery",
           "static": true,
           "settings": {
-            "media_presentation": "grid",
+            "media_presentation": "carousel",
             "media_columns": "two",
-            "image_gap": 4,
+            "image_gap": 5,
             "large_first_image": false,
-            "slideshow_controls_style": "counter",
-            "slideshow_mobile_controls_style": "dots",
-            "thumbnail_position": "right",
-            "thumbnail_width": 44,
+            "icons_style": "chevron_large",
+            "slideshow_controls_style": "thumbnails",
+            "slideshow_mobile_controls_style": "thumbnails",
+            "thumbnail_position": "left",
+            "thumbnail_width": 72,
             "thumbnail_radius": 0,
             "aspect_ratio": "adapt",
-            "constrain_to_viewport": true,
+            "constrain_to_viewport": false,
             "media_fit": "contain",
+            "image_max_height_vh": 80,
+            "image_max_height_px": 0,
             "media_radius": 0,
             "extend_media": false,
             "zoom": true,
-            "video_loop": false,
+            "video_loop": true,
             "hide_variants": true,
             "padding-block-start": 0,
             "padding-block-end": 0,
@@ -70,14 +55,14 @@
             "details_position": "flex-start",
             "gap": 28,
             "sticky_details_desktop": true,
+            "inherit_color_scheme": true,
+            "color_scheme": "scheme-1",
             "background_media": "none",
-            "background_color": "",
             "video_position": "cover",
             "background_image_position": "cover",
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
-            "border_color": "",
             "border_radius": 0,
             "padding-block-start": 24,
             "padding-block-end": 24,
@@ -87,7 +72,7 @@
           "blocks": {
             "group_icgrde": {
               "type": "group",
-              "name": "t:names.header",
+              "name": "Header",
               "settings": {
                 "content_direction": "column",
                 "vertical_on_mobile": true,
@@ -103,19 +88,21 @@
                 "custom_width_mobile": 100,
                 "height": "fit",
                 "custom_height": 100,
+                "inherit_color_scheme": true,
+                "color_scheme": "",
                 "background_media": "none",
-                "background_color": "",
                 "video_position": "cover",
                 "background_image_position": "cover",
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
+                "background_image_position_mobile": "cover",
                 "border": "none",
                 "border_width": 1,
                 "border_opacity": 100,
-                "border_color": "",
                 "border_radius": 0,
+                "toggle_overlay": false,
+                "overlay_color": "#1c1c1a26",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "link": "",
                 "open_in_new_tab": false,
                 "placeholder": "",
                 "padding-block-start": 0,
@@ -124,29 +111,56 @@
                 "padding-inline-end": 0
               },
               "blocks": {
+                "collection_name_main": {
+                  "type": "collection-name",
+                  "name": "Collection Name",
+                  "settings": {
+                    "collection": "",
+                    "link_to_collection": true,
+                    "show_dot": true,
+                    "alignment": "left"
+                  },
+                  "blocks": {}
+                },
                 "text_xrnftG": {
                   "type": "text",
-                  "name": "t:names.product_title",
+                  "name": "Product title",
                   "settings": {
                     "text": "<h1>{{ closest.product.title }}</h1>",
                     "width": "100%",
                     "max_width": "normal",
                     "alignment": "left",
                     "type_preset": "h3",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
+                    "font": "var(--font-primary--family)",
+                    "font_size": "",
                     "line_height": "normal",
                     "letter_spacing": "normal",
                     "case": "none",
                     "wrap": "pretty",
-                    "text_color": "",
+                    "color": "",
                     "background": false,
-                    "background_color": "#00000026",
+                    "background_color": "#1c1c1a26",
                     "corner_radius": 0,
                     "padding-block-start": 0,
                     "padding-block-end": 0,
                     "padding-inline-start": 0,
                     "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "custom_reviews_main": {
+                  "type": "custom-reviews",
+                  "name": "Custom Reviews",
+                  "settings": {
+                    "rating_min": 4.8,
+                    "rating_max": 5,
+                    "count_min": 20,
+                    "count_max": 30,
+                    "reviews_word": "reviews",
+                    "show_read_link": true,
+                    "read_link_label": "Read reviews",
+                    "modal_title": "Customer Reviews",
+                    "reviews": "Aisha R. | Absolutely beautiful — even better in person. The quality is stunning.\nOmar F. | Arrived quickly and packaged with so much care. Will order again, insha'Allah.\nFatima K. | Gifted this for Eid and the whole family loved it. Highly recommend.\nYusuf A. | Elegant, sturdy and exactly as pictured. Worth every taka.\nMariam S. | A truly meaningful piece for our home. Thank you for the lovely craftsmanship.\nIbrahim H. | Fast delivery across Bangladesh and excellent customer service.\nZainab M. | The colours are gorgeous and the frame feels premium. Five stars."
                   },
                   "blocks": {}
                 },
@@ -164,7 +178,7 @@
                     "line_height": "normal",
                     "letter_spacing": "normal",
                     "case": "none",
-                    "text_color": "",
+                    "color": "var(--color-foreground)",
                     "padding-block-start": 4,
                     "padding-block-end": 0,
                     "padding-inline-start": 0,
@@ -174,9 +188,24 @@
                 }
               },
               "block_order": [
+                "collection_name_main",
                 "text_xrnftG",
+                "custom_reviews_main",
                 "price_tVjtKg"
               ]
+            },
+            "why_we_chose_this_main": {
+              "type": "why-we-chose-this",
+              "name": "Why We Chose This",
+              "settings": {
+                "heading": "Why we chose this",
+                "metafield_namespace": "custom",
+                "metafield_key": "why_we_chose_this",
+                "default_text": "<p>Chosen for its warmth, craftsmanship and timeless appeal — a piece made to be treasured for years.</p>",
+                "padding-block-start": 0,
+                "padding-block-end": 0
+              },
+              "blocks": {}
             },
             "divider_VJhene": {
               "type": "_divider",
@@ -184,7 +213,6 @@
               "settings": {
                 "thickness": 1,
                 "corner_radius": "square",
-                "divider_color": "{{ settings.color_palette.color2 }}",
                 "width_percent": 100,
                 "padding-block-start": 0,
                 "padding-block-end": 0
@@ -194,17 +222,8 @@
             "variant_picker_R3rGDr": {
               "type": "variant-picker",
               "settings": {
-                "variant_style": "buttons",
+                "variant_style": "dropdowns",
                 "show_swatches": false,
-                "option_label_text_color": "",
-                "variant_style_class": "default",
-                "custom_variant_background": "{{ settings.color_palette.background }}",
-                "custom_variant_text": "{{ settings.color_palette.foreground }}",
-                "custom_variant_border": "{{ settings.color_palette.foreground }}",
-                "selected_variant_style_class": "default",
-                "custom_selected_variant_background": "{{ settings.color_palette.foreground }}",
-                "custom_selected_variant_text": "{{ settings.color_palette.background }}",
-                "custom_selected_variant_border": "{{ settings.color_palette.foreground }}",
                 "alignment": "left",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
@@ -213,27 +232,55 @@
               },
               "blocks": {}
             },
+            "custom-text-input": {
+              "type": "custom-text-input",
+              "settings": {
+                "label": "Your Custom Text or Drive Link",
+                "property_name": "Custom Text",
+                "input_type": "text",
+                "placeholder": "Enter your text here or Drive Link...",
+                "required": false,
+                "max_length": 0,
+                "textarea_rows": 3,
+                "select_options": "",
+                "help_text": "",
+                "target_product_handle": "calligraphy-customized-prayer-mat",
+                "target_collection_handle": "frames,bespoke"
+              },
+              "blocks": {}
+            },
+            "gift_options_main": {
+              "type": "gift-options",
+              "name": "Gift Options",
+              "settings": {
+                "toggle_title": "This is a gift",
+                "toggle_subtitle": "Add wrapping, occasion & message",
+                "gift_wrap_label": "Gift wrap",
+                "gift_wrap_options": "Classic Ivory (Free)\nSignature Green (৳50)\nPremium Gold (৳100)",
+                "gift_wrap_property": "Gift Wrap",
+                "occasion_label": "Occasion",
+                "occasion_options": "Eid\nRamadan\nNikah\nNew Baby\nBirthday\nJust Because",
+                "occasion_property": "Occasion",
+                "show_message": true,
+                "message_label": "Gift message (optional)",
+                "message_placeholder": "Write a message for the recipient…",
+                "message_property": "Gift Message",
+                "show_hide_price": true,
+                "hide_price_label": "Hide price from recipient",
+                "hide_price_property": "Hide Price From Recipient",
+                "hide_price_value": "Yes",
+                "gift_property": "Gift",
+                "gift_value": "Yes",
+                "cart_attribute_key": "gift_order"
+              },
+              "blocks": {}
+            },
             "buy_buttons_eYQEYi": {
               "type": "buy-buttons",
               "settings": {
                 "stacking": true,
-                "text_color": "",
                 "show_pickup_availability": false,
                 "gift_card_form": true,
-                "recipient_button_style": "default",
-                "recipient_button_background": "{{ settings.color_palette.background }}",
-                "recipient_button_text": "{{ settings.color_palette.foreground }}",
-                "recipient_button_border": "{{ settings.color_palette.foreground }}",
-                "selected_recipient_button_style": "default",
-                "selected_recipient_button_background": "{{ settings.color_palette.foreground }}",
-                "selected_recipient_button_text": "{{ settings.color_palette.background }}",
-                "selected_recipient_button_border": "{{ settings.color_palette.foreground }}",
-                "input_style": "default",
-                "input_background_color": "{{ settings.color_palette.background }}",
-                "input_text_color": "{{ settings.color_palette.foreground }}",
-                "input_border_color": "{{ settings.color_palette.foreground }}",
-                "border_width": 1,
-                "border_radius": 0,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -243,24 +290,14 @@
                 "quantity": {
                   "type": "quantity",
                   "static": true,
-                  "settings": {
-                    "input_style": "default",
-                    "input_background_color": "{{ settings.color_palette.background }}",
-                    "input_text_color": "{{ settings.color_palette.foreground }}",
-                    "input_border_color": "{{ settings.color_palette.foreground }}",
-                    "border_width": 1,
-                    "border_radius": 0
-                  },
+                  "settings": {},
                   "blocks": {}
                 },
                 "add-to-cart": {
                   "type": "add-to-cart",
                   "static": true,
                   "settings": {
-                    "style_class": "button",
-                    "custom_button_background": "{{ settings.color_palette.foreground }}",
-                    "custom_button_text": "{{ settings.color_palette.background }}",
-                    "custom_button_border": "{{ settings.color_palette.background }}"
+                    "style_class": "button"
                   },
                   "blocks": {}
                 },
@@ -273,45 +310,192 @@
               },
               "block_order": []
             },
-            "text_aEtTtq": {
-              "type": "text",
-              "name": "t:names.product_description",
+            "pairs_well_with": {
+              "type": "pairs-well-with",
+              "disabled": true,
               "settings": {
-                "text": "{{ closest.product.description }}",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
+                "heading": "Pairs well with",
+                "products_to_show": 3
+              },
+              "blocks": {}
+            },
+            "product_tabs_main": {
+              "type": "product-tabs",
+              "disabled": true,
+              "settings": {
+                "tab_1_title": "DESCRIPTION",
+                "tab_2_title": "DETAILS",
+                "tab_5_title": "ABOUT",
+                "tab_3_title": "SPECIFICATIONS",
+                "tab_4_title": "HIGHLIGHTS",
+                "default_description": "",
+                "default_details": "",
+                "default_about": "",
+                "default_specifications": "",
+                "default_delivery": "",
+                "show_badge": false,
+                "badge_text": "Designed in New York City"
+              },
+              "blocks": {}
+            },
+            "accordion_fpt3mC": {
+              "type": "accordion",
+              "name": "t:names.accordion",
+              "settings": {
+                "icon": "plus",
+                "dividers": true,
+                "type_preset": "h6",
+                "inherit_color_scheme": true,
+                "color_scheme": "",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
               },
-              "blocks": {}
+              "blocks": {
+                "accordion_row_q9kDXB": {
+                  "type": "_accordion-row",
+                  "settings": {
+                    "heading": "Description",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "text_JKxkPq": {
+                      "type": "text",
+                      "settings": {
+                        "text": "{{ closest.product.description }}",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
+                        "type_preset": "rte",
+                        "font": "var(--font-body--family)",
+                        "font_size": "1rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "color": "var(--color-foreground)",
+                        "background": false,
+                        "background_color": "#1c1c1a26",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "text_JKxkPq"
+                  ]
+                },
+                "accordion_row_VVDiLY": {
+                  "type": "_accordion-row",
+                  "settings": {
+                    "heading": "Shipping",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "text_QY9XfF": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>We will work quickly to ship your order as soon as possible. Once your order has shipped, you will receive an email with further information. Delivery times vary depending on your location.</p>",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
+                        "type_preset": "rte",
+                        "font": "var(--font-body--family)",
+                        "font_size": "1rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "color": "var(--color-foreground)",
+                        "background": false,
+                        "background_color": "#1c1c1a26",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "text_QY9XfF"
+                  ]
+                },
+                "accordion_row_t4zMCE": {
+                  "type": "_accordion-row",
+                  "settings": {
+                    "heading": "Manufacturing",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "text_NAbH4b": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>Our products are manufactured both locally and globally. We carefully select our manufacturing partners to ensure our products are high quality and a fair value.</p>",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
+                        "type_preset": "rte",
+                        "font": "var(--font-body--family)",
+                        "font_size": "1rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "color": "var(--color-foreground)",
+                        "background": false,
+                        "background_color": "#1c1c1a26",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "text_NAbH4b"
+                  ]
+                }
+              },
+              "block_order": [
+                "accordion_row_q9kDXB",
+                "accordion_row_VVDiLY",
+                "accordion_row_t4zMCE"
+              ]
             }
           },
           "block_order": [
             "group_icgrde",
+            "why_we_chose_this_main",
             "divider_VJhene",
             "variant_picker_R3rGDr",
+            "custom-text-input",
+            "gift_options_main",
             "buy_buttons_eYQEYi",
-            "text_aEtTtq"
+            "pairs_well_with",
+            "product_tabs_main",
+            "accordion_fpt3mC"
           ]
         }
       },
-      "block_order": [
-        "disclosures_g9mWze"
-      ],
       "settings": {
         "content_width": "content-center-aligned",
         "desktop_media_position": "left",
@@ -319,7 +503,95 @@
         "limit_details_width": false,
         "gap": 48,
         "enable_sticky_add_to_cart": true,
-        "background_color": "{{ settings.color_palette.background }}",
+        "color_scheme": "",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "gift_it_together_pww": {
+      "type": "_blocks",
+      "blocks": {
+        "pairs_well_with_gift": {
+          "type": "pairs-well-with",
+          "settings": {
+            "heading": "Gift it together",
+            "products_to_show": 3
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "pairs_well_with_gift"
+      ],
+      "name": "Gift it together",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "full-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#1c1c1a26",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 24,
+        "padding-block-end": 24
+      }
+    },
+    "177504557715bae708": {
+      "type": "_blocks",
+      "blocks": {
+        "judge_me_reviews_review_widget_3YqPNy": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "sample_data",
+            "max_width": 1200,
+            "show_shop_reviews": false,
+            "empty_state": "empty_widget"
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_review_widget_3YqPNy"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#1c1c1a26",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
         "padding-block-start": 0,
         "padding-block-end": 0
       }
@@ -327,29 +599,11 @@
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
-        "text_cbcgyb": {
-          "type": "text",
-          "name": "t:names.header",
+        "header_recs": {
+          "type": "custom-liquid",
+          "name": "Header",
           "settings": {
-            "text": "<h3>You may also like </h3>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h4",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "text_color": "",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
+            "custom_liquid": "<div class=\"pr-header\"><p class=\"pr-header__eyebrow\">You might also love</p><h2 class=\"pr-header__title\">You may also like</h2></div><style>.pr-header{width:100%;text-align:left;margin-bottom:8px}.pr-header__eyebrow{font-family:var(--font-body--family);text-transform:uppercase;letter-spacing:.18em;font-size:.75rem;line-height:1.2;color:rgb(var(--color-foreground-rgb)/.6);margin:0 0 .5rem}.pr-header__title{font-family:var(--font-heading--family);font-size:var(--font-h2--size);font-weight:var(--font-h2--weight);line-height:1.1;margin:0;color:var(--color-foreground-heading)}</style>"
           },
           "blocks": {}
         },
@@ -359,11 +613,11 @@
           "static": true,
           "settings": {
             "product_card_gap": 8,
-            "background_color": "",
+            "inherit_color_scheme": true,
+            "color_scheme": "",
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
-            "border_color": "",
             "border_radius": 0,
             "padding-block-start": 0,
             "padding-block-end": 8,
@@ -375,16 +629,26 @@
               "type": "_product-card-gallery",
               "name": "t:names.product_card_media",
               "settings": {
-                "image_ratio": "adapt",
+                "image_ratio": "square",
                 "border": "none",
                 "border_width": 1,
                 "border_opacity": 100,
-                "border_color": "",
                 "border_radius": 0,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "collection_name_recs": {
+              "type": "collection-name",
+              "name": "Collection Name",
+              "settings": {
+                "collection": "",
+                "link_to_collection": true,
+                "show_dot": false,
+                "alignment": "left"
               },
               "blocks": {}
             },
@@ -395,16 +659,16 @@
                 "width": "100%",
                 "max_width": "normal",
                 "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
+                "type_preset": "custom",
+                "font": "var(--font-heading--family)",
+                "font_size": "1.125rem",
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
-                "text_color": "",
+                "color": "var(--color-foreground)",
                 "background": false,
-                "background_color": "#00000026",
+                "background_color": "#1c1c1a26",
                 "corner_radius": 0,
                 "padding-block-start": 4,
                 "padding-block-end": 0,
@@ -427,7 +691,7 @@
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
-                "text_color": "",
+                "color": "var(--color-foreground)",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -438,13 +702,14 @@
           },
           "block_order": [
             "product_card_gallery_DNizbJ",
+            "collection_name_recs",
             "product_title_M7MJkb",
             "price_gLWgA6"
           ]
         }
       },
       "block_order": [
-        "text_cbcgyb"
+        "header_recs"
       ],
       "name": "t:names.product_recommendations",
       "settings": {
@@ -461,7 +726,840 @@
         "icons_shape": "none",
         "section_width": "page-width",
         "gap": 28,
-        "background_color": "{{ settings.color_palette.background }}",
+        "color_scheme": "scheme-1",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
+    "section_yaHArn": {
+      "type": "section",
+      "blocks": {
+        "group_nnKaDP": {
+          "type": "group",
+          "name": "t:names.column",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "center",
+            "align_baseline": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 8,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "inherit_color_scheme": true,
+            "color_scheme": "",
+            "background_media": "none",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "background_image_position_mobile": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "toggle_overlay": false,
+            "overlay_color": "#1c1c1a26",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
+            "link": "",
+            "open_in_new_tab": false,
+            "placeholder": "",
+            "padding-block-start": 10,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "text_kbtTLP": {
+              "type": "text",
+              "name": "t:names.heading",
+              "settings": {
+                "text": "<h4><strong>Delivered across Bangladesh</strong></h4>",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "center",
+                "type_preset": "h4",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "background_color": "#1c1c1a26",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "text_8qYjgV": {
+              "type": "text",
+              "name": "t:names.description",
+              "settings": {
+                "text": "<p>We deliver to every corner of Bangladesh within just a few days. Your order is packed with care and sent straight to your door — fast, safe, and reliable.</p>",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "center",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "background_color": "#1c1c1a26",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "text_kbtTLP",
+            "text_8qYjgV"
+          ]
+        },
+        "group_PjYtam": {
+          "type": "group",
+          "name": "t:names.column",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "center",
+            "align_baseline": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 8,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "inherit_color_scheme": true,
+            "color_scheme": "",
+            "background_media": "none",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "background_image_position_mobile": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "toggle_overlay": false,
+            "overlay_color": "#1c1c1a26",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
+            "link": "",
+            "open_in_new_tab": false,
+            "placeholder": "",
+            "padding-block-start": 10,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "text_wmbAPe": {
+              "type": "text",
+              "name": "t:names.heading",
+              "settings": {
+                "text": "<h3><strong>Talk to us on WhatsApp</strong></h3>",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "center",
+                "type_preset": "h4",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "background_color": "#1c1c1a26",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "text_pLhwFe": {
+              "type": "text",
+              "name": "t:names.description",
+              "settings": {
+                "text": "<p>Got a question? Message us directly on WhatsApp and get a real reply — fast. No waiting, no bots. Just a friendly team ready to help you anytime. </p>",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "center",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "background_color": "#1c1c1a26",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "text_wmbAPe",
+            "text_pLhwFe"
+          ]
+        },
+        "group_fJmiEm": {
+          "type": "group",
+          "name": "t:names.column",
+          "settings": {
+            "content_direction": "column",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "center",
+            "align_baseline": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "flex-start",
+            "gap": 8,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "inherit_color_scheme": true,
+            "color_scheme": "",
+            "background_media": "none",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "background_image_position_mobile": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "toggle_overlay": false,
+            "overlay_color": "#1c1c1a26",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
+            "link": "",
+            "open_in_new_tab": false,
+            "placeholder": "",
+            "padding-block-start": 10,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "text_n8CCrL": {
+              "type": "text",
+              "name": "t:names.heading",
+              "settings": {
+                "text": "<h2><strong>100% halal & authentically sourced</strong></h2>",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "center",
+                "type_preset": "h4",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "background_color": "#1c1c1a26",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "text_bwtijf": {
+              "type": "text",
+              "name": "t:names.description",
+              "settings": {
+                "text": "<p>Every dua, verse, and product is verified from authentic Islamic sources. Our business is fully interest-free and Shariah-compliant — a brand Bangladeshi Muslims can truly trust.</p>",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "center",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "background_color": "#1c1c1a26",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "text_n8CCrL",
+            "text_bwtijf"
+          ]
+        }
+      },
+      "block_order": [
+        "group_nnKaDP",
+        "group_PjYtam",
+        "group_fJmiEm"
+      ],
+      "name": "t:names.multicolumn",
+      "settings": {
+        "content_direction": "row",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "flex-start",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 16,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#1c1c1a26",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
+    "section_6ag7Gi": {
+      "type": "section",
+      "blocks": {
+        "text_wb3YCx": {
+          "type": "text",
+          "name": "t:names.heading",
+          "settings": {
+            "text": "<h2>Frequently asked questions</h2>",
+            "width": "100%",
+            "max_width": "narrow",
+            "alignment": "center",
+            "type_preset": "h2",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#1c1c1a26",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "accordion_7hpzmA": {
+          "type": "accordion",
+          "name": "t:names.accordion",
+          "settings": {
+            "icon": "caret",
+            "dividers": true,
+            "type_preset": "h5",
+            "inherit_color_scheme": true,
+            "color_scheme": "",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "accordion_row_aaAfc4": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "What is the return policy?",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_GrRRJ9": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>Our goal is for every customer to be totally satisfied with their purchase. If this isn't the case, let us know and we'll do our best to work with you to make it right.</p>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "color": "var(--color-foreground)",
+                    "background": false,
+                    "background_color": "#1c1c1a26",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_GrRRJ9"
+              ]
+            },
+            "accordion_row_xXYzNY": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Are any purchases final sale?",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_EPhBX8": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>We are unable to accept returns on certain items. These will be carefully marked before purchase.</p>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "color": "var(--color-foreground)",
+                    "background": false,
+                    "background_color": "#1c1c1a26",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_EPhBX8"
+              ]
+            },
+            "accordion_row_zzVHj6": {
+              "type": "_accordion-row",
+              "name": "t:names.accordion_row",
+              "settings": {
+                "heading": "When will I get my order?",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_XpryDk": {
+                  "type": "text",
+                  "name": "t:names.text",
+                  "settings": {
+                    "text": "<p>We will work quickly to ship your order as soon as possible. Once your order has shipped, you will receive an email with further information. Delivery times vary depending on your location.</p>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "color": "var(--color-foreground)",
+                    "background": false,
+                    "background_color": "#1c1c1a26",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_XpryDk"
+              ]
+            },
+            "accordion_row_3DknHh": {
+              "type": "_accordion-row",
+              "name": "t:names.accordion_row",
+              "settings": {
+                "heading": "Where are your products manufactured?",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_9Xn3G7": {
+                  "type": "text",
+                  "name": "t:names.text",
+                  "settings": {
+                    "text": "<p>Our products are manufactured both locally and globally. We carefully select our manufacturing partners to ensure our products are high quality and a fair value.</p>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "color": "var(--color-foreground)",
+                    "background": false,
+                    "background_color": "#1c1c1a26",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_9Xn3G7"
+              ]
+            },
+            "accordion_row_BABWcY": {
+              "type": "_accordion-row",
+              "name": "t:names.accordion_row",
+              "settings": {
+                "heading": "How much does shipping cost?",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_mjiq7U": {
+                  "type": "text",
+                  "name": "t:names.text",
+                  "settings": {
+                    "text": "<p>Shipping is calculated based on your location and the items in your order. You will always know the shipping price before you purchase.</p>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "color": "var(--color-foreground)",
+                    "background": false,
+                    "background_color": "#1c1c1a26",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_mjiq7U"
+              ]
+            }
+          },
+          "block_order": [
+            "accordion_row_aaAfc4",
+            "accordion_row_xXYzNY",
+            "accordion_row_zzVHj6",
+            "accordion_row_3DknHh",
+            "accordion_row_BABWcY"
+          ]
+        }
+      },
+      "block_order": [
+        "text_wb3YCx",
+        "accordion_7hpzmA"
+      ],
+      "name": "t:names.faq_section",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 32,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#1c1c1a26",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
+    "marquee_RfbP6c": {
+      "type": "marquee",
+      "blocks": {
+        "text_6LAN8N": {
+          "type": "text",
+          "settings": {
+            "text": "<p><em>\"The best of you are those who are best to their families.\" </em>(Tirmidhi)</p>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "custom",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "tight",
+            "letter_spacing": "tight",
+            "case": "none",
+            "wrap": "nowrap",
+            "color": "var(--color-foreground-heading)",
+            "background": false,
+            "background_color": "#1c1c1a",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "text_JX4wAL": {
+          "type": "text",
+          "name": "t:names.text",
+          "settings": {
+            "text": "<p><em>\"Convey from me even if it is one verse.\"   </em>(Bukhari)</p>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#1c1c1a26",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "text_VtrVNf": {
+          "type": "text",
+          "name": "t:names.text",
+          "settings": {
+            "text": "<p><em>\"Allah is beautiful and He loves beauty.\"  </em>(Muslim)</p>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#1c1c1a26",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "text_PjHeJU": {
+          "type": "text",
+          "name": "t:names.text",
+          "settings": {
+            "text": "<p><em>\"Exchange gifts, as that will lead to increasing your love for one another.\" </em>(Bukhari)</p>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#1c1c1a26",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "text_6LAN8N",
+        "text_JX4wAL",
+        "text_VtrVNf",
+        "text_PjHeJU"
+      ],
+      "name": "t:names.marquee_section",
+      "settings": {
+        "movement_direction": "normal",
+        "speed": 35,
+        "color_scheme": "scheme-5",
+        "quote_color": "#ffffff",
+        "source_color": "#b8860b",
+        "padding-block-start": 24,
+        "padding-block-end": 24,
+        "gap_between_elements": 50
+      }
+    },
+    "complete_the_look_AqPpmT": {
+      "type": "complete-the-look",
+      "blocks": {
+        "look_Ab6whq": {
+          "type": "look",
+          "settings": {
+            "heading": "The Look",
+            "product_1": "3-quls-arabic-english-frame",
+            "image_1": "shopify://shop_images/Between_the_World_and_the_Sacred_3.png",
+            "product_2": "adopt-a-gentle-tone-while-speaking-mug",
+            "image_2": "shopify://shop_images/HeadUmbrella-Inside.jpg",
+            "product_3": "al-quran-al-kareem",
+            "product_4": "arabian-platinum-thobe-caramel-brown",
+            "image_4": "shopify://shop_images/Cherry_Hijab_Dark_Wine_CDW_2.jpg",
+            "product_5": "arabian-platinum-thobe-caramel-brown",
+            "product_6": "al-quran-al-kareem",
+            "button_text": "View Entire Look",
+            "button_url": ""
+          }
+        },
+        "look_ED6Cz7": {
+          "type": "look",
+          "settings": {
+            "heading": "The Look",
+            "product_1": "3-quls-arabic-english-frame",
+            "image_1": "shopify://shop_images/Between_the_World_and_the_Sacred_3.png",
+            "product_2": "adopt-a-gentle-tone-while-speaking-mug",
+            "image_2": "shopify://shop_images/HeadUmbrella-Inside.jpg",
+            "product_3": "al-quran-al-kareem",
+            "product_4": "arabian-platinum-thobe-caramel-brown",
+            "image_4": "shopify://shop_images/Cherry_Hijab_Dark_Wine_CDW_2.jpg",
+            "product_5": "arabian-platinum-thobe-caramel-brown",
+            "product_6": "al-quran-al-kareem",
+            "button_text": "View Entire Look",
+            "button_url": ""
+          }
+        },
+        "look_ijN4gf": {
+          "type": "look",
+          "settings": {
+            "heading": "The Look",
+            "product_1": "3-quls-arabic-english-frame",
+            "image_1": "shopify://shop_images/Between_the_World_and_the_Sacred_3.png",
+            "product_2": "adopt-a-gentle-tone-while-speaking-mug",
+            "image_2": "shopify://shop_images/HeadUmbrella-Inside.jpg",
+            "product_3": "al-quran-al-kareem",
+            "product_4": "arabian-platinum-thobe-caramel-brown",
+            "image_4": "shopify://shop_images/Cherry_Hijab_Dark_Wine_CDW_2.jpg",
+            "product_5": "arabian-platinum-thobe-caramel-brown",
+            "product_6": "al-quran-al-kareem",
+            "button_text": "View Entire Look",
+            "button_url": ""
+          }
+        }
+      },
+      "block_order": [
+        "look_Ab6whq",
+        "look_ED6Cz7",
+        "look_ijN4gf"
+      ],
+      "disabled": true,
+      "name": "Complete the Look",
+      "settings": {
+        "heading": "Complete the Look",
+        "heading_alignment": "left",
+        "max_width": 1280,
+        "columns": 3,
+        "card_background": "#f0f0f0",
+        "card_aspect": "4 / 3",
+        "card_radius": 0,
+        "color_scheme": "",
+        "show_auto": true,
+        "show_preview": true,
+        "source_product": "{{ closest.product }}",
+        "auto_per_card": 5,
+        "auto_button_text": "View Entire Look",
+        "auto_modal_title": "Complete the Look",
         "padding-block-start": 48,
         "padding-block-end": 48
       }
@@ -469,6 +1567,12 @@
   },
   "order": [
     "main",
-    "product_recommendations_qggXJq"
+    "gift_it_together_pww",
+    "177504557715bae708",
+    "product_recommendations_qggXJq",
+    "section_yaHArn",
+    "section_6ag7Gi",
+    "marquee_RfbP6c",
+    "complete_the_look_AqPpmT"
   ]
 }

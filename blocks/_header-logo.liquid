@@ -4,11 +4,11 @@
   assign block_settings = block.settings
   assign use_inverse_logo = false
 
-  if section.settings.enable_transparent_header_home and template.name == 'index' and section.settings.home_inverse_logo == true
+  if section.settings.enable_transparent_header_home and template.name == 'index' and section.settings.home_color_scheme == 'inverse'
     assign use_inverse_logo = true
-  elsif section.settings.enable_transparent_header_product and template.name == 'product' and section.settings.product_inverse_logo == true
+  elsif section.settings.enable_transparent_header_product and template.name == 'product' and section.settings.product_color_scheme == 'inverse'
     assign use_inverse_logo = true
-  elsif section.settings.enable_transparent_header_collection and template.name == 'collection' and section.settings.collection_inverse_logo == true
+  elsif section.settings.enable_transparent_header_collection and template.name == 'collection' and section.settings.collection_color_scheme == 'inverse'
     assign use_inverse_logo = true
   endif
 
@@ -20,7 +20,7 @@
     endif
   endif
 
-  assign alt_text_fallback = 'accessibility.home_logo_alt' | t: store_name: shop.name
+  assign alt_text_fallback = shop.name | escape | append: ' ' | append: 'accessibility.home' | t
 %}
 
 {% comment %}

@@ -243,6 +243,24 @@
     },
     {
       "type": "range",
+      "id": "image_max_height_vh",
+      "label": "Max image height",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 100,
+      "info": "Limit image height on desktop. 100vh = full screen height."
+    },
+    {
+      "type": "number",
+      "id": "image_max_height_px",
+      "label": "Custom max height (px)",
+      "default": 0,
+      "info": "Enter a pixel value to override the slider above. Set to 0 to use the slider."
+    },
+    {
+      "type": "range",
       "id": "media_radius",
       "label": "t:settings.border_radius",
       "min": 0,
@@ -262,7 +280,7 @@
       "type": "checkbox",
       "id": "zoom",
       "label": "t:settings.enable_zoom",
-      "default": true
+      "default": false
     },
     {
       "type": "checkbox",

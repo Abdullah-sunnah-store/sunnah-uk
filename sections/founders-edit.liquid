@@ -1,0 +1,771 @@
+{% comment %}
+  Founder's Edit
+  A split editorial section on a deep colour panel: a featured "current mug-box"
+  image (left) beside a founder's letter — eyebrow + issue number, quote,
+  signature, this-month's-pick product card, two calls to action and a link to
+  the journal (right).
+
+  "Add to basket" adds the selected product's first available variant to the
+  cart. "Send as gift" links anywhere (e.g. the custom gift box page).
+  Everything — text, colours, the product, and the image — is editable from
+  the theme editor.
+{% endcomment %}
+
+{%- liquid
+  assign product = section.settings.product
+  assign variant = null
+  if product != blank
+    for v in product.variants
+      if v.available and variant == null
+        assign variant = v
+      endif
+    endfor
+    if variant == null
+      assign variant = product.variants.first
+    endif
+  endif
+
+  assign fe_image = section.settings.image
+  if fe_image == blank and product != blank
+    assign fe_image = product.featured_image
+  endif
+
+  assign pick_name = section.settings.pick_name
+  if pick_name == blank
+    assign pick_name = product.title
+  endif
+-%}
+
+<style>
+  #shopify-section-{{ section.id }} {
+    --fe-panel-bg: {{ section.settings.panel_bg }};
+    --fe-content-bg: {{ section.settings.content_bg }};
+    --fe-eyebrow: {{ section.settings.eyebrow_color }};
+    --fe-issue: {{ section.settings.issue_color }};
+    --fe-heading: {{ section.settings.heading_color }};
+    --fe-heading-rgb: {{ section.settings.heading_color.red }}, {{ section.settings.heading_color.green }}, {{ section.settings.heading_color.blue }};
+    --fe-quote: {{ section.settings.quote_color }};
+    --fe-accent: {{ section.settings.accent_color }};
+    --fe-accent-rgb: {{ section.settings.accent_color.red }}, {{ section.settings.accent_color.green }}, {{ section.settings.accent_color.blue }};
+    --fe-btn-bg: {{ section.settings.btn_bg }};
+    --fe-btn-text: {{ section.settings.btn_text }};
+    --fe-btn2-text: {{ section.settings.btn2_text }};
+    --fe-btn2-border: {{ section.settings.btn2_border }};
+  }
+
+  .fe {
+    background: var(--fe-content-bg);
+  }
+
+  .fe__inner {
+    width: 100%;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    min-height: {{ section.settings.min_height }}px;
+  }
+
+  /* ---------- Left / image panel ---------- */
+  .fe__panel {
+    background:
+      radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.06), rgba(0,0,0,0) 55%),
+      linear-gradient(155deg, var(--fe-panel-bg) 0%, rgba(28, 28, 26, 0.55) 100%),
+      var(--fe-panel-bg);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    min-height: 100%;
+    text-align: center;
+  }
+
+  .fe__panel-img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .fe__panel-icon {
+    width: 46px;
+    height: 46px;
+    color: rgba(var(--fe-heading-rgb), 0.35);
+  }
+  .fe__panel-icon svg { width: 100%; height: 100%; display: block; }
+
+  .fe__panel-text {
+    color: rgba(var(--fe-heading-rgb), 0.35);
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    line-height: 1.7;
+    margin: 0;
+    max-width: 220px;
+  }
+
+  /* ---------- Right / content ---------- */
+  .fe__content {
+    position: relative;
+    background: var(--fe-content-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 56px clamp(32px, 5vw, 72px);
+  }
+  /* subtle diagonal weave over the content panel */
+  .fe__content::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      rgba(var(--fe-heading-rgb), 0.03) 0,
+      rgba(var(--fe-heading-rgb), 0.03) 1px,
+      transparent 1px,
+      transparent 9px
+    );
+    pointer-events: none;
+  }
+  .fe__content > * { position: relative; z-index: 1; }
+
+  .fe__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .fe__eyebrow {
+    color: var(--fe-eyebrow);
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .fe__issue {
+    color: var(--fe-issue);
+    font-size: 0.75rem; /* 12px */
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .fe__rule {
+    border: 0;
+    border-top: 1px solid rgba(var(--fe-heading-rgb), 0.16);
+    margin: 16px 0 26px;
+  }
+
+  .fe__heading {
+    color: var(--fe-heading);
+    font-family: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    font-weight: {{ section.settings.heading_font.weight }};
+    font-size: clamp(2rem, 4vw, 3rem); /* 32px → 48px */
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    margin: 0 0 26px;
+  }
+  .fe__heading p { margin: 0; }
+  .fe__heading em { font-style: italic; }
+
+  .fe__quote {
+    border-left: 3px solid var(--fe-accent);
+    padding-left: 22px;
+    margin: 0 0 30px;
+    color: var(--fe-quote);
+    font-family: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    font-style: italic;
+    font-size: clamp(1rem, 1.5vw, 1.1875rem); /* 16px → 19px */
+    line-height: 1.6;
+  }
+  .fe__quote p { margin: 0 0 14px; }
+  .fe__quote p:last-child { margin-bottom: 0; }
+
+  /* ---------- Signature ---------- */
+  .fe__author {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0 0 30px;
+  }
+
+  .fe__avatar {
+    flex-shrink: 0;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 1px solid var(--fe-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fe-accent);
+    font-family: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    font-size: 1.125rem;
+    letter-spacing: 0.04em;
+  }
+
+  .fe__author-name {
+    color: var(--fe-heading);
+    font-family: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    font-style: italic;
+    font-size: 1.375rem; /* 22px */
+    line-height: 1.15;
+    margin: 0 0 2px;
+  }
+
+  .fe__author-role {
+    color: var(--fe-issue);
+    font-size: 0.8125rem; /* 13px */
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+
+  /* ---------- This month's pick ---------- */
+  .fe__pick {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 22px;
+    margin: 0 0 26px;
+    border: 1px solid rgba(var(--fe-accent-rgb), 0.30);
+    border-radius: 4px;
+    background: rgba(var(--fe-heading-rgb), 0.035);
+  }
+
+  .fe__pick-label {
+    color: var(--fe-issue);
+    font-size: 0.6875rem; /* 11px */
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+  }
+
+  .fe__pick-name {
+    color: var(--fe-heading);
+    font-family: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .fe__pick-price {
+    flex-shrink: 0;
+    color: var(--fe-accent);
+    font-family: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    font-size: 1.375rem; /* 22px */
+    line-height: 1.2;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .fe__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .fe__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.75rem; /* 12px */
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 16px 30px;
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    border: 1px solid transparent;
+  }
+  .fe__btn:hover { transform: translateY(-1px); }
+
+  .fe__btn--primary {
+    background: var(--fe-btn-bg);
+    color: var(--fe-btn-text);
+  }
+  .fe__btn--primary:hover { opacity: 0.9; }
+  .fe__btn--primary[disabled] { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .fe__btn--secondary {
+    background: transparent;
+    color: var(--fe-btn2-text);
+    border-color: var(--fe-btn2-border);
+  }
+  .fe__btn--secondary:hover { background: var(--fe-btn2-text); color: var(--fe-content-bg); }
+
+  /* ---------- Journal link ---------- */
+  .fe__more {
+    margin: 28px 0 0;
+    padding-top: 22px;
+    border-top: 1px solid rgba(var(--fe-heading-rgb), 0.16);
+    color: var(--fe-issue);
+    font-size: 0.8125rem; /* 13px */
+    letter-spacing: 0.02em;
+  }
+  .fe__more a {
+    color: var(--fe-accent);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  /* !important is required to beat the theme's global `p a:hover` rule in
+     base.css, whose :is() wrapper gives it (0,3,2) specificity. Keep the
+     underline too (that rule also sets text-decoration-color: transparent). */
+  .fe__content .fe__more a:hover {
+    color: var(--fe-heading) !important;
+    text-decoration-color: currentcolor !important;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 749px) {
+    .fe__inner {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .fe__panel { order: 1; min-height: 320px; aspect-ratio: 4 / 3; }
+    .fe__content { order: 2; padding: 40px 24px; }
+    .fe__pick { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .fe__actions { gap: 12px; }
+    .fe__btn { flex: 1 1 auto; }
+  }
+</style>
+
+<div class="fe">
+  <div class="fe__inner">
+
+    {% comment %} Left — image panel {% endcomment %}
+    <div class="fe__panel">
+      {%- if fe_image != blank -%}
+        {{ fe_image | image_url: width: 1400 | image_tag:
+          class: 'fe__panel-img',
+          loading: 'lazy',
+          widths: '500, 700, 900, 1100, 1400',
+          alt: fe_image.alt | default: product.title | default: section.settings.heading
+        }}
+      {%- else -%}
+        <span class="fe__panel-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 8a2 2 0 0 1 2-2h1.2l.9-1.5A1 1 0 0 1 9 4h6a1 1 0 0 1 .86.5L16.8 6H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z" stroke="currentColor" stroke-width="1.4"/>
+            <circle cx="12" cy="12.5" r="3.2" stroke="currentColor" stroke-width="1.4"/>
+          </svg>
+        </span>
+        {%- if section.settings.placeholder_text != blank -%}
+          <p class="fe__panel-text">{{ section.settings.placeholder_text }}</p>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+
+    {% comment %} Right — content {% endcomment %}
+    <div class="fe__content">
+      {%- if section.settings.eyebrow != blank or section.settings.issue_label != blank or section.settings.use_hijri -%}
+        <div class="fe__top">
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="fe__eyebrow">{{ section.settings.eyebrow }}</p>
+          {%- endif -%}
+          {%- if section.settings.use_hijri -%}
+            <p class="fe__issue" data-fe-hijri>{{ section.settings.issue_label }}</p>
+          {%- elsif section.settings.issue_label != blank -%}
+            <p class="fe__issue">{{ section.settings.issue_label }}</p>
+          {%- endif -%}
+        </div>
+        <hr class="fe__rule">
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <div class="fe__heading">{{ section.settings.heading }}</div>
+      {%- endif -%}
+
+      {%- if section.settings.quote != blank -%}
+        <div class="fe__quote">{{ section.settings.quote }}</div>
+      {%- endif -%}
+
+      {%- if section.settings.author_name != blank -%}
+        <div class="fe__author">
+          {%- if section.settings.author_initials != blank -%}
+            <span class="fe__avatar">{{ section.settings.author_initials }}</span>
+          {%- endif -%}
+          <div class="fe__author-meta">
+            <p class="fe__author-name">{{ section.settings.author_name }}</p>
+            {%- if section.settings.author_role != blank -%}
+              <p class="fe__author-role">{{ section.settings.author_role }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if pick_name != blank -%}
+        <div class="fe__pick">
+          <div class="fe__pick-info">
+            {%- if section.settings.pick_label != blank -%}
+              <p class="fe__pick-label">{{ section.settings.pick_label }}</p>
+            {%- endif -%}
+            <p class="fe__pick-name">{{ pick_name }}</p>
+          </div>
+          {%- if variant != blank -%}
+            <p class="fe__pick-price">{{ variant.price | money }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="fe__actions">
+        {%- if variant != blank -%}
+          <button
+            type="button"
+            class="fe__btn fe__btn--primary"
+            data-fe-add
+            data-variant-id="{{ variant.id }}"
+            {% unless variant.available %}disabled{% endunless %}
+          >
+            {{ section.settings.add_label | default: 'Add to basket' }}
+          </button>
+        {%- endif -%}
+
+        {%- if section.settings.gift_label != blank and section.settings.gift_link != blank -%}
+          <a
+            href="{{ section.settings.gift_link }}"
+            class="fe__btn fe__btn--secondary"
+            {% if section.settings.gift_new_tab %}target="_blank" rel="noopener"{% endif %}
+          >
+            {{ section.settings.gift_label }}
+          </a>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.journal_label != blank and section.settings.journal_link != blank -%}
+        <p class="fe__more">
+          {{ section.settings.journal_prefix }}
+          <a
+            href="{{ section.settings.journal_link }}"
+            {% if section.settings.journal_new_tab %}target="_blank" rel="noopener"{% endif %}
+          >{{ section.settings.journal_label }} &rarr;</a>
+        </p>
+      {%- endif -%}
+    </div>
+
+  </div>
+</div>
+
+{%- if section.settings.use_hijri -%}
+<script>
+  (function () {
+    var root = document.getElementById('shopify-section-{{ section.id }}') || document;
+    var el = root.querySelector('[data-fe-hijri]');
+    if (!el) return;
+    try {
+      var now = new Date();
+      var locale = 'en-GB-u-ca-islamic-umalqura';
+      var opts = { day: 'numeric', month: 'long', year: 'numeric' };
+      var text;
+      try {
+        text = new Intl.DateTimeFormat(locale, opts).format(now);
+      } catch (inner) {
+        text = new Intl.DateTimeFormat('en-GB-u-ca-islamic', opts).format(now);
+      }
+      if (text) { el.textContent = text; }
+    } catch (e) { /* keep the server-rendered fallback */ }
+  })();
+</script>
+{%- endif -%}
+
+{%- if variant != blank -%}
+<script>
+  (function () {
+    var root = document.getElementById('shopify-section-{{ section.id }}') || document;
+    var btn = root.querySelector('[data-fe-add]');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      if (btn.hasAttribute('disabled')) return;
+      var id = btn.getAttribute('data-variant-id');
+      var original = btn.textContent;
+      btn.setAttribute('disabled', 'disabled');
+      btn.textContent = {{ 'Adding…' | json }};
+      fetch('{{ routes.cart_add_url }}.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ items: [{ id: id, quantity: 1 }] })
+      })
+        .then(function (res) {
+          if (!res.ok) { throw new Error('add failed'); }
+          window.location.href = '{{ routes.cart_url }}';
+        })
+        .catch(function () {
+          btn.removeAttribute('disabled');
+          btn.textContent = original;
+          alert('Sorry, this item could not be added. Please try again.');
+        });
+    });
+  })();
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Founder's Edit",
+  "tag": "section",
+  "class": "section section--full-width",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Soulful Latte with Raashid"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_hijri",
+      "label": "Show live Hijri (Islamic) date top-right",
+      "info": "Automatically displays today's Islamic calendar date, updated daily.",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "issue_label",
+      "label": "Issue / date label (fallback)",
+      "info": "Shown top-right when the live Hijri date is off, or before it loads.",
+      "default": "No. 04 · Muharram"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Use italics for the emphasised word.",
+      "default": "<p>The gift I reach for first.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "quote",
+      "label": "Quote",
+      "default": "<p>\"I gave this to my mother on an ordinary Tuesday — no occasion, no reason. She still sends me a photo of it every morning with her tea.</p><p>That was the day I understood what we actually make here: not a mug, but a way to say 'I was thinking of you' — without needing the words.\"</p>"
+    },
+    {
+      "type": "header",
+      "content": "Signature"
+    },
+    {
+      "type": "text",
+      "id": "author_initials",
+      "label": "Avatar initials",
+      "default": "RS"
+    },
+    {
+      "type": "text",
+      "id": "author_name",
+      "label": "Author name",
+      "default": "Rashid Shahriar"
+    },
+    {
+      "type": "text",
+      "id": "author_role",
+      "label": "Author role",
+      "default": "Founder & CEO, The Sunnah Store"
+    },
+    {
+      "type": "header",
+      "content": "This month's pick"
+    },
+    {
+      "type": "text",
+      "id": "pick_label",
+      "label": "Pick label",
+      "default": "This month's pick"
+    },
+    {
+      "type": "text",
+      "id": "pick_name",
+      "label": "Pick name override",
+      "info": "Optional. Falls back to the featured product's title."
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Featured product",
+      "info": "Used for the pick name, price, \"Add to basket\", and the default panel image."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image override",
+      "info": "Optional. Falls back to the product's featured image, then a placeholder."
+    },
+    {
+      "type": "text",
+      "id": "placeholder_text",
+      "label": "Image placeholder text",
+      "info": "Shown on the left panel when no image is set.",
+      "default": "Your current mug-box photo goes here"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "add_label",
+      "label": "Add to basket label",
+      "default": "Add to basket"
+    },
+    {
+      "type": "text",
+      "id": "gift_label",
+      "label": "Secondary button label",
+      "default": "Send as gift"
+    },
+    {
+      "type": "url",
+      "id": "gift_link",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "gift_new_tab",
+      "label": "Open secondary link in new tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Journal link"
+    },
+    {
+      "type": "text",
+      "id": "journal_prefix",
+      "label": "Prefix text",
+      "default": "More from me:"
+    },
+    {
+      "type": "text",
+      "id": "journal_label",
+      "label": "Link label",
+      "default": "Read my latest letter in The Journal"
+    },
+    {
+      "type": "url",
+      "id": "journal_link",
+      "label": "Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "journal_new_tab",
+      "label": "Open journal link in new tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "panel_bg",
+      "label": "Image panel background",
+      "default": "#14120b"
+    },
+    {
+      "type": "color",
+      "id": "content_bg",
+      "label": "Content background",
+      "default": "#08291E"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "Eyebrow",
+      "default": "#F5F0E8"
+    },
+    {
+      "type": "color",
+      "id": "issue_color",
+      "label": "Muted text (issue, role, pick label)",
+      "default": "#adbfb2"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#F5F0E8"
+    },
+    {
+      "type": "color",
+      "id": "quote_color",
+      "label": "Quote",
+      "default": "#F5F0E8"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent (bar, avatar, price)",
+      "default": "#D4A830"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Primary button background",
+      "default": "#D4A830"
+    },
+    {
+      "type": "color",
+      "id": "btn_text",
+      "label": "Primary button text",
+      "default": "#14120b"
+    },
+    {
+      "type": "color",
+      "id": "btn2_text",
+      "label": "Secondary button text / border base",
+      "default": "#F5F0E8"
+    },
+    {
+      "type": "color",
+      "id": "btn2_border",
+      "label": "Secondary button border",
+      "default": "#F5F0E8"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading & quote font",
+      "default": "cormorant_n7"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "Minimum height",
+      "min": 300,
+      "max": 700,
+      "step": 10,
+      "unit": "px",
+      "default": 560
+    }
+  ],
+  "presets": [
+    {
+      "name": "Founder's Edit"
+    }
+  ]
+}
+{% endschema %}

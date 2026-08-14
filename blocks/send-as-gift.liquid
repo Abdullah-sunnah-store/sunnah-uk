@@ -1,0 +1,94 @@
+
+
+{%- doc -%}
+  Adds a "Send as Gift" button on the product page.
+  When clicked it opens a modal to collect recipient details.
+  The item is added to cart with gift line item properties.
+  Cart attribute `gift_order: true` is set, which can be read
+  by a Shopify Payment Customization to block Cash on Delivery.
+{%- enddoc -%}
+
+{% liquid
+  assign product = closest.product
+  assign current_variant = product.selected_or_first_available_variant
+  assign style_class = block.settings.style_class
+%}
+
+<span
+  {{ block.shopify_attributes }}
+  style="--add-to-cart-font-case: {{ settings.button_text_case }};"
+>
+  <button
+    type="button"
+    class="button {{ style_class }} send-as-gift__btn"
+    data-send-as-gift
+    data-variant-id="{{ current_variant.id }}"
+    {% unless current_variant.available %}
+      disabled
+    {% endunless %}
+  >
+    <span class="svg-wrapper send-as-gift__icon" aria-hidden="true">
+      {{- 'icon-gift.svg' | inline_asset_content -}}
+    </span>
+    <span>{{ block.settings.button_label | default: 'Send as Gift' }}</span>
+  </button>
+</span>
+
+{% # Render the modal once on the page — subsequent blocks share the same modal %}
+{% unless gift_modal_rendered %}
+  {% assign gift_modal_rendered = true %}
+  {% render 'send-as-gift-modal' %}
+{% endunless %}
+
+<script type="module" src="{{ 'send-as-gift.js' | asset_url }}"></script>
+
+{% stylesheet %}
+  .send-as-gift__btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-xs, 0.5rem);
+  }
+
+  .send-as-gift__icon {
+    display: flex;
+    align-items: center;
+  }
+
+  .send-as-gift__icon svg {
+    width: var(--icon-size-sm, 1.1rem);
+    height: var(--icon-size-sm, 1.1rem);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Send as Gift",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Send as Gift"
+    },
+    {
+      "type": "select",
+      "id": "style_class",
+      "label": "Button style",
+      "options": [
+        {
+          "value": "button",
+          "label": "Primary"
+        },
+        {
+          "value": "button-secondary",
+          "label": "Secondary"
+        }
+      ],
+      "default": "button-secondary"
+    }
+  ]
+}
+{% endschema %}

@@ -75,22 +75,17 @@
     "view_pricing_info": "Visa prissättningsinformation",
     "slideshow": "Bildspel",
     "header_navigation_label": "Primär",
-    "home_logo_alt": "{{ store_name }} – Startsida",
+    "home": "Hem",
     "active_filters": "Aktiva filter:",
     "product_details": "Produktdetaljer",
     "show_product_details": "Visa produktdetaljer för {{ product_name }}",
-    "show_submenu": "Visa undermeny för {{ title }}",
-    "featured_product": "Utvald produkt",
-    "search_suggestions_available": "Sökförslag tillgängliga för \"{{ query }}\"",
-    "price_filter_low": "Lågt pris",
-    "price_filter_high": "Högt pris",
-    "view_disclosure_information_for_product": "Visa produktupplysningar för {{ product_title }}"
+    "featured_product": "Utvald produkt"
   },
   "actions": {
     "add_to_cart": "Lägg till i varukorgen",
     "clear_all": "Rensa alla",
     "remove": "Ta bort",
-    "view_in_your_space": "Visa i din miljö",
+    "view_in_your_space": "Visa i ditt utrymme",
     "show_filters": "Filter",
     "clear": "Rensa",
     "continue_shopping": "Fortsätt handla",
@@ -124,10 +119,7 @@
     "sign_up": "Registrera dig",
     "sort": "Sortera",
     "show_all_options": "Visa alla alternativ",
-    "open": "Öppna",
-    "back_to": "Tillbaka till {{ title }}",
-    "back_to_main_menu": "Tillbaka till huvudmenyn",
-    "zoom_media": "Zooma media {{ index }}"
+    "open": "Öppna"
   },
   "content": {
     "reviews": "recensioner",
@@ -141,7 +133,7 @@
     "quantity": "Kvantitet",
     "product_total": "Produkter totalt",
     "cart_estimated_total": "Beräknad totalsumma",
-    "seller_note": "Särskilda anvisningar",
+    "seller_note": "Särskilda instruktioner",
     "cart_subtotal": "Delsumma",
     "discounts": "Rabatter",
     "discount": "Rabatt",
@@ -225,7 +217,7 @@
     "taxes_at_checkout_shipping_at_checkout_without_policy_without_discounts": "Skatt och frakt beräknas i kassan.",
     "taxes_included_shipping_at_checkout_with_policy_without_discounts_html": "Skatter ingår. Frakt beräknas i kassan.",
     "taxes_included_shipping_at_checkout_without_policy_without_discounts": "Skatter ingår. Frakt beräknas i kassan.",
-    "view_more_details": "Visa mer information",
+    "view_more_details": "Visa fler uppgifter",
     "page_placeholder_title": "Sidrubrik",
     "page_placeholder_content": "Välj en sida om du vill visa dess innehåll.",
     "placeholder_image": "Platshållarbild",
@@ -256,7 +248,7 @@
     "product_custom_property_character_count": "{{ used_chars }}/{{ max_chars }} tecken har använts",
     "terms_and_policies": "Villkor och policyer",
     "pagination": {
-      "nav_label": "Paginering",
+      "nav_label": "Navigering av paginering",
       "previous": "Föregående",
       "next": "Nästa",
       "page": "Sidan {{ page }}"
@@ -283,9 +275,7 @@
       "one": "1 artikel har lagts till i varukorgen",
       "other": "{{ count }} artiklar har lagts till i varukorgen"
     },
-    "item_count_cutoff": "Fler än {{ count }} artiklar",
-    "quick_order_list": "Snabborderlista",
-    "product_disclosures": "Produktupplysningar"
+    "item_count_cutoff": "Fler än {{ count }} artiklar"
   },
   "gift_cards": {
     "issued": {

@@ -1,0 +1,255 @@
+<section class="clg-section" style="
+  background-color: {{ section.settings.section_bg }};
+  padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;
+">
+  <div class="clg-inner">
+    <div class="clg-grid" style="
+      border: {{ section.settings.border_width }}px solid {{ section.settings.border_color }};
+      border-radius: {{ section.settings.card_radius }}px;
+    ">
+
+      {%- for block in section.blocks -%}
+        {%- assign parent = collections[block.settings.parent_collection] -%}
+        <div class="clg-column" style="
+          background-color: {{ block.settings.column_bg }};
+          border-right: {{ section.settings.border_width }}px solid {{ section.settings.border_color }};
+        " {{ block.shopify_attributes }}>
+
+          <a class="clg-col-title" href="{{ parent.url | default: '#' }}" style="
+            color: {{ block.settings.title_color }};
+            font-size: {{ section.settings.title_font_size }}px;
+            font-weight: {{ section.settings.title_font_weight }};
+            font-family: var(--font-heading--family);
+            text-transform: {{ section.settings.title_transform }};
+          ">
+            {%- if parent != blank -%}
+              {{ parent.title }}
+            {%- else -%}
+              {{ block.settings.fallback_title }}
+            {%- endif -%}
+          </a>
+
+          <ul class="clg-links">
+            {%- assign child_ids = 'col_1,col_2,col_3,col_4,col_5,col_6,col_7,col_8,col_9,col_10' | split: ',' -%}
+            {%- for key in child_ids -%}
+              {%- assign child = collections[block.settings[key]] -%}
+              {%- if child != blank -%}
+                <li>
+                  <a href="{{ child.url }}" class="clg-link" style="color: {{ section.settings.link_color }};">
+                    <span class="clg-arrow">→</span>{{ child.title }}
+                  </a>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+
+        </div>
+      {%- endfor -%}
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .clg-section { box-sizing: border-box; }
+
+  .clg-inner { width: 100%; }
+
+  .clg-grid {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.columns }}, 1fr);
+    gap: 0;
+    overflow: hidden;
+  }
+
+  .clg-column {
+    padding: {{ section.settings.card_padding }}px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: filter 0.25s ease;
+    cursor: pointer;
+  }
+
+  .clg-column:last-child { border-right: none !important; }
+
+  .clg-column:hover { filter: brightness(1.4); }
+
+  .clg-col-title {
+    display: block;
+    text-align: left;
+    text-decoration: none;
+    margin: 0 0 {{ section.settings.title_bottom_gap }}px;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+    transition: opacity 0.2s;
+  }
+
+  .clg-col-title:hover { opacity: 0.75; }
+
+  .clg-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: {{ section.settings.link_gap }}px;
+    width: 100%;
+  }
+
+  .clg-link {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    text-align: left;
+    font-size: {{ section.settings.link_font_size }}px;
+    font-family: var(--font-body--family);
+    text-decoration: none;
+    line-height: 1.4;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .clg-link:hover {
+    opacity: 0.85;
+    transform: translateX(3px);
+  }
+
+  .clg-arrow {
+    flex-shrink: 0;
+    font-style: normal;
+  }
+
+  @media screen and (max-width: 768px) {
+    .clg-section {
+      padding: {{ section.settings.mobile_padding_top }}px {{ section.settings.mobile_padding_right }}px {{ section.settings.mobile_padding_bottom }}px {{ section.settings.mobile_padding_left }}px !important;
+    }
+    .clg-col-title { font-size: {{ section.settings.title_font_size_mobile }}px !important; }
+    .clg-link { font-size: {{ section.settings.link_font_size_mobile }}px !important; }
+    .clg-grid {
+      grid-template-columns: repeat({{ section.settings.mobile_columns }}, 1fr);
+    }
+    .clg-column {
+      border-right: {{ section.settings.border_width }}px solid {{ section.settings.border_color }} !important;
+      border-bottom: {{ section.settings.border_width }}px solid {{ section.settings.border_color }};
+    }
+    /* Remove right border from last column in each row */
+    .clg-column:nth-child({{ section.settings.mobile_columns }}n) {
+      border-right: none !important;
+    }
+    /* Remove bottom border from all columns in the last row */
+    .clg-column:nth-last-child(-n+{{ section.settings.mobile_columns }}) {
+      border-bottom: none !important;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .clg-grid { grid-template-columns: repeat({{ section.settings.phone_columns }}, 1fr); }
+    .clg-column {
+      border-right: {{ section.settings.border_width }}px solid {{ section.settings.border_color }} !important;
+      border-bottom: {{ section.settings.border_width }}px solid {{ section.settings.border_color }};
+    }
+    .clg-column:nth-child({{ section.settings.phone_columns }}n) { border-right: none !important; }
+    .clg-column:nth-last-child(-n+{{ section.settings.phone_columns }}) { border-bottom: none !important; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Collection List Grid",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "columns",        "label": "Columns (desktop)", "min": 1, "max": 6,   "step": 1,  "default": 4 },
+    { "type": "range", "id": "mobile_columns", "label": "Columns (tablet)",  "min": 1, "max": 4,   "step": 1,  "default": 2 },
+    { "type": "range", "id": "phone_columns",  "label": "Columns (mobile)",  "min": 1, "max": 3,   "step": 1,  "default": 2 },
+    { "type": "range", "id": "card_radius",    "label": "Container radius (px)", "min": 0, "max": 30, "step": 2, "default": 8 },
+    { "type": "range", "id": "card_padding",   "label": "Card padding (px)", "min": 12, "max": 60,  "step": 4,  "default": 28 },
+
+    { "type": "header", "content": "Border" },
+    { "type": "color", "id": "border_color", "label": "Border color", "default": "#ffffff" },
+    { "type": "range", "id": "border_width", "label": "Border width (px)", "min": 1, "max": 6, "step": 1, "default": 2 },
+
+    { "type": "header", "content": "Section Spacing — Desktop" },
+    { "type": "range", "id": "padding_top",    "label": "Padding top",    "min": 0, "max": 100, "step": 4, "default": 40 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 100, "step": 4, "default": 40 },
+    { "type": "range", "id": "padding_left",   "label": "Padding left",   "min": 0, "max": 80,  "step": 4, "default": 0 },
+    { "type": "range", "id": "padding_right",  "label": "Padding right",  "min": 0, "max": 80,  "step": 4, "default": 0 },
+
+    { "type": "header", "content": "Section Spacing — Mobile" },
+    { "type": "range", "id": "mobile_padding_top",    "label": "Padding top",    "min": 0, "max": 100, "step": 4, "default": 24 },
+    { "type": "range", "id": "mobile_padding_bottom", "label": "Padding bottom", "min": 0, "max": 100, "step": 4, "default": 24 },
+    { "type": "range", "id": "mobile_padding_left",   "label": "Padding left",   "min": 0, "max": 80,  "step": 4, "default": 0 },
+    { "type": "range", "id": "mobile_padding_right",  "label": "Padding right",  "min": 0, "max": 80,  "step": 4, "default": 0 },
+
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "section_bg",  "label": "Section background", "default": "#ffffff" },
+    { "type": "color", "id": "link_color",  "label": "Child link color",   "default": "#333333" },
+
+    { "type": "header", "content": "Column Title" },
+    { "type": "range",  "id": "title_font_size",        "label": "Font size desktop (px)", "min": 10, "max": 36, "step": 1, "default": 15 },
+    { "type": "range",  "id": "title_font_size_mobile", "label": "Font size mobile (px)",  "min": 10, "max": 36, "step": 1, "default": 13 },
+    {
+      "type": "select", "id": "title_font_weight", "label": "Font weight",
+      "options": [{"value":"400","label":"Regular"},{"value":"600","label":"Semi-bold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"}],
+      "default": "700"
+    },
+    {
+      "type": "select", "id": "title_transform", "label": "Text transform",
+      "options": [{"value":"none","label":"None"},{"value":"uppercase","label":"Uppercase"},{"value":"lowercase","label":"Lowercase"},{"value":"capitalize","label":"Capitalize"}],
+      "default": "none"
+    },
+    {
+      "type": "select", "id": "title_font_family", "label": "Font family",
+      "options": [{"value":"inherit","label":"Theme default"},{"value":"'Cormorant', serif","label":"Cormorant"},{"value":"serif","label":"Serif"},{"value":"sans-serif","label":"Sans-serif"}],
+      "default": "inherit"
+    },
+    { "type": "range", "id": "title_bottom_gap", "label": "Space below title (px)", "min": 8, "max": 48, "step": 2, "default": 20 },
+
+    { "type": "header", "content": "Child Links" },
+    { "type": "range",  "id": "link_font_size",        "label": "Font size desktop (px)", "min": 10, "max": 28, "step": 1, "default": 14 },
+    { "type": "range",  "id": "link_font_size_mobile", "label": "Font size mobile (px)",  "min": 10, "max": 28, "step": 1, "default": 12 },
+    { "type": "range",  "id": "link_gap",       "label": "Gap between links (px)", "min": 2, "max": 24, "step": 1, "default": 10 },
+    {
+      "type": "select", "id": "link_font_family", "label": "Font family",
+      "options": [{"value":"inherit","label":"Theme default"},{"value":"'Cormorant', serif","label":"Cormorant"},{"value":"serif","label":"Serif"},{"value":"sans-serif","label":"Sans-serif"}],
+      "default": "inherit"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "column",
+      "name": "Column",
+      "settings": [
+        { "type": "collection", "id": "parent_collection", "label": "Parent collection (title)" },
+        { "type": "text",       "id": "fallback_title",    "label": "Fallback title (if no collection)", "default": "Shop by" },
+        { "type": "color",      "id": "column_bg",         "label": "Column background", "default": "#1C4A3A" },
+        { "type": "color",      "id": "title_color",       "label": "Title color",       "default": "#ffffff" },
+        { "type": "header",     "content": "Child Collections" },
+        { "type": "collection", "id": "col_1",  "label": "Collection 1" },
+        { "type": "collection", "id": "col_2",  "label": "Collection 2" },
+        { "type": "collection", "id": "col_3",  "label": "Collection 3" },
+        { "type": "collection", "id": "col_4",  "label": "Collection 4" },
+        { "type": "collection", "id": "col_5",  "label": "Collection 5" },
+        { "type": "collection", "id": "col_6",  "label": "Collection 6" },
+        { "type": "collection", "id": "col_7",  "label": "Collection 7" },
+        { "type": "collection", "id": "col_8",  "label": "Collection 8" },
+        { "type": "collection", "id": "col_9",  "label": "Collection 9" },
+        { "type": "collection", "id": "col_10", "label": "Collection 10" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection List Grid",
+      "blocks": [
+        { "type": "column" },
+        { "type": "column" },
+        { "type": "column" },
+        { "type": "column" }
+      ]
+    }
+  ],
+  "max_blocks": 8
+}
+{% endschema %}

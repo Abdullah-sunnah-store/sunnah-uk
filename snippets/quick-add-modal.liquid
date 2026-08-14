@@ -3,12 +3,9 @@
   type="module"
   fetchpriority="low"
 ></script>
-
-{% render 'dialog-styles' %}
-
 <quick-add-dialog id="quick-add-dialog">
   <dialog
-    class="quick-add-modal dialog-modal color-custom-popover"
+    class="quick-add-modal dialog-modal color-{{ settings.popover_color_scheme }}"
     ref="dialog"
     scroll-lock
   >
@@ -21,15 +18,12 @@
       {{- 'icon-close.svg' | inline_asset_content -}}
     </button>
 
-    <product-component
+    <div
       id="quick-add-modal-content"
       class="quick-add-modal__content"
-      view-event-trigger="dialog"
-    ></product-component>
+    ></div>
   </dialog>
 </quick-add-dialog>
 
-{% render 'product-media-container-styles' %}
 {% render 'quick-add-modal-styles' %}
 {% render 'product-media-gallery-content-styles' %}
-{% render 'payment-terms-styles' %}

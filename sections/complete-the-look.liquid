@@ -1,0 +1,578 @@
+{% comment %}
+  Complete the Look — Nike-style "shop the look" / related products section.
+  AUTOMATIC by default: generates N cards (default 3); each card = the viewed
+  (preview) product + a different set of related products (default 5 per card).
+  Related pool = complementary + related metafields (Search & Discovery) with a
+  same-collection fallback, deduped, current product excluded, capped at
+  cards x per_card so every card shows different products.
+  Optional MANUAL "Look" blocks can still be added for fully curated cards.
+  Each product has a hotspot dot (hover/tap → product popover); each card has a
+  "View Entire Look" button opening a shop-the-look modal.
+{% endcomment %}
+
+{% liquid
+  assign sec = section.settings
+
+  comment
+    Resolve the source product: explicit picker first, else the page product.
+  endcomment
+  assign src_product = sec.source_product
+  if src_product == blank
+    assign src_product = closest.product
+  endif
+  if src_product == blank
+    assign src_product = product
+  endif
+  comment
+    Final fallback so a "view product" hero always shows (used when the section
+    can't read a current product, e.g. editor preview or non-product pages).
+    On live product pages src_product is the actual viewed product.
+  endcomment
+  if src_product == blank
+    assign src_product = collections.all.products.first
+  endif
+
+  assign per_card = sec.auto_per_card | default: 5
+  assign look_blocks = section.blocks
+  assign card_count = look_blocks.size
+  if card_count < 1
+    assign card_count = 3
+  endif
+  assign needed = per_card | times: card_count
+
+  comment
+    Build a dynamic pool of related products: complementary + related
+    metafields (Search & Discovery), then same-collection products as a
+    fallback. Deduped, current product excluded, image required, capped at
+    (cards x per_card) so each card gets a different set.
+  endcomment
+  assign related = '' | split: ''
+  if sec.show_auto
+    if src_product != blank
+      assign comp = src_product.metafields["shopify--discovery--product_recommendation"]["complementary_products"].value
+      if comp != blank
+        assign related = related | concat: comp
+      endif
+      assign rel = src_product.metafields["shopify--discovery--product_recommendation"]["related_products"].value
+      if rel != blank
+        assign related = related | concat: rel
+      endif
+      comment
+        Same-collection products (all collections the product is in).
+      endcomment
+      for c in src_product.collections
+        assign related = related | concat: c.products
+      endfor
+    endif
+    comment
+      Catalog fallback so cards always fill, even without related data or a
+      product context. Pull from store collections until we have enough.
+    endcomment
+    if related.size < needed
+      for c in collections
+        assign related = related | concat: c.products
+        if related.size >= needed
+          break
+        endif
+      endfor
+    endif
+  endif
+
+  assign pool = '' | split: ''
+  assign seen = ''
+  for p in related
+    if p.id != blank and p.id != src_product.id
+      assign key = '|' | append: p.id | append: '|'
+      unless seen contains key
+        assign one = related | slice: forloop.index0, 1
+        assign pool = pool | concat: one
+        assign seen = seen | append: key
+      endunless
+    endif
+  endfor
+  if pool.size > needed
+    assign pool = pool | slice: 0, needed
+  endif
+%}
+
+<div
+  class="ctl color-{{ sec.color_scheme }} section spacing-style"
+  id="ctl-{{ section.id }}"
+  style="
+    --ctl-card-bg: {{ sec.card_background }};
+    --ctl-cols: {{ sec.columns }};
+    --ctl-radius: {{ sec.card_radius }}px;
+    --ctl-aspect: {{ sec.card_aspect }};
+    {% render 'spacing-style', settings: sec %}
+  "
+>
+  <div class="ctl-inner page-width" style="max-width: {{ sec.max_width }}px;">
+
+    {% if sec.heading != blank %}
+      <h2 class="ctl-heading" style="text-align: {{ sec.heading_alignment }};">{{ sec.heading }}</h2>
+    {% endif %}
+
+    <div class="ctl-grid">
+
+      {% comment %} ── LOOK CARDS: one per block; auto-fill when block is empty ── {% endcomment %}
+      {% for block in look_blocks %}
+        {% assign look_id = 'ctl-look-' | append: block.id %}
+        {% assign look_count = 0 %}
+        {% for i in (1..6) %}
+          {% assign pkey = 'product_' | append: i %}
+          {% assign ikey = 'image_' | append: i %}
+          {% if block.settings[pkey] != blank or block.settings[ikey] != blank %}{% assign look_count = look_count | plus: 1 %}{% endif %}
+        {% endfor %}
+
+        {% assign auto_fill = false %}
+        {% assign chunk = '' | split: '' %}
+        {% if look_count == 0 and sec.show_auto and pool.size > 0 %}
+          {% assign auto_fill = true %}
+          {% assign offset = forloop.index0 | times: per_card %}
+          {% assign chunk = pool | slice: offset, per_card %}
+          {% if chunk == blank %}{% assign chunk = pool | slice: 0, per_card %}{% endif %}
+        {% endif %}
+
+        {% if look_count > 0 or auto_fill %}
+          <div class="ctl-card" {{ block.shopify_attributes }}>
+            <div class="ctl-collage">
+              {% if auto_fill %}
+                {% if sec.show_preview and src_product != blank %}{% render 'ctl-collage-item', p: src_product %}{% endif %}
+                {% for p in chunk %}{% render 'ctl-collage-item', p: p %}{% endfor %}
+              {% else %}
+                {% for i in (1..6) %}
+                  {% assign pkey = 'product_' | append: i %}
+                  {% assign ikey = 'image_' | append: i %}
+                  {% assign p = block.settings[pkey] %}
+                  {% assign img = block.settings[ikey] %}
+                  {% if p != blank or img != blank %}{% render 'ctl-collage-item', p: p, image: img %}{% endif %}
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            {% if block.settings.button_url != blank %}
+              <a class="ctl-view" href="{{ block.settings.button_url }}">
+                {% render 'ctl-eye-icon' %}
+                <span>{{ block.settings.button_text | default: 'View Entire Look' }}</span>
+              </a>
+            {% else %}
+              <button type="button" class="ctl-view" aria-haspopup="dialog" data-ctl-open="{{ look_id }}">
+                {% render 'ctl-eye-icon' %}
+                <span>{{ block.settings.button_text | default: 'View Entire Look' }}</span>
+              </button>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  {% comment %} ── MODALS (one per card that opens a look) ── {% endcomment %}
+
+  {% comment %} Look modals (one per block; auto-fill when empty) {% endcomment %}
+  {% for block in look_blocks %}
+    {% if block.settings.button_url == blank %}
+      {% assign look_id = 'ctl-look-' | append: block.id %}
+      {% assign look_count = 0 %}
+      {% for i in (1..6) %}
+        {% assign pkey = 'product_' | append: i %}
+        {% assign ikey = 'image_' | append: i %}
+        {% if block.settings[pkey] != blank or block.settings[ikey] != blank %}{% assign look_count = look_count | plus: 1 %}{% endif %}
+      {% endfor %}
+
+      {% assign auto_fill = false %}
+      {% assign chunk = '' | split: '' %}
+      {% if look_count == 0 and sec.show_auto and pool.size > 0 %}
+        {% assign auto_fill = true %}
+        {% assign offset = forloop.index0 | times: per_card %}
+        {% assign chunk = pool | slice: offset, per_card %}
+        {% if chunk == blank %}{% assign chunk = pool | slice: 0, per_card %}{% endif %}
+      {% endif %}
+
+      {% if look_count > 0 or auto_fill %}
+        <div class="ctl-modal" id="{{ look_id }}" role="dialog" aria-modal="true" aria-label="{{ block.settings.heading | default: 'Complete the Look' | escape }}">
+          <div class="ctl-modal__overlay" data-ctl-close></div>
+          <div class="ctl-modal__panel">
+            <div class="ctl-modal__head">
+              <p class="ctl-modal__title">{{ block.settings.heading | default: sec.auto_modal_title | default: 'Complete the Look' }}</p>
+              <button type="button" class="ctl-modal__close" data-ctl-close aria-label="Close">&times;</button>
+            </div>
+            <div class="ctl-modal__list">
+              {% if auto_fill %}
+                {% if sec.show_preview and src_product != blank %}{% render 'ctl-modal-row', p: src_product %}{% endif %}
+                {% for p in chunk %}{% render 'ctl-modal-row', p: p %}{% endfor %}
+              {% else %}
+                {% for i in (1..6) %}
+                  {% assign pkey = 'product_' | append: i %}
+                  {% assign p = block.settings[pkey] %}
+                  {% if p != blank %}{% render 'ctl-modal-row', p: p %}{% endif %}
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+</div>
+
+<style>
+  #ctl-{{ section.id }} .ctl-inner { margin-inline: auto; }
+
+  #ctl-{{ section.id }} .ctl-heading {
+    font-family: var(--font-heading--family);
+    font-size: var(--font-h2--size);
+    font-weight: var(--font-h2--weight);
+    line-height: var(--font-h2--line-height);
+    letter-spacing: var(--font-h2--letter-spacing);
+    color: var(--color-foreground-heading, var(--color-foreground));
+    margin: 0 0 1.5rem;
+  }
+
+  #ctl-{{ section.id }} .ctl-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--ctl-cols), 1fr);
+    gap: 24px;
+  }
+
+  #ctl-{{ section.id }} .ctl-card {
+    position: relative;
+    background: var(--ctl-card-bg);
+    border-radius: var(--ctl-radius);
+    aspect-ratio: var(--ctl-aspect);
+    overflow: visible;
+  }
+
+  #ctl-{{ section.id }} .ctl-collage {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 6%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    align-content: center;
+    justify-items: center;
+  }
+  #ctl-{{ section.id }} .ctl-item {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  #ctl-{{ section.id }} .ctl-item img,
+  #ctl-{{ section.id }} .ctl-item svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+    display: block;
+    background: #fff;
+  }
+
+  /* ── Hotspots (Nike-style dots) ── */
+  #ctl-{{ section.id }} .ctl-hotspot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+  }
+  #ctl-{{ section.id }} .ctl-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+    box-shadow: 0 1px 5px rgba(28, 28, 26, 0.28);
+    cursor: pointer;
+    padding: 0;
+    display: block;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  #ctl-{{ section.id }} .ctl-dot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #111;
+  }
+  #ctl-{{ section.id }} .ctl-card:hover .ctl-dot { opacity: 1; transform: scale(1); }
+  #ctl-{{ section.id }} .ctl-dot:hover { transform: scale(1.15); }
+
+  #ctl-{{ section.id }} .ctl-pop {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    width: 230px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    color: #111;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 8px 28px rgba(28, 28, 26, 0.20);
+    text-decoration: none;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+    z-index: 6;
+  }
+  #ctl-{{ section.id }} .ctl-hotspot:hover .ctl-pop,
+  #ctl-{{ section.id }} .ctl-dot:focus-visible + .ctl-pop,
+  #ctl-{{ section.id }} .ctl-hotspot.is-active .ctl-pop {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+  #ctl-{{ section.id }} .ctl-hotspot.is-active .ctl-dot { opacity: 1; transform: scale(1); }
+  #ctl-{{ section.id }} .ctl-pop__img {
+    width: 44px; height: 44px; flex-shrink: 0;
+    border-radius: 6px; overflow: hidden; background: var(--ctl-card-bg);
+  }
+  #ctl-{{ section.id }} .ctl-pop__img img { width: 100%; height: 100%; object-fit: cover; }
+  #ctl-{{ section.id }} .ctl-pop__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  #ctl-{{ section.id }} .ctl-pop__vendor { font-size: 11px; color: #1C4A3A; font-family: var(--font-body--family); }
+  #ctl-{{ section.id }} .ctl-pop__title {
+    font-size: 12px; font-weight: 500; line-height: 1.25; color: #111;
+    font-family: var(--font-body--family);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  #ctl-{{ section.id }} .ctl-pop__price { font-size: 12px; font-weight: 600; color: #111; font-family: var(--font-body--family); }
+  #ctl-{{ section.id }} .ctl-pop__arrow { font-size: 20px; color: #111; line-height: 1; flex-shrink: 0; }
+
+  /* Touch devices: dots always visible, popover toggled by tap */
+  @media (hover: none) {
+    #ctl-{{ section.id }} .ctl-dot { opacity: 1; transform: scale(1); }
+  }
+
+  #ctl-{{ section.id }} .ctl-view {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    color: #111;
+    border: none;
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-body--family);
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(28, 28, 26, 0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  #ctl-{{ section.id }} .ctl-view:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(28, 28, 26, 0.18); }
+  #ctl-{{ section.id }} .ctl-view svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  /* Modal */
+  #ctl-{{ section.id }} .ctl-modal { position: fixed; inset: 0; z-index: 1000; display: none; }
+  #ctl-{{ section.id }} .ctl-modal.is-open { display: block; }
+  #ctl-{{ section.id }} .ctl-modal__overlay { position: absolute; inset: 0; background: rgba(28, 28, 26, 0.5); }
+  #ctl-{{ section.id }} .ctl-modal__panel {
+    position: absolute;
+    top: 0; right: 0;
+    height: 100%;
+    width: min(440px, 92vw);
+    background: var(--color-background, #fff);
+    box-shadow: -4px 0 24px rgba(28, 28, 26, 0.18);
+    padding: 24px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    animation: ctl-slide-{{ section.id }} 0.25s ease;
+  }
+  @keyframes ctl-slide-{{ section.id }} { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  #ctl-{{ section.id }} .ctl-modal__head { display: flex; align-items: center; justify-content: space-between; }
+  #ctl-{{ section.id }} .ctl-modal__title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: var(--font-h4--size, 1.25rem);
+    color: var(--color-foreground-heading, var(--color-foreground));
+  }
+  #ctl-{{ section.id }} .ctl-modal__close { background: none; border: none; font-size: 28px; line-height: 1; cursor: pointer; color: var(--color-foreground); }
+  #ctl-{{ section.id }} .ctl-modal__list { display: flex; flex-direction: column; gap: 14px; }
+
+  #ctl-{{ section.id }} .ctl-row { display: flex; gap: 12px; align-items: center; }
+  #ctl-{{ section.id }} .ctl-row__img { width: 64px; height: 64px; flex-shrink: 0; border-radius: 6px; overflow: hidden; background: var(--ctl-card-bg); }
+  #ctl-{{ section.id }} .ctl-row__img img { width: 100%; height: 100%; object-fit: cover; }
+  #ctl-{{ section.id }} .ctl-row__info { flex: 1; min-width: 0; }
+  #ctl-{{ section.id }} .ctl-row__title {
+    margin: 0 0 2px;
+    font-family: var(--font-body--family);
+    font-size: var(--font-paragraph--size, 0.875rem);
+    color: var(--color-foreground);
+    text-decoration: none;
+    display: block;
+  }
+  #ctl-{{ section.id }} .ctl-row__title:hover { text-decoration: underline; }
+  #ctl-{{ section.id }} .ctl-row__price { font-family: var(--font-body--family); font-size: 0.85rem; font-weight: 600; color: var(--color-foreground); }
+  #ctl-{{ section.id }} .ctl-row__btn {
+    flex-shrink: 0;
+    background-color: var(--color-primary-button-background, #111);
+    color: var(--color-primary-button-text, #fff);
+    border: 1.5px solid var(--color-primary-button-border, #111);
+    border-radius: var(--style-border-radius-buttons-primary, 14px);
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: var(--button-font-family-primary, var(--font-body--family));
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  #ctl-{{ section.id }} .ctl-row__btn:hover {
+    background-color: var(--color-primary-button-text, #fff);
+    color: var(--color-primary-button-background, #111);
+  }
+  #ctl-{{ section.id }} .ctl-row__btn[disabled] { opacity: 0.4; cursor: default; }
+  #ctl-{{ section.id }} .ctl-row__btn form { margin: 0; }
+
+  @media (max-width: 990px) {
+    #ctl-{{ section.id }} .ctl-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    #ctl-{{ section.id }} .ctl-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  (function () {
+    var root = document.getElementById('ctl-{{ section.id }}');
+    if (!root) return;
+
+    function closeAll() {
+      root.querySelectorAll('.ctl-modal.is-open').forEach(function (m) { m.classList.remove('is-open'); });
+      document.body.style.overflow = '';
+    }
+    root.querySelectorAll('[data-ctl-open]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var modal = root.querySelector('#' + this.getAttribute('data-ctl-open'));
+        if (!modal) return;
+        closeAll();
+        modal.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    root.querySelectorAll('[data-ctl-close]').forEach(function (el) {
+      el.addEventListener('click', closeAll);
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(); });
+
+    // Hotspot dots: tap/click toggles the product popover (mobile + click)
+    root.querySelectorAll('.ctl-dot').forEach(function (dot) {
+      dot.addEventListener('click', function (e) {
+        e.preventDefault();
+        var hs = this.parentNode;
+        var isActive = hs.classList.contains('is-active');
+        root.querySelectorAll('.ctl-hotspot.is-active').forEach(function (h) { h.classList.remove('is-active'); });
+        if (!isActive) hs.classList.add('is-active');
+      });
+    });
+    document.addEventListener('click', function (e) {
+      if (!(e.target.closest && e.target.closest('.ctl-hotspot'))) {
+        root.querySelectorAll('.ctl-hotspot.is-active').forEach(function (h) { h.classList.remove('is-active'); });
+      }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Complete the Look",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Complete the Look" },
+    {
+      "type": "select", "id": "heading_alignment", "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    { "type": "range", "id": "max_width", "label": "Content max width (px)", "min": 800, "max": 1600, "step": 20, "default": 1280 },
+    { "type": "range", "id": "columns", "label": "Cards per row (desktop)", "min": 1, "max": 4, "step": 1, "default": 3 },
+    { "type": "color", "id": "card_background", "label": "Card background", "default": "#f0f0f0" },
+    {
+      "type": "select", "id": "card_aspect", "label": "Card shape",
+      "options": [
+        { "value": "1 / 1", "label": "Square" },
+        { "value": "4 / 3", "label": "Landscape" },
+        { "value": "3 / 4", "label": "Portrait" }
+      ],
+      "default": "4 / 3"
+    },
+    { "type": "range", "id": "card_radius", "label": "Card corner radius (px)", "min": 0, "max": 30, "step": 1, "default": 0 },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+
+    { "type": "header", "content": "Automatic related products", "info": "Cards build automatically from this product's related & complementary products (Search & Discovery), falling back to products from the same collection. Each card = the viewed product + N different related products. Works on the product page, or pick a source product below." },
+    { "type": "checkbox", "id": "show_auto", "label": "Auto-generate look cards", "default": true },
+    { "type": "checkbox", "id": "show_preview", "label": "Include the viewed product in each card", "default": true },
+    { "type": "product", "id": "source_product", "label": "Source product (optional)", "info": "Leave empty to use the current product on product pages." },
+    { "type": "range", "id": "auto_per_card", "label": "Related products per card", "min": 2, "max": 6, "step": 1, "default": 5 },
+    { "type": "paragraph", "content": "Each Look block = one card. Empty blocks auto-fill with related products. Add or remove blocks to change the number of cards (3 by default)." },
+    { "type": "text", "id": "auto_button_text", "label": "Card button text", "default": "View Entire Look" },
+    { "type": "text", "id": "auto_modal_title", "label": "Popup title", "default": "Complete the Look" },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding-block-start", "label": "Padding top", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "padding-block-end", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 48 }
+  ],
+  "blocks": [
+    {
+      "type": "look",
+      "name": "Look",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Look name", "default": "The Look" },
+        { "type": "paragraph", "content": "For each item pick a product and/or upload an image. Leave the whole block empty to auto-fill it with related products." },
+        { "type": "product", "id": "product_1", "label": "Product 1" },
+        { "type": "image_picker", "id": "image_1", "label": "Image 1 (optional)" },
+        { "type": "product", "id": "product_2", "label": "Product 2" },
+        { "type": "image_picker", "id": "image_2", "label": "Image 2 (optional)" },
+        { "type": "product", "id": "product_3", "label": "Product 3" },
+        { "type": "image_picker", "id": "image_3", "label": "Image 3 (optional)" },
+        { "type": "product", "id": "product_4", "label": "Product 4" },
+        { "type": "image_picker", "id": "image_4", "label": "Image 4 (optional)" },
+        { "type": "product", "id": "product_5", "label": "Product 5" },
+        { "type": "image_picker", "id": "image_5", "label": "Image 5 (optional)" },
+        { "type": "product", "id": "product_6", "label": "Product 6" },
+        { "type": "image_picker", "id": "image_6", "label": "Image 6 (optional)" },
+        { "type": "text", "id": "button_text", "label": "Button text", "default": "View Entire Look" },
+        { "type": "url", "id": "button_url", "label": "Button link (optional)", "info": "If set, the button links here instead of opening the shop-the-look popup." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Complete the Look",
+      "settings": {
+        "source_product": "{{ closest.product }}"
+      },
+      "blocks": [
+        { "type": "look" },
+        { "type": "look" },
+        { "type": "look" }
+      ]
+    }
+  ]
+}
+{% endschema %}

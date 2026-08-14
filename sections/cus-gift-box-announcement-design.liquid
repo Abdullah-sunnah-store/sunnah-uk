@@ -1,0 +1,233 @@
+{%- liquid
+  assign section_id = section.id
+  assign is_full = false
+  if section.settings.section_width == 'full'
+    assign is_full = true
+  endif
+-%}
+
+<style>
+  .cgb-{{ section_id }} {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .cgb-inner-{{ section_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: {{ section.settings.bg_color }};
+    color: {{ section.settings.text_color }};
+    padding: 5px 0;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .cgb-inner-{{ section_id }}:hover {
+    background-color: {{ section.settings.bg_hover_color }};
+  }
+
+  .cgb-inner-{{ section_id }}::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 150%; height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 50%, rgba(255,255,255,0.4) 70%, rgba(255,255,255,0) 80%);
+    transform: translateX(-100%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .cgb-inner-{{ section_id }}:hover::before {
+    animation: cgb-shine 2s ease-in-out infinite;
+  }
+
+  @keyframes cgb-shine {
+    0%   { transform: translateX(-100%); }
+    50%  { transform: translateX(100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .cgb-inner-{{ section_id }} > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  .cgb-inner-{{ section_id }} .gift-icon { font-size: 18px; }
+
+  .cgb-inner-{{ section_id }} .gift-text {
+    text-transform: none;
+    font-weight: bold;
+    color: {{ section.settings.text_color }};
+  }
+
+  .cgb-inner-{{ section_id }} .gift-arrow {
+    background: {{ section.settings.arrow_bg_color }};
+    color: {{ section.settings.arrow_text_color }};
+    border-radius: 50%;
+    padding: 0 5px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid {{ section.settings.arrow_border_color }};
+  }
+
+  @media (max-width: 768px) {
+    .cgb-inner-{{ section_id }} {
+      font-size: 14px;
+      padding: 10px 16px;
+      gap: 15px;
+    }
+    .cgb-inner-{{ section_id }} .gift-icon { font-size: 16px; }
+    .cgb-inner-{{ section_id }} .gift-arrow { font-size: 12px; padding: 4px 6px; }
+  }
+
+  @media (max-width: 480px) {
+    .cgb-inner-{{ section_id }} {
+      font-size: 13px;
+      padding: 10px;
+    }
+  }
+</style>
+
+{%- comment -%}
+  Horizon width approach:
+  - Full: wrapper is 100vw, negative margins pull it past any theme container padding
+  - Page: wrapper sits inside normal flow, no overrides needed
+{%- endcomment -%}
+
+{%- if is_full -%}
+  <style>
+    #shopify-section-{{ section_id }} .cgb-{{ section_id }} {
+      width: 100vw;
+      position: relative;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+    }
+  </style>
+{%- endif -%}
+
+<div class="cgb-{{ section_id }}">
+  <a href="{{ section.settings.button_url }}" class="cgb-inner-{{ section_id }}">
+    {%- if section.settings.show_icon -%}
+      <span class="gift-icon">{{ section.settings.icon_emoji }}</span>
+    {%- endif -%}
+    <span class="gift-text">{{ section.settings.button_text }}</span>
+    {%- if section.settings.show_arrow -%}
+      <span class="gift-arrow">➔</span>
+    {%- endif -%}
+  </a>
+</div>
+
+{% schema %}
+{
+  "name": "Cus Gift Box A.Bar",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Width",
+      "options": [
+        { "value": "page", "label": "Page" },
+        { "value": "full", "label": "Full" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Create Your Own Gift Box"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "text",
+      "id": "icon_emoji",
+      "label": "Icon emoji",
+      "default": "🎁"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrow",
+      "label": "Show arrow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "bg_hover_color",
+      "label": "Background on hover",
+      "default": "#c4c4c4"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1C1C1A"
+    },
+    {
+      "type": "color",
+      "id": "arrow_bg_color",
+      "label": "Arrow background",
+      "default": "#1C1C1A"
+    },
+    {
+      "type": "color",
+      "id": "arrow_text_color",
+      "label": "Arrow icon color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "arrow_border_color",
+      "label": "Arrow border color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cus Gift Box A.Bar"
+    }
+  ]
+}
+{% endschema %}

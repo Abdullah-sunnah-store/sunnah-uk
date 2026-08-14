@@ -1,0 +1,135 @@
+{%- doc -%}
+  Shows the product's collection name above the title (e.g. "● HORSEMEN COLLECTION").
+  Dynamic: uses the first non-generic collection the product belongs to, unless a
+  specific collection is chosen in the block settings.
+{%- enddoc -%}
+
+{% liquid
+  assign block_settings = block.settings
+  assign product = closest.product
+
+  if request.visual_preview_mode and product == blank
+    assign product = collections.all.products.first
+  endif
+
+  assign chosen = block_settings.collection
+  assign coll = null
+
+  if chosen != blank
+    assign coll = chosen
+  else
+    assign excluded = 'all,frontpage' | split: ','
+    for c in product.collections
+      assign skip = false
+      for ex in excluded
+        if c.handle == ex
+          assign skip = true
+        endif
+      endfor
+      unless skip
+        assign coll = c
+        break
+      endunless
+    endfor
+  endif
+%}
+
+{%- if coll != blank -%}
+  {%- liquid
+    assign label = coll.title
+    assign tag = 'a'
+    if block_settings.link_to_collection == false
+      assign tag = 'span'
+    endif
+  -%}
+  <{{ tag }}
+    class="collection-name justify-{{ block_settings.alignment }}"
+    {% if tag == 'a' %}href="{{ coll.url }}"{% endif %}
+    {{ block.shopify_attributes }}
+  >
+    {%- if block_settings.show_dot -%}
+      <span class="collection-name__dot" aria-hidden="true"></span>
+    {%- endif -%}
+    <span class="collection-name__label">{{ label }}</span>
+  </{{ tag }}>
+{%- endif -%}
+
+{% stylesheet %}
+  .collection-name {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-2xs, 0.5rem);
+    width: 100%;
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-size: calc(var(--font-paragraph--size, 1.5rem) * 0.85);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #B8860B;
+    text-decoration: none;
+  }
+
+  .collection-name.justify-center {
+    justify-content: center;
+  }
+
+  .collection-name.justify-right {
+    justify-content: flex-end;
+  }
+
+  a.collection-name:hover .collection-name__label {
+    text-decoration: underline;
+  }
+
+  .collection-name__dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background-color: #B8860B;
+    flex-shrink: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Collection Name",
+  "tag": null,
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Leave blank to auto-use the product's first collection."
+    },
+    {
+      "type": "checkbox",
+      "id": "link_to_collection",
+      "label": "Link to collection page",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dot",
+      "label": "Show leading dot",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Name",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

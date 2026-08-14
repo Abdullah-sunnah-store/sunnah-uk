@@ -1,0 +1,554 @@
+{%- assign sid = section.id -%}
+
+<section
+  class="cfa-section"
+  id="cfa-{{ sid }}"
+  style="background-color:{{ section.settings.section_bg }};padding:{{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;"
+>
+  <div class="cfa-wrap">
+
+    <!-- Header -->
+    <div class="cfa-head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="cfa-eyebrow" style="color:{{ section.settings.eyebrow_color }};">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h2 class="cfa-title" style="color:{{ section.settings.heading_color }};font-size:var(--font-h2--size);text-align:{{ section.settings.heading_align }};">
+        {{ section.settings.heading }}
+      </h2>
+    </div>
+
+    <!-- Collection tabs -->
+    {%- if section.blocks.size > 0 -%}
+      <div class="cfa-tabs" role="tablist">
+        {%- for block in section.blocks -%}
+          {%- assign col = collections[block.settings.collection] -%}
+          {%- assign tab_label = block.settings.label | default: col.title -%}
+          <button
+            class="cfa-tab{% if forloop.first %} cfa-tab--active{% endif %}"
+            data-panel="cfa-{{ sid }}-panel-{{ forloop.index0 }}"
+            data-col-url="{{ col.url | default: '#' }}"
+            role="tab"
+            aria-selected="{{ forloop.first | json }}"
+            {{ block.shopify_attributes }}
+          >
+            {%- if section.settings.show_tab_images -%}
+              {%- if block.settings.icon != blank -%}
+                <img src="{{ block.settings.icon | image_url: width: 160 }}" alt="" class="cfa-tab-icon" loading="lazy">
+              {%- elsif col.featured_image != blank -%}
+                <img src="{{ col.featured_image | image_url: width: 160 }}" alt="{{ col.featured_image.alt | escape }}" class="cfa-tab-icon" loading="lazy">
+              {%- endif -%}
+            {%- endif -%}
+            <span class="cfa-tab-name">{{ tab_label }}</span>
+            {%- if block.settings.show_badge -%}
+              <span class="cfa-badge" style="background:{{ section.settings.badge_bg }};color:{{ section.settings.badge_color }};">
+                {{- section.settings.badge_text | default: 'NEW' -}}
+              </span>
+            {%- endif -%}
+          </button>
+        {%- endfor -%}
+      </div>
+
+      <!-- Product panels (one per tab) -->
+      {%- assign products_limit = section.settings.products_limit_1 -%}
+      {%- if section.settings.product_layout == 'featured' -%}
+        {%- assign products_limit = section.settings.products_limit_2 -%}
+      {%- endif -%}
+      {%- for block in section.blocks -%}
+        {%- assign col = collections[block.settings.collection] -%}
+        <div
+          id="cfa-{{ sid }}-panel-{{ forloop.index0 }}"
+          class="cfa-panel{% if forloop.first %} cfa-panel--active{% endif %}"
+          role="tabpanel"
+        >
+          <div class="cfa-products{% if section.settings.product_layout == 'featured' %} cfa-products--featured{% endif %}">
+            {%- if col != blank -%}
+              {%- for product in col.products limit: products_limit -%}
+                <a class="cfa-card" href="{{ product.url }}">
+                  <div class="cfa-card-img">
+                    {%- if product.featured_image -%}
+                      <img
+                        src="{{ product.featured_image | image_url: width: 600 }}"
+                        alt="{{ product.featured_image.alt | escape }}"
+                        loading="lazy"
+                        class="cfa-prod-img"
+                      >
+                    {%- endif -%}
+                  </div>
+                  <div class="cfa-card-info">
+                    {%- if product.vendor != blank -%}
+                      <p class="cfa-vendor">{{ product.vendor }}</p>
+                    {%- endif -%}
+                    <p class="cfa-prod-name">{{ product.title }}</p>
+                    <p class="cfa-prod-price">{{ product.price | money }}</p>
+                  </div>
+                </a>
+              {%- else -%}
+                <p class="cfa-empty">No products found in this collection.</p>
+              {%- endfor -%}
+            {%- else -%}
+              <p class="cfa-empty">Select a collection for this tab in the editor.</p>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    {%- endif -%}
+
+    <!-- View All button — bottom center -->
+    {%- if section.settings.show_view_all and section.settings.view_all_text != blank -%}
+      <div class="cfa-view-all-wrap">
+        <a class="cfa-view-all btn btn--primary" href="#">
+          {{ section.settings.view_all_text }}
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<style>
+  #cfa-{{ sid }} { box-sizing: border-box; }
+
+  #cfa-{{ sid }} .cfa-wrap {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ── */
+  #cfa-{{ sid }} .cfa-head {
+    text-align: center;
+    margin-bottom: {{ section.settings.head_bottom_gap }}px;
+  }
+
+  #cfa-{{ sid }} .cfa-eyebrow {
+    margin: 0 0 6px;
+    font-size: {{ section.settings.eyebrow_size }}px;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    color: {{ section.settings.eyebrow_color }};
+    font-family: var(--font-body--family);
+  }
+
+  #cfa-{{ sid }} .cfa-title {
+    margin: 0;
+    line-height: var(--font-h2--line-height);
+    font-weight: var(--font-h2--weight);
+    letter-spacing: var(--font-h2--letter-spacing);
+    font-family: var(--font-heading--family);
+  }
+
+  /* ── View All button — bottom center ── */
+  #cfa-{{ sid }} .cfa-view-all-wrap {
+    text-align: center;
+    margin-top: {{ section.settings.view_all_top_gap }}px;
+  }
+
+  #cfa-{{ sid }} .cfa-view-all {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    padding: var(--button-padding-block, 14px) var(--button-padding-inline, 36px);
+    background-color: var(--color-primary-button-background);
+    color: var(--color-primary-button-text);
+    border: 1.5px solid var(--color-primary-button-border);
+    border-radius: var(--style-border-radius-buttons-primary);
+    font-size: {{ section.settings.btn_font_size }}px;
+    font-family: var(--button-font-family-primary);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: var(--button-text-case-primary, none);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  #cfa-{{ sid }} .cfa-view-all:hover {
+    background-color: var(--color-primary-button-text, #fff);
+    color: var(--color-primary-button-background, #111);
+    border-color: var(--color-primary-button-background, #111);
+  }
+
+  /* ── Tabs ── */
+  #cfa-{{ sid }} .cfa-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: {{ section.settings.tab_gap }}px;
+    margin-bottom: {{ section.settings.tabs_bottom_gap }}px;
+  }
+
+  #cfa-{{ sid }} .cfa-tab {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+    background: {{ section.settings.tab_bg }};
+    color: {{ section.settings.tab_color }};
+    border: 1px solid {{ section.settings.tab_border_color }};
+    border-radius: {{ section.settings.tab_radius }}px;
+    cursor: pointer;
+    font-size: {{ section.settings.tab_font_size }}px;
+    font-family: var(--font-body--family);
+    letter-spacing: 0.02em;
+    text-transform: none;
+    transition: border-color 0.2s, border-width 0.1s;
+    text-align: left;
+  }
+
+  #cfa-{{ sid }} .cfa-tab:hover,
+  #cfa-{{ sid }} .cfa-tab.cfa-tab--active {
+    background: {{ section.settings.tab_bg }};
+    color: {{ section.settings.tab_color }};
+    border: 2px solid {{ section.settings.tab_active_bg }};
+  }
+
+  #cfa-{{ sid }} .cfa-tab-icon {
+    width: {{ section.settings.icon_size }}px;
+    height: {{ section.settings.icon_size }}px;
+    object-fit: cover;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  #cfa-{{ sid }} .cfa-tab-name {
+    padding: 0 {{ section.settings.tab_padding_h }}px;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+
+  {%- unless section.settings.show_tab_images -%}
+    /* No tab image: give the text pill its own vertical padding so it isn't a thin sliver */
+    #cfa-{{ sid }} .cfa-tab-name { padding-block: 11px; }
+  {%- endunless -%}
+
+  #cfa-{{ sid }} .cfa-badge {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 5px;
+    border-radius: 4px;
+    text-transform: none;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  {%- if section.settings.tab_layout == 'vertical' -%}
+    /* Vertical tab card: image on top, title below, badge under the title.
+       Cards stretch to equal height so badge / no-badge tabs match. */
+    #cfa-{{ sid }} .cfa-tabs { align-items: stretch; }
+    #cfa-{{ sid }} .cfa-tab {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: {{ section.settings.icon_size }}px;
+      padding: 0 0 8px;
+    }
+    #cfa-{{ sid }} .cfa-tab-icon {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+    }
+    #cfa-{{ sid }} .cfa-tab-name {
+      padding: 6px 6px 0;
+      white-space: normal;
+      line-height: 1.25;
+    }
+    #cfa-{{ sid }} .cfa-badge {
+      position: static;
+      top: auto;
+      right: auto;
+      margin: 5px auto 0;
+    }
+  {%- endif -%}
+
+  /* ── Panels ── */
+  #cfa-{{ sid }} .cfa-panel { display: none; }
+  #cfa-{{ sid }} .cfa-panel.cfa-panel--active { display: block; }
+
+  /* ── Product grid ── */
+  #cfa-{{ sid }} .cfa-products {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.columns }}, 1fr);
+    gap: {{ section.settings.product_gap }}px;
+  }
+
+  #cfa-{{ sid }} .cfa-card {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #cfa-{{ sid }} .cfa-card-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: {{ section.settings.card_radius }}px;
+    margin-bottom: 12px;
+  }
+
+  /* ── Layout 2 — featured left ── */
+  /* The whole featured grid is capped to a fixed height so the section never
+     grows taller than the merchant's "Featured grid height" setting. Both the
+     big featured card and the 2×2 cards fill their grid rows; their images
+     flex to fill the leftover space (after the title/price), so everything
+     scales together and bottoms stay aligned. */
+  #cfa-{{ sid }} .cfa-products--featured {
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: repeat(2, 1fr);
+    height: {{ section.settings.featured_grid_height | default: 700 }}px;
+  }
+
+  #cfa-{{ sid }} .cfa-products--featured .cfa-card { min-height: 0; }
+
+  #cfa-{{ sid }} .cfa-products--featured .cfa-card:first-child {
+    grid-row: span 2;
+  }
+
+  /* Every featured card: image grows to fill the card height and is absolutely
+     positioned so it always covers the box — fills & crops, never shows the
+     card background. */
+  #cfa-{{ sid }} .cfa-products--featured .cfa-card-img {
+    aspect-ratio: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  #cfa-{{ sid }} .cfa-products--featured .cfa-prod-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  #cfa-{{ sid }} .cfa-prod-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+  }
+
+  #cfa-{{ sid }} .cfa-card:hover .cfa-prod-img { transform: scale(1.06); }
+
+  #cfa-{{ sid }} .cfa-card-info { padding: 0 2px; }
+
+  #cfa-{{ sid }} .cfa-vendor {
+    margin: 0 0 4px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: {{ section.settings.vendor_color }};
+    font-family: var(--font-body--family);
+  }
+
+  #cfa-{{ sid }} .cfa-prod-name {
+    margin: 0 0 6px;
+    font-size: {{ section.settings.product_name_size }}px;
+    line-height: 1.3;
+    color: {{ section.settings.product_name_color }};
+    font-family: var(--font-body--family);
+  }
+
+  #cfa-{{ sid }} .cfa-prod-price {
+    margin: 0;
+    font-size: {{ section.settings.price_size }}px;
+    font-weight: 600;
+    color: {{ section.settings.price_color }};
+    font-family: var(--font-body--family);
+  }
+
+  #cfa-{{ sid }} .cfa-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 48px 0;
+    color: {{ section.settings.vendor_color }};
+    font-size: 14px;
+  }
+
+  /* ── Responsive ── */
+  @media screen and (max-width: 768px) {
+    #cfa-{{ sid }} {
+      padding: {{ section.settings.mobile_padding_top }}px {{ section.settings.mobile_padding_right }}px {{ section.settings.mobile_padding_bottom }}px {{ section.settings.mobile_padding_left }}px !important;
+    }
+    /* .cfa-title size handled by theme heading scale */
+    #cfa-{{ sid }} .cfa-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
+    #cfa-{{ sid }} .cfa-tab { flex-shrink: 0; }
+    #cfa-{{ sid }} .cfa-products { grid-template-columns: repeat({{ section.settings.columns_tablet }}, 1fr); }
+    /* On mobile every card is the same size in a plain 2-column grid — the
+       featured card loses its full-width span so rows are always 2 across. */
+    #cfa-{{ sid }} .cfa-products--featured { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; height: auto; }
+    #cfa-{{ sid }} .cfa-products--featured .cfa-card:first-child { grid-row: span 1; grid-column: span 1; justify-content: flex-start; }
+    #cfa-{{ sid }} .cfa-products--featured .cfa-card-img { aspect-ratio: 4 / 5; flex: none; }
+    /* On mobile the cards are fixed 4:5 boxes, so crop to fill instead of
+       letterboxing the way the desktop featured grid does. */
+    #cfa-{{ sid }} .cfa-products--featured .cfa-prod-img { object-fit: cover; }
+  }
+
+  @media screen and (max-width: 480px) {
+    #cfa-{{ sid }} .cfa-products { grid-template-columns: repeat(2, 1fr); }
+    #cfa-{{ sid }} .cfa-products--featured { grid-template-columns: repeat(2, 1fr); }
+    #cfa-{{ sid }} .cfa-products--featured .cfa-card:first-child { grid-column: span 1; }
+  }
+</style>
+
+<script>
+  (function () {
+    var sec = document.getElementById('cfa-{{ sid }}');
+    if (!sec) return;
+    var viewAllLink = sec.querySelector('.cfa-view-all');
+
+    function setViewAll(tab) {
+      if (!viewAllLink) return;
+      var url = tab.getAttribute('data-col-url');
+      if (url) viewAllLink.href = url;
+    }
+
+    var firstTab = sec.querySelector('.cfa-tab');
+    if (firstTab) setViewAll(firstTab);
+
+    sec.querySelectorAll('.cfa-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        sec.querySelectorAll('.cfa-tab').forEach(function (t) {
+          t.classList.remove('cfa-tab--active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        sec.querySelectorAll('.cfa-panel').forEach(function (p) {
+          p.classList.remove('cfa-panel--active');
+        });
+        tab.classList.add('cfa-tab--active');
+        tab.setAttribute('aria-selected', 'true');
+        var panel = document.getElementById(tab.getAttribute('data-panel'));
+        if (panel) panel.classList.add('cfa-panel--active');
+        setViewAll(tab);
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Community Favourites",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Section" },
+    { "type": "color", "id": "section_bg", "label": "Background color", "default": "#f5f0e8" },
+    { "type": "range", "id": "max_width",  "label": "Content max-width (px)", "min": 800, "max": 1800, "step": 20, "default": 1400 },
+
+    { "type": "header", "content": "Eyebrow" },
+    { "type": "text",  "id": "eyebrow",       "label": "Eyebrow text",   "default": "COMMUNITY FAVOURITES" },
+    { "type": "range", "id": "eyebrow_size",  "label": "Font size (px)", "min": 9, "max": 18, "step": 1, "default": 11 },
+    { "type": "color", "id": "eyebrow_color", "label": "Color",          "default": "#1C4A3A" },
+
+    { "type": "header", "content": "Heading" },
+    { "type": "text",   "id": "heading",             "label": "Heading text",           "default": "Most Gifted This Season" },
+    { "type": "range",  "id": "heading_size",        "label": "Font size desktop (px)", "min": 20, "max": 72, "step": 2, "default": 36 },
+    { "type": "range",  "id": "heading_size_mobile", "label": "Font size mobile (px)",  "min": 16, "max": 48, "step": 2, "default": 26 },
+    { "type": "color",  "id": "heading_color",       "label": "Color",                  "default": "#1C1C1A" },
+    {
+      "type": "select", "id": "heading_align", "label": "Alignment",
+      "options": [
+        { "value": "left",   "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right",  "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "range", "id": "head_bottom_gap", "label": "Space below header (px)", "min": 8, "max": 60, "step": 4, "default": 24 },
+
+    { "type": "header", "content": "View All Button" },
+    { "type": "checkbox", "id": "show_view_all", "label": "Show View All button", "default": true },
+    { "type": "text",  "id": "view_all_text",    "label": "Button text",           "default": "View All" },
+    { "type": "range", "id": "btn_font_size",    "label": "Button font size (px)", "min": 11, "max": 18, "step": 1, "default": 13 },
+    { "type": "range", "id": "view_all_top_gap", "label": "Space above button (px)",  "min": 8, "max": 80, "step": 4, "default": 32 },
+
+    { "type": "header", "content": "Collection Tabs" },
+    { "type": "color", "id": "tab_bg",           "label": "Tab background",          "default": "#f5f0e8" },
+    { "type": "color", "id": "tab_active_bg",    "label": "Active tab border color", "default": "#1C4A3A" },
+    { "type": "color", "id": "tab_color",        "label": "Tab text color",          "default": "#1C1C1A" },
+    { "type": "color", "id": "tab_active_color", "label": "Active tab text color",   "default": "#1C1C1A" },
+    { "type": "color", "id": "tab_border_color", "label": "Tab border color",        "default": "#1C4A3A" },
+    { "type": "range", "id": "tab_radius",       "label": "Tab radius (px)",         "min": 0,  "max": 40, "step": 2, "default": 0 },
+    { "type": "range", "id": "tab_padding_h",    "label": "Label padding (px)",      "min": 8,  "max": 40, "step": 2, "default": 16 },
+    { "type": "range", "id": "tab_gap",          "label": "Gap between tabs (px)",   "min": 4,  "max": 24, "step": 2, "default": 8 },
+    { "type": "range", "id": "tab_font_size",    "label": "Tab font size (px)",      "min": 11, "max": 20, "step": 1, "default": 12 },
+    { "type": "checkbox", "id": "show_tab_images",  "label": "Show tab images",         "default": true },
+    { "type": "select", "id": "tab_layout", "label": "Tab layout", "options": [ { "value": "horizontal", "label": "Horizontal (image left)" }, { "value": "vertical", "label": "Vertical (image top, title below)" } ], "default": "horizontal" },
+    { "type": "range", "id": "icon_size",        "label": "Image size (px)",         "min": 40, "max": 100,"step": 4, "default": 64 },
+    { "type": "range", "id": "tabs_bottom_gap",  "label": "Space below tabs (px)",   "min": 8,  "max": 60, "step": 4, "default": 24 },
+
+    { "type": "header", "content": "NEW Badge" },
+    { "type": "text",  "id": "badge_text",  "label": "Badge text",        "default": "NEW" },
+    { "type": "color", "id": "badge_bg",    "label": "Badge background",  "default": "#B8860B" },
+    { "type": "color", "id": "badge_color", "label": "Badge text color",  "default": "#ffffff" },
+
+    { "type": "header", "content": "Product Grid" },
+    {
+      "type": "select", "id": "product_layout", "label": "Layout",
+      "options": [
+        { "value": "grid",     "label": "Layout 1 — Equal grid" },
+        { "value": "featured", "label": "Layout 2 — Featured left + 2×2" }
+      ],
+      "default": "grid"
+    },
+    { "type": "range", "id": "columns",           "label": "Columns — Layout 1 (desktop)", "min": 1, "max": 6, "step": 1, "default": 4 },
+    { "type": "range", "id": "columns_tablet",   "label": "Columns (tablet)",              "min": 1, "max": 4, "step": 1, "default": 2 },
+    { "type": "range", "id": "columns_mobile",   "label": "Columns (mobile)",              "min": 1, "max": 3, "step": 1, "default": 2 },
+    { "type": "range", "id": "products_limit_1", "label": "Products per tab — Layout 1",  "min": 2, "max": 12,"step": 1, "default": 4 },
+    { "type": "range", "id": "products_limit_2", "label": "Products per tab — Layout 2",  "min": 2, "max": 12,"step": 1, "default": 9 },
+    { "type": "range", "id": "featured_grid_height", "label": "Featured grid height — Layout 2 (px)", "info": "Caps the height of the featured product area. Lower this to keep the whole section under your target height.", "min": 320, "max": 800, "step": 20, "default": 700 },
+    { "type": "range", "id": "product_gap",      "label": "Gap between cards (px)",        "min": 4, "max": 48, "step": 4, "default": 16 },
+    { "type": "range", "id": "card_radius",     "label": "Card image radius (px)", "min": 0, "max": 24, "step": 2, "default": 0 },
+
+    { "type": "header", "content": "Product Text" },
+    { "type": "color", "id": "vendor_color",       "label": "Vendor name color",  "default": "#1C4A3A" },
+    { "type": "color", "id": "product_name_color", "label": "Product name color", "default": "#1C1C1A" },
+    { "type": "color", "id": "price_color",        "label": "Price color",        "default": "#b85c38" },
+    { "type": "range", "id": "product_name_size",  "label": "Product name size (px)", "min": 12, "max": 24, "step": 1, "default": 15 },
+    { "type": "range", "id": "price_size",         "label": "Price size (px)",    "min": 11, "max": 22, "step": 1, "default": 14 },
+
+    { "type": "header", "content": "Section Spacing — Desktop" },
+    { "type": "range", "id": "padding_top",    "label": "Padding top",    "min": 0, "max": 120, "step": 4, "default": 80 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "default": 80 },
+    { "type": "range", "id": "padding_left",   "label": "Padding left",   "min": 0, "max": 80,  "step": 4, "default": 40 },
+    { "type": "range", "id": "padding_right",  "label": "Padding right",  "min": 0, "max": 80,  "step": 4, "default": 40 },
+
+    { "type": "header", "content": "Section Spacing — Mobile" },
+    { "type": "range", "id": "mobile_padding_top",    "label": "Padding top",    "min": 0, "max": 80, "step": 4, "default": 40 },
+    { "type": "range", "id": "mobile_padding_bottom", "label": "Padding bottom", "min": 0, "max": 80, "step": 4, "default": 40 },
+    { "type": "range", "id": "mobile_padding_left",   "label": "Padding left",   "min": 0, "max": 60, "step": 4, "default": 20 },
+    { "type": "range", "id": "mobile_padding_right",  "label": "Padding right",  "min": 0, "max": 60, "step": 4, "default": 20 }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Collection Tab",
+      "settings": [
+        { "type": "collection",   "id": "collection", "label": "Collection" },
+        { "type": "text",         "id": "label",       "label": "Custom label (overrides collection title)" },
+        { "type": "image_picker", "id": "icon",        "label": "Tab icon image" },
+        { "type": "checkbox",     "id": "show_badge",  "label": "Show NEW badge", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Community Favourites",
+      "blocks": [
+        { "type": "tab" },
+        { "type": "tab" },
+        { "type": "tab" },
+        { "type": "tab" }
+      ]
+    }
+  ]
+}
+{% endschema %}

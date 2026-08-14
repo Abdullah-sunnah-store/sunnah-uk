@@ -14,19 +14,29 @@
       >
     {%- endif -%}
 
-    {% comment %}
-      Opt into cross-document (MPA) view transitions and hold first paint until #MainContent
-      parses, so the transition runs consistently.
-      Both are gated on the same settings as the view-transitions.js opt-out switch (see snippets/scripts.liquid).
-    {% endcomment %}
+    
+    <!-- Google Search consol -->
+    <meta name="google-site-verification" content="1e2_HJIBpLwatBd8YwtvhS0EHI6GH-yNKqxLlREUgu8" />
+    <!-- End Google search consol -->
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-M8KP83KX');</script>
+    <!-- End Google Tag Manager -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NL55GJTGZR"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-NL55GJTGZR');
+    </script>
+        {% render 'ultimate-datalayer' %}
+    {% comment %} This a way to wait for main content to load when navigating to a new page so that the view transitions can work consistently {% endcomment %}
     {% if settings.transition_to_main_product or settings.page_transition_enabled %}
-      {% style %}
-        @media (prefers-reduced-motion: no-preference) {
-          @view-transition {
-            navigation: auto;
-          }
-        }
-      {% endstyle %}
       <link
         rel="expect"
         href="#MainContent"
@@ -37,159 +47,157 @@
 
     {%- render 'meta-tags' -%}
     {%- render 'stylesheets' -%}
-    {%- render 'card-hover-effect-styles' -%}
     {%- render 'fonts' -%}
     {%- render 'scripts' -%}
     {%- render 'theme-styles-variables' -%}
-    {%- render 'color-palette' -%}
+    {%- render 'color-schemes' -%}
+
+    {%- comment %} Product names use Cormorant across the whole site {% endcomment -%}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      /* Force Cormorant on every product name, site-wide */
+      [ref="productTitleLink"],
+      [ref="productTitleLink"] *,
+      .cart-items__title,
+      .resource-card[data-resource-type='product'] .resource-card__title,
+      .hotspot-dialog__product-title,
+      .title-text,
+      /* Custom homepage / theme sections */
+      .wnt-title,            /* What's New Today */
+      .cfa-prod-name,        /* Community Favourites */
+      .chb-tile-title,       /* Collection Hero Banner */
+      .brd-product__title,   /* Brands Discovered */
+      .ctl-pop__title,       /* Complete the Look */
+      .product-addon-title,  /* Pairs Well With */
+      .dotd-title,           /* Deal of the Day */
+      .cgb-product-card__title /* Gift Box Builder */ {
+        font-family: 'Cormorant', serif !important;
+      }
+
+      /* Product-card titles (home page & grids): 18px, weight 600.
+         Standard cards scoped to .product-card so the product-page heading and cart are untouched;
+         plus the homepage product-listing sections that render their own card markup. */
+      .product-card [ref="productTitleLink"],
+      .product-card [ref="productTitleLink"] *,
+      .cfa-prod-name,        /* Community Favourites */
+      .wnt-title,            /* What's New Today */
+      .brd-product__title {  /* Brands Discovered */
+        font-size: 18px !important;
+        font-weight: 600 !important;
+      }
+    </style>
 
     {% if request.design_mode %}
       {%- render 'theme-editor' -%}
     {% endif %}
 
     {{ content_for_header }}
+
+    {%- render 'home-section-spacing' -%}
   </head>
 
-  <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
+  <body class="{{ page_title | handleize }} page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
+     <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M8KP83KX"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
+    <div id="header-group">
+      {% sections 'header-group' %}
+    </div>
 
-    {% render 'chat-drawer' %}
-
-    <div class="page-wrapper">
-      <div id="header-group">
-        {% sections 'header-group' %}
-      </div>
-
-      <script>
-        /**
-         * Sets `--header-height` and `--header-group-height` to measured values before first paint.
-         *
-         * A few CSS rules position content relative to the header at first paint — a hero sized to
-         * the remaining viewport, a transparent header's negative margin. Without a measured value
-         * those rules use the `60px` fallback from `sections/header.liquid`, and the content visibly
-         * jumps once `header.js` corrects the values after load.
-         *
-         * Measuring forces layout mid-parse, so it only runs where a consuming rule exists.
-         * Callers opt in: the transparent-header branch below, or `snippets/measure-header-heights.liquid`,
-         * which any new first-paint consumer must render too.
-         *
-         * Measures once per page; after load, header.js's ResizeObservers keep the values fresh.
-         * The group-height walk mimics calculateHeaderGroupHeight() in utilities.js — keep them
-         * in sync.
+    <script>
+      // Inline header height and menu style calculations to prevent layout shift
+      // Note: Updates in calculateHeaderGroupHeight(), updateTransparentHeaderOffset() and setHeaderMenuStyle() utilities.js should be kept in sync with this function
+      (function setHeaderHeighCustomProperties() {
+        /*
+         * Header calculation functions for maintaining CSS variables
+         * Mimic calculateHeaderGroupHeight() in utilities.js
          */
-        window.measureHeaderHeights = (function () {
-          let measured = false;
+        const header = document.querySelector('header-component');
+        const headerGroup = document.querySelector('#header-group');
+        const hasHeaderSection = headerGroup?.querySelector('.header-section');
 
-          return function measureHeaderHeights() {
-            if (measured) return;
+        if (!header || !headerGroup) return;
 
-            const header = document.querySelector('#header-component');
-            const headerGroup = document.querySelector('#header-group');
+        const headerTopRow = header.querySelector('.header__row--top');
+        const headerHeight = header.offsetHeight;
 
-            if (!header || !headerGroup) return;
-            measured = true;
+        // Calculate the total height of the header group
+        let headerGroupHeight = 0;
+        const children = headerGroup.children;
+        for (let i = 0; i < children.length; i++) {
+          const element = children[i];
+          if (element === header || !(element instanceof HTMLElement)) continue;
+          headerGroupHeight += element.offsetHeight;
+        }
 
-            const headerHeight = header.offsetHeight;
+        // Check for transparent header special case
+        if (header.hasAttribute('transparent') && header.parentElement?.nextElementSibling) {
+          headerGroupHeight += headerHeight;
+        }
 
-            let headerGroupHeight = 0;
-            for (const element of headerGroup.children) {
-              if (element instanceof HTMLElement) headerGroupHeight += element.offsetHeight;
-            }
+        // Set CSS variables
+        document.body.style.setProperty('--header-height', `${headerHeight}px`);
+        document.body.style.setProperty('--header-group-height', `${headerGroupHeight}px`);
 
-            /**
-             * A transparent header is absolutely positioned, so the loop above counts its section
-             * wrapper as 0px. When a section follows it in the group, header.liquid pushes that
-             * section down by the header's height using a margin, which offsetHeight also
-             * excludes — so the header's height has to be added back manually.
-             */
-            if (header.hasAttribute('transparent') && header.parentElement?.nextElementSibling) {
-              headerGroupHeight += headerHeight;
-            }
-
-            document.body.style.setProperty('--header-height', `${headerHeight}px`);
-            document.body.style.setProperty('--header-group-height', `${headerGroupHeight}px`);
-          };
-        })();
-
-        /**
-         * Transparent-header rules consume the measured heights at first paint on every
-         * template, so the transparent case opts in globally here instead of per-section.
-         */
-        if (document.querySelector('#header-component')?.hasAttribute('transparent')) {
-          measureHeaderHeights();
+        if (headerTopRow) {
+          window.requestAnimationFrame(function () {
+            document.body.style.setProperty('--top-row-height', `${headerTopRow.offsetHeight}px`);
+          });
         }
 
         /**
-         * Sets `--top-row-height`, consumed by the header underlays and submenus. Deferred to a
-         * rAF so the `offsetHeight` read doesn't force layout mid-parse, and scoped to the
-         * header, where all consumers live, so the write only invalidates the header subtree.
-         * Mimics the `--top-row-height` write in updateHeaderHeights() in utilities.js
+         * Updates CSS custom properties for transparent header offset calculation
+         * Mimic updateTransparentHeaderOffset() in utilities.js
          */
-        (function setTopRowHeight() {
-          const header = document.querySelector('#header-component');
-          const headerTopRow = header?.querySelector('.header__row--top');
-          if (!headerTopRow) return;
 
-          window.requestAnimationFrame(function () {
-            header.style.setProperty('--top-row-height', `${headerTopRow.offsetHeight}px`);
-          });
-        })();
+        if (!hasHeaderSection || !header?.hasAttribute('transparent')) {
+          document.body.style.setProperty('--transparent-header-offset-boolean', '0');
+          return;
+        }
 
-        /**
-         * Sets `--transparent-header-offset-boolean` when the first section must offset itself
-         * under a transparent header. The non-offset case relies on the `0` default declared in
-         * sections/header.liquid — unlike updateTransparentHeaderOffset() in utilities.js, which
-         * re-runs on editor changes and must write '0' to reset a previously written '1'.
-         */
-        (function updateTransparentHeaderOffset() {
-          const header = document.querySelector('#header-component');
-          const headerSection = document.querySelector('#header-group .header-section');
-          if (!headerSection || !header?.hasAttribute('transparent')) return;
+        const hasImmediateSection = hasHeaderSection.nextElementSibling?.classList.contains('shopify-section');
 
-          const hasImmediateSection = headerSection.nextElementSibling?.classList.contains('shopify-section');
-          if (!hasImmediateSection) {
-            document.body.style.setProperty('--transparent-header-offset-boolean', '1');
-          }
-        })();
+        const shouldApplyOffset = !hasImmediateSection ? '1' : '0';
+        document.body.style.setProperty('--transparent-header-offset-boolean', shouldApplyOffset);
+      })();
 
-        /**
-         * Sets the initial menu style (inline menu vs. drawer) on the header component.
-         * Mimics setHeaderMenuStyle() in utilities.js
-         */
-        (function setHeaderMenuStyle() {
-          const headerComponent = document.querySelector('#header-component');
-          if (headerComponent) {
-            const isTouchDevice = 'ontouchstart' in window && navigator.maxTouchPoints > 0;
-            const overflowList = headerComponent.querySelector('overflow-list');
-            const hasReachedMinimum = overflowList && overflowList.hasAttribute('minimum-reached');
-            headerComponent.dataset.menuStyle = isTouchDevice || hasReachedMinimum ? 'drawer' : 'menu';
-          }
-        })();
-      </script>
+      (function setHeaderMenuStyle() {
+        const headerComponent = document.querySelector('#header-component');
+        if (headerComponent) {
+          const isTouchDevice = 'ontouchstart' in window && navigator.maxTouchPoints > 0;
+          const overflowList = headerComponent?.querySelector('overflow-list');
+          const hasReachedMinimum = overflowList && overflowList.hasAttribute('minimum-reached');
+          headerComponent.dataset.menuStyle = isTouchDevice || hasReachedMinimum ? 'drawer' : 'menu';
+        }
+      })();
+    </script>
 
-      <main
-        id="MainContent"
-        class="content-for-layout"
-        role="main"
-        data-page-transition-enabled="{{ settings.page_transition_enabled }}"
-        data-product-transition="{{ settings.transition_to_main_product }}"
-        data-template="{{ template }}"
-      >
-        {{ content_for_layout }}
-      </main>
+    <main
+      id="MainContent"
+      class="content-for-layout"
+      role="main"
+      data-page-transition-enabled="{{ settings.page_transition_enabled }}"
+      data-product-transition="{{ settings.transition_to_main_product }}"
+      data-template="{{ template }}"
+    >
+      {{ content_for_layout }}
+    </main>
 
-      <footer>
-        {% sections 'footer-group' %}
-      </footer>
-    </div>
-
-    {% render 'cart-drawer', render_wrapper: true %}
-    {% render 'theme-drawer' %}
+    <footer>
+      {% sections 'footer-group' %}
+    </footer>
 
     {% render 'search-modal' %}
 
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
     {% endif %}
+
+    {% section 'whatsapp-button' %}
+    {% render 'ihsan-widget' %}
   </body>
 </html>

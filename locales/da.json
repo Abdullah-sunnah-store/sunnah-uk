@@ -75,25 +75,20 @@
     "view_pricing_info": "Vis prisoplysninger",
     "slideshow": "Diasshow",
     "header_navigation_label": "Primær",
-    "home_logo_alt": "{{ store_name }} - Start",
+    "home": "Hjem",
     "active_filters": "Aktive filtre:",
     "product_details": "Produktoplysninger",
     "show_product_details": "Vis produktoplysninger for {{ product_name }}",
-    "featured_product": "Udvalgt produkt",
-    "search_suggestions_available": "Søgeforslag tilgængelige for \"{{ query }}\"",
-    "price_filter_low": "Lav pris",
-    "price_filter_high": "Høj pris",
-    "view_disclosure_information_for_product": "Se deklarationsoplysninger for {{ product_title }}",
-    "show_submenu": "Vis undermenu for {{ title }}"
+    "featured_product": "Udvalgt produkt"
   },
   "actions": {
     "add_to_cart": "Læg i indkøbskurven",
-    "clear_all": "Ryd alle",
+    "clear_all": "Ryd alt",
     "remove": "Fjern",
-    "view_in_your_space": "Se i dit rum",
+    "view_in_your_space": "Se den i dit område",
     "show_filters": "Filtrer",
     "clear": "Ryd",
-    "continue_shopping": "Fortsæt med at handle",
+    "continue_shopping": "Tilbage til butikken",
     "log_in_html": "Har du en konto? <a href=\"{{ link }}\">Log ind</a> for at betale hurtigere.",
     "see_items": {
       "one": "Se {{ count }} vare",
@@ -124,10 +119,7 @@
     "sign_in_options": "Andre muligheder for at logge ind",
     "sort": "Sortér",
     "show_all_options": "Vis alle muligheder",
-    "open": "Åbn",
-    "back_to": "Tilbage til {{ title }}",
-    "zoom_media": "Zoom medie {{ index }}",
-    "back_to_main_menu": "Tilbage til hovedmenu"
+    "open": "Åbn"
   },
   "content": {
     "reviews": "anmeldelser",
@@ -256,7 +248,7 @@
     "product_custom_property_character_count": "{{ used_chars }}/{{ max_chars }} tegn brugt",
     "terms_and_policies": "Vilkår og politikker",
     "pagination": {
-      "nav_label": "Sideinddeling",
+      "nav_label": "Navigation med sideinddeling",
       "previous": "Forrige",
       "next": "Næste",
       "page": "Side {{ page }}"
@@ -283,9 +275,7 @@
       "one": "1 vare er lagt i indkøbskurven",
       "other": "{{ count }} varer lagt i indkøbskurven"
     },
-    "item_count_cutoff": "Mere end {{ count }} varer",
-    "quick_order_list": "Hurtig ordreliste",
-    "product_disclosures": "Produktdeklarationer"
+    "item_count_cutoff": "Mere end {{ count }} varer"
   },
   "gift_cards": {
     "issued": {

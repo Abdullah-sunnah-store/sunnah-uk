@@ -1,0 +1,30 @@
+{% comment %}
+  Renders one "shop the look" product row inside the Complete the Look modal.
+  @param {object} p - product
+{% endcomment %}
+<div class="ctl-row">
+  <a class="ctl-row__img" href="{{ p.url }}" tabindex="-1" aria-hidden="true">
+    {% if p.featured_image != blank %}
+      <img src="{{ p.featured_image | image_url: width: 160 }}" alt="{{ p.featured_image.alt | default: p.title | escape }}" loading="lazy" width="64" height="64">
+    {% endif %}
+  </a>
+  <div class="ctl-row__info">
+    <a class="ctl-row__title" href="{{ p.url }}">{{ p.title }}</a>
+    <span class="ctl-row__price">
+      {%- if p.price_varies -%}From {% endif -%}{{ p.price | money }}
+    </span>
+  </div>
+
+  {%- if p.available == false -%}
+    <span class="ctl-row__btn" style="opacity:0.4;cursor:default;">Sold out</span>
+  {%- elsif p.has_only_default_variant or p.variants.size == 1 -%}
+    {%- assign v = p.selected_or_first_available_variant -%}
+    <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" style="margin:0;flex-shrink:0;">
+      <input type="hidden" name="id" value="{{ v.id }}">
+      <input type="hidden" name="quantity" value="1">
+      <button type="submit" class="ctl-row__btn">Add</button>
+    </form>
+  {%- else -%}
+    <a class="ctl-row__btn" href="{{ p.url }}">Options</a>
+  {%- endif -%}
+</div>

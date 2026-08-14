@@ -5,11 +5,10 @@
   @param {string} [section_id] - The section ID for cart discount component.
 {%- enddoc -%}
 
-{% render 'text-component-shimmer-styles' %}
-{% render 'cart-typography-styles' %}
 
 <div class="cart-totals">
-  {% # We need to keep this node in place to allow morphing to work properly # %}
+  <div class="essential-upsell-cross-sell-block" data-skip-subtree-update></div>
+  {% # Keep this node in place AND skip its subtree during morph so the Essential Upsell app's injected widget isn't wiped on every cart re-render # %}
   <div class="cart-totals__original-container cart-primary-typography">
     {%- if cart.cart_level_discount_applications.size > 0 -%}
       <span class="cart-totals__item cart-totals__original">
@@ -52,6 +51,7 @@
         <cart-note style="display: flex;">
           {% capture cart_note_accordion_children %}
             <details
+              class="details"
               {% if settings.cart_note_open_by_default %}
                 open
               {% endif %}
@@ -79,7 +79,6 @@
                   id="cart-note"
                   class="cart-note__instructions"
                   name="note"
-                  data-skip-node-update
                 >{{ cart.note }}</textarea>
               </div>
             </details>
@@ -118,6 +117,7 @@
 
         {% capture cart_discount_accordion_children %}
           <details
+            class="details"
             {% if disclosure_expanded %}
               open
             {% endif %}
@@ -157,7 +157,6 @@
                         size="8"
                         placeholder="{{ 'content.discount_code' | t }}"
                         required
-                        data-skip-node-update
                       >
                       <button
                         type="submit"
@@ -214,7 +213,10 @@
             </div>
           </details>
         {% endcapture %}
-        {% render 'accordion-custom-component', children: cart_discount_accordion_children, class: 'cart-discount' %}
+        {% render 'accordion-custom-component',
+          children: cart_discount_accordion_children,
+          class: 'cart-discount'
+        %}
       {% endif %}
     </div>
   {% endif %}
@@ -290,18 +292,18 @@
     display: flex;
     flex-direction: column;
     gap: 0;
-    border-block: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-10-25));
+    border-block: 1px solid var(--color-border);
     padding-block: 0;
     margin-block-start: var(--margin-3xs);
   }
 
   .cart-actions__divider {
-    border-block-start: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-10-25));
+    border-block-start: 1px solid var(--color-border);
   }
 
   .cart-totals:not(:has(.cart-actions)) {
     margin-block-start: var(--margin-3xs);
-    border-block-start: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-10-25));
+    border-block-start: 1px solid var(--color-border);
     padding-block-start: var(--margin-xl);
   }
 
@@ -312,17 +314,7 @@
   }
 
   .cart-totals__tax-note {
-    color: var(--color-foreground-subdued);
-  }
-
-  .cart-totals__tax-note a {
-    color: var(--color-foreground-subdued);
-    text-decoration-line: underline;
-    text-decoration-color: currentColor;
-
-    &:hover {
-      text-decoration-color: transparent;
-    }
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
   }
 
   .cart-totals__tax-note small {
@@ -404,6 +396,7 @@
 
   .cart-totals__total-value {
     font-size: var(--cart-font-size--xl);
+    color: #B8860B;
 
     @media screen and (max-width: 749px) {
       font-size: var(--font-size--lg);
@@ -438,7 +431,7 @@
   }
 
   .cart-note__summary:hover {
-    color: rgb(var(--color-rgb, var(--color-foreground-rgb)) / var(--opacity-subdued-text));
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
   }
 
   .cart-note__label {
@@ -483,8 +476,18 @@
     padding-inline: var(--padding-4xl);
   }
 
+  /* Match the Cash On Delivery button styling (bold label + rounded corners) */
+  .cart__ctas .cart__checkout-button,
+  .cart__ctas .cart__checkout-button .button-text {
+    font-weight: 700;
+  }
+
+  .cart__ctas .cart__checkout-button {
+    border-radius: 25px;
+  }
+
   .cart-drawer__summary .cart-totals:not(:has(.cart-totals__original-container:empty)) {
-    border-block-start: var(--style-border-width) solid rgb(var(--color-foreground-rgb) / var(--opacity-10-25));
+    border-block-start: var(--style-border-width) solid var(--color-border);
     padding-block-start: var(--padding-2xl);
   }
 
@@ -553,7 +556,7 @@
     padding: var(--padding-xs) var(--padding-sm);
     border-radius: var(--style-border-radius-pills);
     background-color: var(--color-input-background);
-    text-transform: uppercase;
+    text-transform: none;
   }
 
   .cart-discount__form {
@@ -599,7 +602,7 @@
   }
 
   .cart-discount__summary:hover {
-    color: rgb(var(--color-rgb, var(--color-foreground-rgb)) / var(--opacity-subdued-text));
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
   }
 
   .cart-discount__label {
@@ -615,4 +618,6 @@
       height: 100%;
     }
   }
+
+
 {% endstylesheet %}

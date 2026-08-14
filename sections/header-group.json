@@ -9,7 +9,7 @@
  */
 {
   "type": "header",
-  "name": "t:names.header",
+  "name": "Header",
   "sections": {
     "header_announcements_9jGBFp": {
       "type": "header-announcements",
@@ -17,9 +17,53 @@
         "announcement_BxgCk9": {
           "type": "_announcement",
           "settings": {
-            "text": "Welcome to our store",
+            "text": "Free gift wrapping on all orders",
+            "link": "",
             "font": "var(--font-subheading--family)",
-            "font_size": "0.75rem",
+            "font_size": "0.875rem",
+            "weight": "",
+            "letter_spacing": "normal",
+            "case": "none"
+          },
+          "blocks": {}
+        },
+        "announcement_6VQc4E": {
+          "type": "_announcement",
+          "name": "t:names.announcement",
+          "settings": {
+            "text": "Trusted by 50,000+ Muslim families",
+            "link": "",
+            "font": "var(--font-subheading--family)",
+            "font_size": "0.875rem",
+            "weight": "",
+            "letter_spacing": "normal",
+            "case": "none"
+          },
+          "blocks": {}
+        },
+        "announcement_UaWTkK": {
+          "type": "_announcement",
+          "name": "t:names.announcement",
+          "settings": {
+            "text": "Since 2017",
+            "link": "",
+            "font": "var(--font-subheading--family)",
+            "font_size": "0.875rem",
+            "weight": "",
+            "letter_spacing": "normal",
+            "case": "none"
+          },
+          "blocks": {}
+        },
+        "announcement_inmcKM": {
+          "type": "_announcement",
+          "name": "t:names.announcement",
+          "settings": {
+            "text": "Same-day dispatch in Dhaka",
+            "link": "",
+            "font": "var(--font-subheading--family)",
+            "font_size": "0.875rem",
+            "weight": "",
             "letter_spacing": "normal",
             "case": "none"
           },
@@ -27,17 +71,37 @@
         }
       },
       "block_order": [
-        "announcement_BxgCk9"
+        "announcement_BxgCk9",
+        "announcement_6VQc4E",
+        "announcement_UaWTkK",
+        "announcement_inmcKM"
       ],
       "name": "t:names.announcement_bar",
       "settings": {
-        "speed": 5,
-        "section_width": "page-width",
-        "background_color": "{{ settings.color_palette.background }}",
-        "divider_width": 1,
-        "divider_color": "{{ settings.color_palette.color2 }}",
+        "speed": 4,
+        "section_width": "full-width",
+        "color_scheme": "scheme-1",
+        "divider_width": 0,
         "padding-block-start": 15,
         "padding-block-end": 15
+      }
+    },
+    "cus_gift_box_announcement_design_HQCeKJ": {
+      "type": "cus-gift-box-announcement-design",
+      "name": "Cus Gift Box A.Bar",
+      "settings": {
+        "section_width": "full",
+        "button_text": "Create Your Own Gift Box",
+        "button_url": "shopify://pages/custom-gift-box",
+        "icon_emoji": "🎁",
+        "show_icon": true,
+        "show_arrow": true,
+        "bg_color": "#fafafa",
+        "bg_hover_color": "#edf5e8",
+        "text_color": "#1c1c1a",
+        "arrow_bg_color": "#1c1c1a",
+        "arrow_text_color": "#ffffff",
+        "arrow_border_color": "#ffffff"
       }
     },
     "header_section": {
@@ -49,7 +113,7 @@
           "settings": {
             "hide_logo_on_home_page": false,
             "padding-block-start": 0,
-            "padding-block-end": 0
+            "padding-block-end": 7
           },
           "blocks": {}
         },
@@ -57,7 +121,8 @@
           "type": "_header-menu",
           "static": true,
           "settings": {
-            "menu": "main-menu",
+            "menu": "main-menu-2-horizon",
+            "color_scheme": "",
             "type_font_primary_size": "0.875rem",
             "menu_font_style": "inverse",
             "type_font_primary_link": "body",
@@ -66,23 +131,25 @@
             "featured_products_aspect_ratio": "4 / 5",
             "featured_collections_aspect_ratio": "16 / 9",
             "image_border_radius": 0,
-            "navigation_bar": false,
-            "drawer_accordion": false,
-            "drawer_accordion_expand_first": false,
-            "drawer_dividers": false
+            "navigation_bar": true,
+            "color_scheme_navigation_bar": "",
+            "drawer_accordion": true,
+            "drawer_accordion_expand_first": true,
+            "drawer_dividers": true
           },
           "blocks": {}
         }
       },
       "settings": {
         "logo_position": "left",
-        "menu_position": "left",
+        "menu_position": "center",
         "menu_row": "top",
+        "customer_account_menu": "main-menu-2-horizon",
         "show_search": true,
         "search_position": "right",
         "search_row": "top",
-        "show_country": true,
-        "country_selector_style": false,
+        "show_country": false,
+        "country_selector_style": true,
         "show_language": true,
         "localization_font": "heading",
         "localization_font_size": "0.875rem",
@@ -94,15 +161,25 @@
         "divider_width": 0,
         "divider_size": "page-width",
         "border_width": 0,
-        "background_color_top": "{{ settings.color_palette.background }}",
+        "actions_display_style": "icon",
+        "actions_font_size": "0.875rem",
+        "actions_font": "body",
+        "actions_text_case": "none",
+        "color_scheme_top": "scheme-2",
+        "color_scheme_bottom": "",
+        "color_scheme_transparent": "scheme-6",
         "enable_transparent_header_home": false,
+        "home_color_scheme": "inverse",
         "enable_transparent_header_product": false,
-        "enable_transparent_header_collection": false
+        "product_color_scheme": "default",
+        "enable_transparent_header_collection": false,
+        "collection_color_scheme": "default"
       }
     }
   },
   "order": [
     "header_announcements_9jGBFp",
+    "cus_gift_box_announcement_design_HQCeKJ",
     "header_section"
   ]
 }

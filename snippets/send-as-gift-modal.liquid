@@ -1,0 +1,344 @@
+<div
+  id="send-as-gift-modal"
+  class="gift-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="gift-modal-title"
+  hidden
+>
+  <div class="gift-modal__overlay" data-gift-modal-close></div>
+
+  <div class="gift-modal__dialog">
+    <button
+      class="gift-modal__close button-unstyled"
+      data-gift-modal-close
+      aria-label="Close gift form"
+      type="button"
+    >
+      {{- 'icon-filters-close.svg' | inline_asset_content -}}
+    </button>
+
+    <h2 id="gift-modal-title" class="gift-modal__title">Send as Gift</h2>
+    <p class="gift-modal__subtitle">Fill in the details below. The recipient will not see the price.</p>
+
+    <p class="gift-modal__error-general hidden" id="gift-general-error" role="alert"></p>
+
+    <form id="send-as-gift-form" class="gift-modal__form" novalidate>
+
+      <div class="gift-modal__field">
+        <label for="gift-recipient-name" class="gift-modal__label">Recipient Name <span aria-hidden="true">*</span></label>
+        <input
+          type="text"
+          id="gift-recipient-name"
+          name="recipient_name"
+          class="gift-modal__input"
+          placeholder="Who is this gift for?"
+          required
+          autocomplete="off"
+        >
+        <span class="gift-modal__error hidden" data-error="recipient_name">Please enter the recipient's name.</span>
+      </div>
+
+      <div class="gift-modal__field">
+        <label for="gift-recipient-contact" class="gift-modal__label">Recipient Phone <span aria-hidden="true">*</span></label>
+        <input
+          type="tel"
+          id="gift-recipient-contact"
+          name="recipient_contact"
+          class="gift-modal__input"
+          placeholder="Phone number"
+          required
+          autocomplete="off"
+        >
+        <span class="gift-modal__error hidden" data-error="recipient_contact">Please enter the recipient's phone number.</span>
+      </div>
+
+      <div class="gift-modal__field">
+        <label for="gift-sender-name" class="gift-modal__label">Your Name (From)</label>
+        <input
+          type="text"
+          id="gift-sender-name"
+          name="sender_name"
+          class="gift-modal__input"
+          placeholder="Your name"
+          autocomplete="name"
+        >
+      </div>
+
+      <div class="gift-modal__field">
+        <label for="gift-message" class="gift-modal__label">Gift Message</label>
+        <textarea
+          id="gift-message"
+          name="gift_message"
+          class="gift-modal__input gift-modal__textarea"
+          placeholder="Write a personal message (optional)"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <div class="gift-modal__payment-notice">
+        <span class="gift-modal__payment-icon">
+          {{- 'icon-lock.svg' | inline_asset_content -}}
+        </span>
+        <p class="gift-modal__payment-text">
+          <strong style="color: #c00;">Full payment required.</strong> Gift orders must be paid in full online. Cash on Delivery is not available.
+        </p>
+      </div>
+
+      <div class="gift-modal__field gift-modal__field--checkbox">
+        <label class="gift-modal__checkbox-label" for="gift-hide-amount">
+          <input
+            type="checkbox"
+            id="gift-hide-amount"
+            name="hide_amount"
+            class="gift-modal__checkbox"
+          >
+          <span class="gift-modal__checkbox-custom" aria-hidden="true">
+            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+              <path d="M1 3.5L3.8 6.5L9 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="gift-modal__checkbox-text">Receiver Don't see Amount</span>
+        </label>
+      </div>
+
+      <div class="gift-modal__actions">
+        <button
+          type="submit"
+          class="button gift-modal__submit"
+          id="gift-modal-submit-btn"
+        >
+          Add Gift to Cart
+        </button>
+        <button
+          type="button"
+          class="button-secondary gift-modal__cancel"
+          data-gift-modal-close
+        >
+          Cancel
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{% stylesheet %}
+  .gift-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gift-modal[hidden] {
+    display: none;
+  }
+
+  .gift-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgb(0 0 0 / 0.5);
+    cursor: pointer;
+  }
+
+  .gift-modal__dialog {
+    position: relative;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    border-radius: var(--style-border-radius-card, 8px);
+    padding: var(--padding-2xl, 2rem);
+    width: min(90vw, 520px);
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 1;
+    box-shadow: 0 8px 40px rgb(0 0 0 / 0.18);
+  }
+
+  .gift-modal__close {
+    position: absolute;
+    top: var(--padding-md, 1rem);
+    right: var(--padding-md, 1rem);
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--color-foreground);
+    opacity: 0.6;
+  }
+
+  .gift-modal__close:hover {
+    opacity: 1;
+  }
+
+  .gift-modal__close svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  .gift-modal__title {
+    margin: 0 0 var(--margin-xs, 0.5rem);
+    font-size: var(--font-size--xl, 1.4rem);
+    padding-right: 2.5rem;
+  }
+
+  .gift-modal__subtitle {
+    margin: 0 0 var(--margin-xl, 1.5rem);
+    font-size: var(--font-size--sm, 0.875rem);
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text, 0.6));
+  }
+
+  .gift-modal__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md, 1rem);
+  }
+
+  .gift-modal__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .gift-modal__label {
+    font-size: var(--font-size--sm, 0.875rem);
+    font-weight: 600;
+  }
+
+  .gift-modal__input {
+    background-color: var(--color-input-background);
+    color: var(--color-input-text);
+    border: var(--style-border-width-inputs, 1px) solid var(--color-input-border);
+    border-radius: var(--style-border-radius-inputs, 4px);
+    padding: var(--padding-sm, 0.75rem) var(--padding-md, 1rem);
+    font-size: var(--font-size--sm, 0.875rem);
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+
+  .gift-modal__input:focus {
+    outline: none;
+    border-color: var(--color-foreground);
+  }
+
+  .gift-modal__input--error {
+    border-color: var(--color-error, #c00);
+  }
+
+  .gift-modal__textarea {
+    resize: vertical;
+    min-height: 4rem;
+  }
+
+  .gift-modal__error {
+    font-size: var(--font-size--2xs, 0.75rem);
+    color: var(--color-error, #c00);
+  }
+
+  .gift-modal__payment-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--gap-xs, 0.5rem);
+    background-color: rgb(var(--color-foreground-rgb) / 0.05);
+    border-radius: var(--style-border-radius-card, 8px);
+    padding: var(--padding-md, 1rem);
+    margin-top: var(--margin-xs, 0.25rem);
+  }
+
+  .gift-modal__payment-icon {
+    flex-shrink: 0;
+    width: 1.2rem;
+    height: 1.2rem;
+    display: flex;
+    align-items: center;
+    color: var(--color-foreground);
+  }
+
+  .gift-modal__payment-icon svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  .gift-modal__payment-text {
+    margin: 0;
+    font-size: var(--font-size--sm, 0.875rem);
+    line-height: 1.4;
+  }
+
+  .gift-modal__field--checkbox {
+    margin-top: var(--margin-xs, 0.25rem);
+  }
+
+  .gift-modal__checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    font-size: var(--font-size--sm, 0.875rem);
+    user-select: none;
+  }
+
+  .gift-modal__checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .gift-modal__checkbox-custom {
+    flex-shrink: 0;
+    width: 1.1rem;
+    height: 1.1rem;
+    border: 1.5px solid var(--color-input-border);
+    border-radius: 3px;
+    background-color: var(--color-input-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  .gift-modal__checkbox:checked + .gift-modal__checkbox-custom {
+    background-color: var(--color-foreground);
+    border-color: var(--color-foreground);
+    color: var(--color-background);
+  }
+
+  .gift-modal__checkbox-text {
+    line-height: 1.3;
+  }
+
+  .gift-modal__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs, 0.5rem);
+    margin-top: var(--margin-xs, 0.25rem);
+  }
+
+  .gift-modal__submit,
+  .gift-modal__cancel {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .gift-modal__error-general {
+    font-size: var(--font-size--sm, 0.875rem);
+    color: #c00;
+    background: #fff0f0;
+    border: 1px solid #fcc;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin: 0 0 var(--margin-md, 1rem);
+    display: block;
+  }
+
+  .gift-modal__error-general.hidden {
+    display: none;
+  }
+{% endstylesheet %}

@@ -75,34 +75,29 @@
     "remove": "Elimină",
     "view_pricing_info": "Vezi informațiile de tarifare",
     "slideshow": "Prezentare de diapozitive",
-    "header_navigation_label": "Principală",
-    "home_logo_alt": "{{ store_name }} - Acasă",
+    "header_navigation_label": "principală",
+    "home": "Acasă",
     "active_filters": "Filtre active:",
     "product_details": "Detalii produs",
     "show_product_details": "Afișează detaliile produsului pentru {{ product_name }}",
-    "show_submenu": "Afișează submeniul {{ title }}",
-    "featured_product": "Produs recomandat",
-    "search_suggestions_available": "Sugestii de căutare disponibile pentru „{{ query }}”",
-    "price_filter_low": "Preț mic",
-    "price_filter_high": "Preț mare",
-    "view_disclosure_information_for_product": "Vizualizează mențiunile referitoare la produsul {{ product_title }}"
+    "featured_product": "Produs recomandat"
   },
   "actions": {
     "add_to_cart": "Adaugă în coș",
-    "clear_all": "Ștergeți tot",
-    "remove": "Eliminați",
-    "view_in_your_space": "Vedeți în spațiul dumneavoastră",
+    "clear_all": "Golește tot",
+    "remove": "Elimină",
+    "view_in_your_space": "Vezi în spațiul tău",
     "show_filters": "Filtrează",
-    "clear": "Ștergeți",
-    "continue_shopping": "Continuați cumpărăturile",
+    "clear": "Golește",
+    "continue_shopping": "Continuă cumpărăturile",
     "log_in_html": "Ai un cont? <a href=\"{{ link }}\">Conectează-te</a> pentru a finaliza comanda mai rapid.",
     "see_items": {
       "one": "Vezi {{ count }} articol",
-      "other": "Vedeți {{ count }} articole",
-      "few": "Vedeți {{ count }} articole"
+      "other": "Vezi {{ count }} articole",
+      "few": "Vezi {{ count }} articole"
     },
-    "view_all": "Vedeți toate",
-    "add": "Adăugați",
+    "view_all": "Afișează tot",
+    "add": "Adaugă",
     "choose": "Alege",
     "added": "Adăugat",
     "show_less": "Afișează mai puțin",
@@ -111,13 +106,13 @@
     "more": "Mai multe",
     "zoom": "Zoom",
     "close_dialog": "Închide dialogul",
-    "reset": "Resetare",
+    "reset": "Resetează",
     "remove_discount": "Elimină codul de reducere {{ code }}",
     "enter_using_password": "Accesează folosind parola",
     "submit": "Trimite",
     "enter_password": "Introdu parola",
     "view_store_information": "Vezi informațiile despre magazin",
-    "apply": "Aplicați",
+    "apply": "Aplică",
     "back": "Înapoi",
     "log_in": "Conectează-te",
     "log_out": "Deconectează-te",
@@ -125,11 +120,8 @@
     "sign_in_options": "Alte opțiuni de conectare",
     "sign_up": "Înscrie-te",
     "sort": "Sortează",
-    "show_all_options": "Afișați toate opțiunile",
-    "open": "Deschidere",
-    "back_to": "Înapoi la {{ title }}",
-    "back_to_main_menu": "Înapoi la meniul principal",
-    "zoom_media": "Fă zoom pe elementul media {{ index }}"
+    "show_all_options": "Afișează toate opțiunile",
+    "open": "Deschidere"
   },
   "content": {
     "reviews": "recenzii",
@@ -183,7 +175,7 @@
     "search_results_resource_pages": "Pagini",
     "search_results_resource_products": "Produse",
     "search_results_resource_queries": "Caută sugestii",
-    "search_results_view_all": "Vedeți toate",
+    "search_results_view_all": "Vezi tot",
     "search_results_view_all_button": "Vezi tot",
     "search_results_resource_products_count": {
       "one": "{{ count }} produs",
@@ -229,7 +221,7 @@
     "taxes_at_checkout_shipping_at_checkout_without_policy_without_discounts": "Taxele și costul transportului sunt calculate la momentul efectuării plății.",
     "taxes_included_shipping_at_checkout_with_policy_without_discounts_html": "Taxe incluse. Transportul este calculat la momentul efectuării plății.",
     "taxes_included_shipping_at_checkout_without_policy_without_discounts": "Taxe incluse. Transportul este calculat la momentul efectuării plății.",
-    "view_more_details": "Vedeți mai multe detalii",
+    "view_more_details": "Vezi mai multe detalii",
     "page_placeholder_title": "Titlul paginii",
     "page_placeholder_content": "Selectează o pagină pentru a afișa conținutul acesteia.",
     "placeholder_image": "Imagine substituent",
@@ -246,7 +238,7 @@
       "other": "{{ count }} rămas",
       "few": "{{ count }} rămas"
     },
-    "recipient_form_send_to": "Trimiteți către",
+    "recipient_form_send_to": "Destinatar",
     "recipient_form_email_label": "Adresa de e-mail a destinatarului",
     "recipient_form_email_label_my_email": "Adresa mea de e-mail",
     "recipient_form_email_address": "Adresa de e-mail a destinatarului",
@@ -261,7 +253,7 @@
     "product_custom_property_character_count": "{{ used_chars }}/{{ max_chars }} caractere folosite",
     "terms_and_policies": "Termeni și politici",
     "pagination": {
-      "nav_label": "Paginare",
+      "nav_label": "Navigare în paginare",
       "previous": "Anteriorul",
       "next": "Următorul",
       "page": "Pagina {{ page }}"
@@ -289,9 +281,7 @@
       "other": "{{ count }} articole au fost adăugate în coș",
       "few": "{{ count }} articole au fost adăugate în coș"
     },
-    "item_count_cutoff": "Peste {{ count }} articole",
-    "quick_order_list": "Lista comenzilor rapide",
-    "product_disclosures": "Mențiuni referitoare la produs"
+    "item_count_cutoff": "Peste {{ count }} articole"
   },
   "gift_cards": {
     "issued": {
@@ -329,7 +319,7 @@
     }
   },
   "fields": {
-    "separator": "până la"
+    "separator": "la"
   },
   "placeholders": {
     "password": "Parolă",

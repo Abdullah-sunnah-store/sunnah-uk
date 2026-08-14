@@ -1,0 +1,426 @@
+{%- doc -%}
+  Custom review summary: a golden star rating and review count generated
+  deterministically per product within configurable ranges (so the numbers are
+  stable across reloads), plus a "Read reviews" button that opens a popup
+  showing the written reviews.
+
+  All text is editable in the block settings.
+{%- enddoc -%}
+
+{% liquid
+  assign block_settings = block.settings
+  assign product = closest.product
+
+  if request.visual_preview_mode and product == blank
+    assign product = collections.all.products.first
+  endif
+
+  assign seed = product.id | default: 12345
+
+  # --- Rating (in tenths so we can stay within e.g. 4.8–5.0) ---
+  assign min_t = block_settings.rating_min | times: 10 | round
+  assign max_t = block_settings.rating_max | times: 10 | round
+  if max_t < min_t
+    assign max_t = min_t
+  endif
+  assign rating_span = max_t | minus: min_t | plus: 1
+  assign rating_t = seed | modulo: rating_span | plus: min_t
+  assign rating_display = rating_t | divided_by: 10.0 | round: 1
+  assign fill_pct = rating_t | times: 2
+
+  # --- Review count ---
+  assign count_min = block_settings.count_min
+  assign count_max = block_settings.count_max
+  if count_max < count_min
+    assign count_max = count_min
+  endif
+  assign count_span = count_max | minus: count_min | plus: 1
+  assign review_count = seed | times: 7 | plus: 13 | modulo: count_span | plus: count_min
+
+  # --- Written reviews (one per line; optional "Name | text") ---
+  assign review_lines = block_settings.reviews | newline_to_br | split: '<br />'
+  assign modal_id = 'CRModal-' | append: block.id
+%}
+
+<div class="custom-reviews" {{ block.shopify_attributes }}>
+  <div class="custom-reviews__summary">
+    <span
+      class="custom-reviews__stars"
+      style="--fill: {{ fill_pct }}%;"
+      role="img"
+      aria-label="{{ rating_display }} out of 5 stars"
+    >
+      <span class="custom-reviews__stars-empty" aria-hidden="true">★★★★★</span>
+      <span class="custom-reviews__stars-full" aria-hidden="true">★★★★★</span>
+    </span>
+    <span class="custom-reviews__score">{{ rating_display }}</span>
+    <span class="custom-reviews__sep" aria-hidden="true">·</span>
+    <span class="custom-reviews__count">
+      {{- review_count }} {{ block_settings.reviews_word | default: 'reviews' -}}
+    </span>
+    {%- if block_settings.show_read_link -%}
+      <button type="button" class="custom-reviews__link" data-reviews-open="{{ modal_id }}">
+        {{ block_settings.read_link_label | default: 'Read reviews' }}
+      </button>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- if block_settings.show_read_link -%}
+  <div
+    id="{{ modal_id }}"
+    class="cr-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="{{ modal_id }}-title"
+    hidden
+  >
+    <div class="cr-modal__overlay" data-reviews-close></div>
+    <div class="cr-modal__dialog">
+      <button class="cr-modal__close" type="button" data-reviews-close aria-label="Close reviews">
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+
+      <div class="cr-modal__header">
+        <h2 id="{{ modal_id }}-title" class="cr-modal__title">
+          {{ block_settings.modal_title | default: 'Customer Reviews' }}
+        </h2>
+        <div class="cr-modal__summary">
+          <span class="custom-reviews__stars" style="--fill: {{ fill_pct }}%;" aria-hidden="true">
+            <span class="custom-reviews__stars-empty">★★★★★</span>
+            <span class="custom-reviews__stars-full">★★★★★</span>
+          </span>
+          <span class="cr-modal__score">{{ rating_display }}</span>
+          <span class="cr-modal__count">
+            {{- 'Based on ' }}{{ review_count }} {{ block_settings.reviews_word | default: 'reviews' -}}
+          </span>
+        </div>
+      </div>
+
+      <ul class="cr-modal__list">
+        {%- for line in review_lines -%}
+          {%- liquid
+            assign clean = line | strip | strip_html
+            if clean == blank
+              continue
+            endif
+            assign parts = clean | split: '|'
+            assign author = ''
+            assign text = clean
+            if parts.size > 1
+              assign author = parts[0] | strip
+              assign text = parts | slice: 1, parts.size | join: '|' | strip
+            endif
+          -%}
+          <li class="cr-modal__item">
+            <span class="cr-modal__item-stars" aria-hidden="true">★★★★★</span>
+            <p class="cr-modal__item-text">{{ text }}</p>
+            {%- if author != blank -%}
+              <p class="cr-modal__item-author">— {{ author }}</p>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var modal = document.getElementById({{ modal_id | json }});
+      if (!modal || modal.dataset.bound === 'true') return;
+      modal.dataset.bound = 'true';
+
+      function open() {
+        // Portal to <body> so the fixed modal escapes any ancestor stacking
+        // context and layers above the sticky header.
+        if (modal.parentNode !== document.body) {
+          document.body.appendChild(modal);
+        }
+        modal.removeAttribute('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+      function close() {
+        modal.setAttribute('hidden', '');
+        document.body.style.overflow = '';
+      }
+
+      document.addEventListener('click', function (e) {
+        var opener = e.target.closest('[data-reviews-open="' + {{ modal_id | json }} + '"]');
+        if (opener) { e.preventDefault(); open(); return; }
+        if (e.target.closest('[data-reviews-close]') && modal.contains(e.target)) { close(); }
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !modal.hasAttribute('hidden')) close();
+      });
+    })();
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  .custom-reviews {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2xs, 0.5rem);
+  }
+
+  .custom-reviews__summary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--gap-2xs, 0.5rem);
+    font-size: var(--font-paragraph--size, 1.4rem);
+  }
+
+  .custom-reviews__stars {
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .custom-reviews__stars-empty {
+    color: rgb(var(--color-foreground-rgb) / 0.25);
+  }
+
+  .custom-reviews__stars-full {
+    position: absolute;
+    inset: 0;
+    width: var(--fill, 100%);
+    overflow: hidden;
+    color: #D4A830;
+  }
+
+  .custom-reviews__score {
+    font-weight: 600;
+  }
+
+  .custom-reviews__sep,
+  .custom-reviews__count {
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+  }
+
+  .custom-reviews__link {
+    margin-inline-start: var(--gap-2xs, 0.5rem);
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font: inherit;
+    color: var(--color-foreground);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* --- Modal --- */
+  .cr-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cr-modal[hidden] {
+    display: none;
+  }
+
+  .cr-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgb(0 0 0 / 0.5);
+    cursor: pointer;
+  }
+
+  .cr-modal__dialog {
+    position: relative;
+    z-index: 1;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    border-radius: var(--style-border-radius-card, 8px);
+    padding: var(--padding-2xl, 2rem);
+    width: min(92vw, 560px);
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 40px rgb(0 0 0 / 0.2);
+  }
+
+  .cr-modal__close {
+    position: absolute;
+    top: var(--padding-md, 1rem);
+    right: var(--padding-md, 1rem);
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    opacity: 0.6;
+    color: var(--color-foreground);
+  }
+
+  .cr-modal__close:hover {
+    opacity: 1;
+  }
+
+  .cr-modal__close svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  .cr-modal__header {
+    margin-bottom: var(--margin-lg, 1.25rem);
+    padding-right: 2.5rem;
+  }
+
+  .cr-modal__title {
+    margin: 0 0 var(--margin-2xs, 0.5rem);
+  }
+
+  .cr-modal__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-2xs, 0.5rem);
+    font-size: var(--font-paragraph--size, 1.4rem);
+  }
+
+  .cr-modal__score {
+    font-weight: 600;
+  }
+
+  .cr-modal__count {
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+  }
+
+  .cr-modal__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg, 1.25rem);
+  }
+
+  .cr-modal__item {
+    padding-bottom: var(--padding-md, 1rem);
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / 0.12);
+  }
+
+  .cr-modal__item:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .cr-modal__item-stars {
+    color: #D4A830;
+    letter-spacing: 0.08em;
+    font-size: 0.9em;
+  }
+
+  .cr-modal__item-text {
+    margin: 0.3rem 0 0;
+    line-height: 1.5;
+  }
+
+  .cr-modal__item-author {
+    margin: 0.3rem 0 0;
+    font-size: calc(var(--font-paragraph--size, 1.5rem) * 0.85);
+    color: rgb(var(--color-foreground-rgb) / 0.6);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Custom Reviews",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Rating"
+    },
+    {
+      "type": "range",
+      "id": "rating_min",
+      "label": "Minimum rating",
+      "min": 1,
+      "max": 5,
+      "step": 0.1,
+      "default": 4.8
+    },
+    {
+      "type": "range",
+      "id": "rating_max",
+      "label": "Maximum rating",
+      "min": 1,
+      "max": 5,
+      "step": 0.1,
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Review count"
+    },
+    {
+      "type": "number",
+      "id": "count_min",
+      "label": "Minimum review count",
+      "default": 20
+    },
+    {
+      "type": "number",
+      "id": "count_max",
+      "label": "Maximum review count",
+      "default": 30
+    },
+    {
+      "type": "text",
+      "id": "reviews_word",
+      "label": "Word after the count",
+      "default": "reviews"
+    },
+    {
+      "type": "header",
+      "content": "Read reviews button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_read_link",
+      "label": "Show \"Read reviews\" button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "read_link_label",
+      "label": "Button label",
+      "default": "Read reviews"
+    },
+    {
+      "type": "text",
+      "id": "modal_title",
+      "label": "Popup title",
+      "default": "Customer Reviews"
+    },
+    {
+      "type": "header",
+      "content": "Written reviews (shown in popup)"
+    },
+    {
+      "type": "textarea",
+      "id": "reviews",
+      "label": "Reviews",
+      "info": "One review per line. Optional author: \"Author name | review text\".",
+      "default": "Aisha R. | Absolutely beautiful — even better in person. The quality is stunning.\nOmar F. | Arrived quickly and packaged with so much care. Will order again, insha'Allah.\nFatima K. | Gifted this for Eid and the whole family loved it. Highly recommend.\nYusuf A. | Elegant, sturdy and exactly as pictured. Worth every taka.\nMariam S. | A truly meaningful piece for our home. Thank you for the lovely craftsmanship.\nIbrahim H. | Fast delivery across Bangladesh and excellent customer service.\nZainab M. | The colours are gorgeous and the frame feels premium. Five stars."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Reviews",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,299 @@
+{% comment %}
+  Gift Card Banner Section
+  Replicates the Minted-style e-gift card promotional banner.
+  Add this as a section file: sections/gift-card-banner.liquid
+{% endcomment %}
+
+<section class="gift-card-banner" id="gift-card-banner-{{ section.id }}">
+  <div class="gift-card-banner__inner">
+
+    <div class="gift-card-banner__content">
+      <h2 class="gift-card-banner__heading">
+        {{ section.settings.heading }}
+      </h2>
+      <p class="gift-card-banner__subheading">
+        {{ section.settings.subheading }}
+      </p>
+      <a
+        href="{{ section.settings.button_url }}"
+        class="gift-card-banner__button"
+        {% if section.settings.button_url == blank %}aria-disabled="true"{% endif %}
+      >
+        {{ section.settings.button_label }}
+      </a>
+    </div>
+
+    <div class="gift-card-banner__image-wrap">
+      {% if section.settings.card_image != blank %}
+        <img
+          src="{{ section.settings.card_image | image_url: width: 800 }}"
+          alt="{{ section.settings.card_image.alt | escape }}"
+          width="{{ section.settings.card_image.width }}"
+          height="{{ section.settings.card_image.height }}"
+          loading="lazy"
+          class="gift-card-banner__card-img"
+        >
+      {% else %}
+        {{ 'image' | placeholder_svg_tag: 'gift-card-banner__placeholder' }}
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+
+{% stylesheet %}
+.gift-card-banner {
+  width: 100%;
+  overflow: hidden;
+}
+
+.gift-card-banner__inner {
+  display: flex;
+  min-height: {{ section.settings.banner_height }}px;
+}
+
+/* Left panel */
+.gift-card-banner__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 56px;
+  background-color: {{ section.settings.left_bg_color }};
+  width: 42%;
+  flex-shrink: 0;
+}
+
+.gift-card-banner__heading {
+  font-size: var(--font-h2--size);
+  font-weight: var(--font-h2--weight);
+  color: {{ section.settings.heading_color }};
+  margin: 0 0 16px;
+  line-height: var(--font-h2--line-height);
+  font-family: var(--font-heading--family);
+  letter-spacing: var(--font-h2--letter-spacing);
+}
+
+.gift-card-banner__subheading {
+  font-size: {{ section.settings.subheading_size }}px;
+  color: {{ section.settings.subheading_color }};
+  margin: 0 0 32px;
+  line-height: 1.5;
+}
+
+.gift-card-banner__button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 14px 24px;
+  background-color: var(--color-primary-button-background, #111);
+  color: var(--color-primary-button-text, #fff);
+  border: 1.5px solid var(--color-primary-button-border, #111);
+  border-radius: var(--style-border-radius-buttons-primary, 14px);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  align-self: flex-start;
+  font-family: var(--button-font-family-primary, var(--font-body--family));
+}
+
+.gift-card-banner__button:hover {
+  background-color: var(--color-primary-button-text, #fff);
+  color: var(--color-primary-button-background, #111);
+  border-color: var(--color-primary-button-background, #111);
+}
+
+/* Right panel */
+.gift-card-banner__image-wrap {
+  flex: 1;
+  background-color: {{ section.settings.right_bg_color }};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.gift-card-banner__card-img {
+  max-width: 380px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transform: rotate(-6deg);
+  border-radius: 12px;
+  box-shadow: 0 20px 48px rgba(28, 28, 26, 0.18);
+}
+
+.gift-card-banner__placeholder {
+  max-width: 300px;
+  width: 60%;
+  opacity: 0.4;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .gift-card-banner__inner {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .gift-card-banner__content {
+    width: 100%;
+    padding: 40px 24px;
+    box-sizing: border-box;
+  }
+
+  .gift-card-banner__image-wrap {
+    padding: 40px 24px;
+    min-height: 240px;
+  }
+
+  .gift-card-banner__card-img {
+    max-width: 260px;
+  }
+
+  /* .gift-card-banner__heading size handled by theme heading scale */
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Gift Card Banner",
+  "tag": "section",
+  "class": "section-gift-card-banner",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "banner_height",
+      "label": "Banner height (px)",
+      "min": 200,
+      "max": 600,
+      "step": 10,
+      "default": 300
+    },
+    {
+      "type": "header",
+      "content": "Left panel"
+    },
+    {
+      "type": "color",
+      "id": "left_bg_color",
+      "label": "Background colour",
+      "default": "#1C4A3A"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "If they're hard to shop for"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading font size (px)",
+      "min": 18,
+      "max": 60,
+      "step": 1,
+      "default": 32
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading colour",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Send an e-gift card straight to their inbox."
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading font size (px)",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading colour",
+      "default": "#d4e8e1"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Shop e-gift cards"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#1C4A3A"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button border",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg_color",
+      "label": "Button hover background",
+      "default": "#1C4A3A"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button hover text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Right panel"
+    },
+    {
+      "type": "color",
+      "id": "right_bg_color",
+      "label": "Background colour",
+      "default": "#D4A830"
+    },
+    {
+      "type": "image_picker",
+      "id": "card_image",
+      "label": "Gift card image"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gift Card Banner"
+    }
+  ]
+}
+{% endschema %}

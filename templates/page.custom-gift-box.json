@@ -1,0 +1,145 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "Title",
+          "settings": {
+            "text": "<h1>{{ closest.page.title }}</h1>",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-primary--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "",
+            "background": false,
+            "background_color": "#1c1c1a26",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "page-content": {
+          "type": "page-content",
+          "settings": {},
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "heading",
+        "page-content"
+      ],
+      "disabled": true,
+      "settings": {
+        "content_direction": "column",
+        "gap": 32,
+        "color_scheme": "",
+        "padding-block-start": 40,
+        "padding-block-end": 80
+      }
+    },
+    "gift_box_builder_AXL9qJ": {
+      "type": "gift-box-builder",
+      "blocks": {
+        "collection_VBqgpW": {
+          "type": "collection",
+          "settings": {
+            "collection": "stationeries",
+            "custom_name": ""
+          }
+        },
+        "collection_FEypD9": {
+          "type": "collection",
+          "settings": {
+            "collection": "candles",
+            "custom_name": ""
+          }
+        },
+        "collection_4y3ypY": {
+          "type": "collection",
+          "settings": {
+            "collection": "cards",
+            "custom_name": ""
+          }
+        },
+        "collection_APcpyj": {
+          "type": "collection",
+          "settings": {
+            "collection": "mugs",
+            "custom_name": ""
+          }
+        },
+        "collection_rHVNUz": {
+          "type": "collection",
+          "settings": {
+            "collection": "essentials",
+            "custom_name": ""
+          }
+        },
+        "collection_q4mQA8": {
+          "type": "collection",
+          "settings": {
+            "collection": "prayer-mat",
+            "custom_name": ""
+          }
+        },
+        "collection_MDkAHg": {
+          "type": "collection",
+          "settings": {
+            "collection": "lifestyle",
+            "custom_name": "Lifestyle"
+          }
+        },
+        "collection_dEFdPJ": {
+          "type": "collection",
+          "settings": {
+            "collection": "books",
+            "custom_name": ""
+          }
+        }
+      },
+      "block_order": [
+        "collection_VBqgpW",
+        "collection_FEypD9",
+        "collection_4y3ypY",
+        "collection_APcpyj",
+        "collection_rHVNUz",
+        "collection_q4mQA8",
+        "collection_MDkAHg",
+        "collection_dEFdPJ"
+      ],
+      "name": "Custom Gift Box  v2",
+      "settings": {
+        "main_title": "Build Your Custom Gift Box",
+        "main_subtitle": "Create the perfect personalized gift by selecting your favorite products",
+        "max_box_items": 6,
+        "curated_boxes_url": "shopify://collections/all-gifts",
+        "addon_product_1": "wrapping-paper",
+        "addon_product_2": "wishcard"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "gift_box_builder_AXL9qJ"
+  ]
+}
