@@ -1,0 +1,399 @@
+/*
+  TSS Base — shared design tokens and primitives.
+  Mirrors the reference design system at thesunnahstoremarketplace.vercel.app
+*/
+
+:root {
+  /* Palette — exact values from the reference build */
+  --tss-ivory: #f5f0e8;
+  --tss-ivory-2: #ede8df;
+  --tss-ink: #1c1c1a;
+  --tss-green: #08291e;
+  --tss-green-dark: #051e16;
+  --tss-green-mid: #1a4a3a;
+  --tss-gold: #b8860b;
+  --tss-gold-bright: #d4a830;
+
+  --tss-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --tss-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+
+  --tss-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --tss-gutter: 20px; /* px-5 */
+}
+
+/* ---------- shared primitives ---------- */
+.tss-section {
+  font-family: var(--tss-sans);
+  color: var(--tss-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.tss-section *,
+.tss-section *::before,
+.tss-section *::after {
+  box-sizing: border-box;
+}
+
+.tss-section p,
+.tss-section h1,
+.tss-section h2,
+.tss-section h3,
+.tss-section ol,
+.tss-section ul,
+.tss-section figure,
+.tss-section blockquote {
+  margin: 0;
+  padding: 0;
+}
+
+.tss-section ol,
+.tss-section ul {
+  list-style: none;
+}
+
+/* Section headers */
+.tss-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-inline: var(--tss-gutter);
+}
+
+.tss-eyebrow {
+  font-family: var(--tss-sans);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--tss-gold);
+}
+
+.tss-head-title {
+  display: block;
+  margin-top: 16px;
+  font-family: var(--tss-serif);
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1.1;
+  text-wrap: balance;
+  color: var(--tss-green);
+}
+
+.tss-head-lede {
+  margin-top: 20px;
+  max-width: 46ch;
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.65;
+  color: rgb(28 28 26 / 0.7);
+  text-wrap: pretty;
+}
+
+/* Masked line-by-line heading reveal */
+.tss-line {
+  display: block;
+  overflow: hidden;
+}
+
+.tss-line > span {
+  display: block;
+  transform: translateY(110%);
+  transition: transform 1s var(--tss-ease);
+}
+
+.tss-reveal.is-in .tss-line > span {
+  transform: translateY(0);
+}
+
+.tss-reveal.is-in .tss-line:nth-child(2) > span {
+  transition-delay: 0.08s;
+}
+
+.tss-reveal.is-in .tss-line:nth-child(3) > span {
+  transition-delay: 0.16s;
+}
+
+/* Fade + rise reveal */
+.tss-rise {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.9s var(--tss-ease), transform 0.9s var(--tss-ease);
+}
+
+.tss-rise.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Image clip reveal */
+.tss-clip {
+  overflow: hidden;
+  background: var(--tss-ivory-2);
+}
+
+.tss-clip > * {
+  display: block;
+  width: 100%;
+  clip-path: inset(0% 0% 100% 0%);
+  transition: clip-path 1.2s var(--tss-ease);
+  will-change: clip-path;
+}
+
+.tss-clip.is-in > * {
+  clip-path: inset(0% 0% 0% 0%);
+}
+
+.tss-img-34 {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
+/* Buttons */
+.tss-btn {
+  display: inline-block;
+  border-radius: 2px;
+  padding: 16px 32px;
+  font-family: var(--tss-sans);
+  font-size: 15px;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+.tss-btn--outline-ivory {
+  border: 1px solid rgb(245 240 232 / 0.45);
+  color: var(--tss-ivory);
+  background: transparent;
+}
+
+.tss-btn--outline-ivory:hover {
+  background: var(--tss-ivory);
+  color: var(--tss-green);
+}
+
+.tss-btn--outline-green {
+  border: 1px solid var(--tss-green-mid);
+  color: var(--tss-green);
+  background: transparent;
+}
+
+.tss-btn--outline-green:hover {
+  background: var(--tss-green-mid);
+  color: var(--tss-ivory);
+}
+
+.tss-btn--gold {
+  border: 0;
+  background: var(--tss-gold);
+  color: var(--tss-green-dark);
+  font-weight: 500;
+}
+
+.tss-btn--gold:hover {
+  background: var(--tss-gold-bright);
+}
+
+/* Underlined text links */
+.tss-link-gold {
+  display: inline-block;
+  border-bottom: 1px solid var(--tss-gold);
+  padding-bottom: 2px;
+  font-size: 13px;
+  color: var(--tss-gold);
+  text-decoration: none;
+  transition: color 0.4s ease, border-color 0.4s ease;
+}
+
+.tss-link-gold:hover {
+  color: var(--tss-green-mid);
+  border-color: var(--tss-green-mid);
+}
+
+.tss-link-green {
+  display: inline-block;
+  border-bottom: 1px solid rgb(26 74 58 / 0.4);
+  padding-bottom: 2px;
+  font-size: 14px;
+  color: var(--tss-green);
+  text-decoration: none;
+  transition: color 0.4s ease, border-color 0.4s ease;
+}
+
+.tss-link-green:hover {
+  color: var(--tss-gold);
+  border-color: var(--tss-gold);
+}
+
+/* Horizontal snap rail + progress bar */
+.tss-rail {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 0 var(--tss-gutter) 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tss-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.tss-rail > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  width: 78vw;
+}
+
+@media (min-width: 40rem) {
+  .tss-rail > * {
+    width: 46vw;
+  }
+}
+
+@media (min-width: 64rem) {
+  .tss-rail > * {
+    width: 24vw;
+  }
+}
+
+.tss-progress {
+  margin: 24px var(--tss-gutter) 0;
+  height: 2px;
+  background: rgb(26 74 58 / 0.15);
+}
+
+.tss-progress > span {
+  display: block;
+  height: 100%;
+  width: 12%;
+  background: var(--tss-gold);
+  transition: width 0.2s ease-out, margin-left 0.2s ease-out;
+}
+
+.tss-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tss-rise,
+  .tss-line > span,
+  .tss-clip > * {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+}
+
+/* Header on the emerald ground */
+.tss-head--dark .tss-head-title {
+  color: var(--tss-ivory);
+}
+
+.tss-head--dark .tss-head-lede {
+  color: rgb(245 240 232 / 0.7);
+}
+
+/* Region / currency toggle */
+.tss-region {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--tss-sans);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.tss-region__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tss-region__btn {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  color: rgb(245 240 232 / 0.55);
+  cursor: pointer;
+  transition: color 0.4s ease;
+}
+
+.tss-region__btn:hover,
+.tss-region__btn.is-current {
+  color: var(--tss-gold-bright);
+}
+
+.tss-region__sep {
+  color: rgb(245 240 232 / 0.25);
+}
+
+/* ---------- theme interop ----------
+   base.css applies global button/input/section rules (uppercase button text,
+   themed radii, a negative first-section margin driven by --header-group-height).
+   The TSS chrome is fixed-position with its own in-flow spacer, so neutralise
+   those here rather than fighting them per section. */
+body {
+  --header-height: 88px;
+  --header-group-height: 0px;
+  background: var(--tss-ivory);
+}
+
+.tss-section button,
+.tss-section input,
+.tss-section select,
+.tss-section textarea {
+  font-family: var(--tss-sans);
+  text-transform: none;
+  letter-spacing: inherit;
+}
+
+.tss-section .tss-btn,
+.tss-section .tss-region__btn,
+.tss-section .tss-foot__toggle {
+  text-transform: none;
+}
+
+.tss-section .tss-btn {
+  border-radius: 2px;
+}
+
+.tss-section img {
+  display: block;
+  max-width: 100%;
+}
+
+.tss-section a {
+  color: inherit;
+}
+
+/* The WhatsApp launcher is fixed at bottom:20px / z-index:100 and would sit on
+   top of the sticky bottom nav. Lift both it and its popup clear of the bar. */
+.whatsapp-float {
+  bottom: calc(68px + env(safe-area-inset-bottom)) !important;
+}
+
+.whatsapp-popup {
+  bottom: calc(168px + env(safe-area-inset-bottom)) !important;
+}
+
+@media (max-width: 768px) {
+  .whatsapp-popup {
+    bottom: calc(128px + env(safe-area-inset-bottom)) !important;
+  }
+}

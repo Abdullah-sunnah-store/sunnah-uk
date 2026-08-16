@@ -1,0 +1,176 @@
+{% comment %}
+  TSS — Sticky quick navigation
+  Ivory bar pinned to the bottom edge once the visitor is past the hero;
+  icon over a small uppercase label, gold underline on the active item.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+-%}
+
+<style>
+  #tss-sticky-{{ uid }} {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 40;
+    border-top: 1px solid rgb(8 41 30 / 0.12);
+    background: var(--tss-ivory);
+    opacity: 0;
+    transform: translateY(100%);
+    pointer-events: none;
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  #tss-sticky-{{ uid }}[data-shown='true'] {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  #tss-sticky-{{ uid }} ul {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+  }
+
+  #tss-sticky-{{ uid }} a {
+    display: flex;
+    height: 48px;
+    min-width: 64px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-decoration: none;
+  }
+
+  #tss-sticky-{{ uid }} .tss-icon {
+    color: var(--tss-ink);
+  }
+
+  #tss-sticky-{{ uid }} span {
+    font-family: var(--tss-sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgb(28 28 26 / 0.7);
+  }
+
+  #tss-sticky-{{ uid }} a[aria-current='page'] span {
+    border-bottom: 1px solid var(--tss-gold);
+    padding-bottom: 2px;
+  }
+
+  #tss-sticky-{{ uid }} .tss-sticky__safe {
+    height: env(safe-area-inset-bottom);
+  }
+
+  .tss-sticky__spacer-{{ uid }} {
+    height: 64px;
+  }
+</style>
+
+<nav id="tss-sticky-{{ uid }}" class="tss-section" aria-label="{{ s.aria_label | default: 'Quick navigation' | escape }}" data-shown="false">
+  <ul>
+    {%- for block in section.blocks -%}
+      {%- assign b = block.settings -%}
+      {%- assign href = b.link | default: '#' -%}
+      <li {{ block.shopify_attributes }}>
+        <a href="{{ href }}"{% if forloop.first %} aria-current="page"{% endif %}>
+          {% render 'tss-icon', icon: b.icon, size: 20, stroke: 1.25 %}
+          <span>{{ b.label | escape }}</span>
+        </a>
+      </li>
+    {%- endfor -%}
+  </ul>
+  <div class="tss-sticky__safe" aria-hidden="true"></div>
+</nav>
+
+<div class="tss-sticky__spacer-{{ uid }}" aria-hidden="true"></div>
+
+<script>
+  (function () {
+    var nav = document.getElementById('tss-sticky-{{ uid }}');
+    if (!nav || nav.__tssBound) return;
+    nav.__tssBound = true;
+
+    var threshold = {{ s.reveal_after | default: 600 }};
+    var ticking = false;
+
+    function update() {
+      nav.setAttribute('data-shown', String(window.scrollY > threshold));
+      ticking = false;
+    }
+
+    window.addEventListener(
+      'scroll',
+      function () {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+      },
+      { passive: true }
+    );
+
+    update();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "TSS · Sticky nav",
+  "settings": [
+    {
+      "type": "range",
+      "id": "reveal_after",
+      "label": "Reveal after scrolling",
+      "min": 0,
+      "max": 2000,
+      "step": 50,
+      "unit": "px",
+      "default": 600
+    },
+    { "type": "text", "id": "aria_label", "label": "Nav label", "default": "Quick navigation" }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "store", "label": "Store" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "package", "label": "Package" },
+            { "value": "shopping-bag", "label": "Bag" },
+            { "value": "search", "label": "Search" },
+            { "value": "heart", "label": "Heart" }
+          ],
+          "default": "store"
+        },
+        { "type": "text", "id": "label", "label": "Label", "default": "Shop" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "TSS · Sticky nav",
+      "blocks": [
+        { "type": "item", "settings": { "icon": "store", "label": "Shop" } },
+        { "type": "item", "settings": { "icon": "gift", "label": "Gifts" } },
+        { "type": "item", "settings": { "icon": "package", "label": "Box" } },
+        { "type": "item", "settings": { "icon": "shopping-bag", "label": "Bag" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

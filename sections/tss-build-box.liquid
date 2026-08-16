@@ -1,0 +1,209 @@
+{% comment %}
+  TSS 05 — Build your own box
+  Emerald band with the header in ivory, a grid of gold-outlined tier cards
+  (2-up, 4-up from 40rem), a gold CTA and a closing note.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+-%}
+
+<style>
+  #tss-build-box-{{ uid }} {
+    background: var(--tss-green);
+    padding-block: {{ s.padding_top | default: 112 }}px {{ s.padding_bottom | default: 112 }}px;
+    scroll-margin-top: 96px;
+  }
+
+  #tss-build-box-{{ uid }} .tss-box__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 48px;
+    padding-inline: var(--tss-gutter);
+  }
+
+  @media (min-width: 40rem) {
+    #tss-build-box-{{ uid }} .tss-box__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  #tss-build-box-{{ uid }} .tss-box__tier {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: 1px solid rgb(184 134 11 / 0.6);
+    border-radius: 2px;
+    padding: 24px 16px;
+    text-align: center;
+    text-decoration: none;
+    transition: border-color 0.4s ease;
+  }
+
+  #tss-build-box-{{ uid }} .tss-box__tier:hover {
+    border-color: var(--tss-gold);
+  }
+
+  #tss-build-box-{{ uid }} .tss-box__name {
+    font-family: var(--tss-serif);
+    font-size: 20px;
+    color: var(--tss-ivory);
+  }
+
+  #tss-build-box-{{ uid }} .tss-box__count {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(245 240 232 / 0.55);
+  }
+
+  #tss-build-box-{{ uid }} .tss-box__price {
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--tss-gold-bright);
+  }
+
+  #tss-build-box-{{ uid }} .tss-box__cta {
+    margin-top: 48px;
+    padding-inline: var(--tss-gutter);
+    text-align: center;
+  }
+
+  #tss-build-box-{{ uid }} .tss-box__note {
+    margin: 24px auto 0;
+    max-width: 38ch;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: rgb(245 240 232 / 0.6);
+  }
+</style>
+
+<section
+  id="tss-build-box-{{ uid }}"
+  class="tss-section"
+  aria-labelledby="tss-box-heading-{{ uid }}"
+>
+  <a id="build-your-box" class="tss-sr-only" aria-hidden="true" tabindex="-1"></a>
+
+  <div id="tss-box-heading-{{ uid }}">
+    {% render 'tss-head', eyebrow: s.eyebrow, title: s.title, lede: s.lede, on_dark: true %}
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <div class="tss-box__grid">
+      {%- for block in section.blocks -%}
+        {%- assign b = block.settings -%}
+        {%- capture tier_inner -%}
+          {%- if b.name != blank -%}
+            <p class="tss-box__name">{{ b.name | escape }}</p>
+          {%- endif -%}
+          {%- if b.count != blank -%}
+            <p class="tss-box__count">{{ b.count | escape }}</p>
+          {%- endif -%}
+          {%- if b.price != blank -%}
+            <p class="tss-box__price">{{ b.price | escape }}</p>
+          {%- endif -%}
+        {%- endcapture -%}
+
+        <div class="tss-rise" data-tss-delay="{{ forloop.index0 | times: 0.08 }}" {{ block.shopify_attributes }}>
+          {%- if b.link != blank -%}
+            <a href="{{ b.link }}" class="tss-box__tier">{{ tier_inner }}</a>
+          {%- else -%}
+            <div class="tss-box__tier">{{ tier_inner }}</div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  <div class="tss-rise">
+    <div class="tss-box__cta">
+      {%- if s.button_label != blank -%}
+        <a href="{{ s.button_link | default: '#' }}" class="tss-btn tss-btn--gold">{{ s.button_label | escape }}</a>
+      {%- endif -%}
+      {%- if s.note != blank -%}
+        <p class="tss-box__note">{{ s.note | escape }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "TSS 05 · Build your box",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our Signature" },
+    { "type": "textarea", "id": "title", "label": "Headline", "default": "Build your own box" },
+    {
+      "type": "textarea",
+      "id": "lede",
+      "label": "Supporting text",
+      "default": "Compose a gift by hand — choose each piece yourself, and we will arrange, wrap and send it as one considered whole."
+    },
+    { "type": "header", "content": "Button" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Begin Your Box" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    {
+      "type": "textarea",
+      "id": "note",
+      "label": "Closing note",
+      "default": "Each box arrives hand-wrapped with an occasion card and your personal message — and, if you wish, with the price kept quietly hidden."
+    },
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 112
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 112
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tier",
+      "name": "Tier",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Barakah" },
+        { "type": "text", "id": "count", "label": "Item count", "default": "3 items" },
+        { "type": "text", "id": "price", "label": "Price", "default": "৳3,500" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "TSS 05 · Build your box",
+      "blocks": [
+        { "type": "tier", "settings": { "name": "Barakah", "count": "3 items", "price": "৳3,500" } },
+        { "type": "tier", "settings": { "name": "Noor", "count": "6 items", "price": "৳6,500" } },
+        { "type": "tier", "settings": { "name": "Ihsan", "count": "9 items", "price": "৳9,500" } },
+        { "type": "tier", "settings": { "name": "Jannah", "count": "12 items", "price": "৳12,000" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

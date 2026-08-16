@@ -11,175 +11,36 @@
   "type": "header",
   "name": "Header",
   "sections": {
-    "header_announcements_9jGBFp": {
-      "type": "header-announcements",
+    "tss_header": {
+      "type": "tss-header",
       "blocks": {
-        "announcement_BxgCk9": {
-          "type": "_announcement",
-          "settings": {
-            "text": "Free gift wrapping on all orders",
-            "link": "",
-            "font": "var(--font-subheading--family)",
-            "font_size": "0.875rem",
-            "weight": "",
-            "letter_spacing": "normal",
-            "case": "none"
-          },
-          "blocks": {}
+        "n1": {
+          "type": "notice",
+          "settings": { "text": "Complimentary gift wrapping on every order." }
         },
-        "announcement_6VQc4E": {
-          "type": "_announcement",
-          "name": "t:names.announcement",
-          "settings": {
-            "text": "Trusted by 50,000+ Muslim families",
-            "link": "",
-            "font": "var(--font-subheading--family)",
-            "font_size": "0.875rem",
-            "weight": "",
-            "letter_spacing": "normal",
-            "case": "none"
-          },
-          "blocks": {}
+        "n2": {
+          "type": "notice",
+          "settings": { "text": "Trusted by 50,000+ Muslim families." }
         },
-        "announcement_UaWTkK": {
-          "type": "_announcement",
-          "name": "t:names.announcement",
-          "settings": {
-            "text": "Since 2017",
-            "link": "",
-            "font": "var(--font-subheading--family)",
-            "font_size": "0.875rem",
-            "weight": "",
-            "letter_spacing": "normal",
-            "case": "none"
-          },
-          "blocks": {}
+        "n3": {
+          "type": "notice",
+          "settings": { "text": "Same-day dispatch in Dhaka." }
         },
-        "announcement_inmcKM": {
-          "type": "_announcement",
-          "name": "t:names.announcement",
-          "settings": {
-            "text": "Same-day dispatch in Dhaka",
-            "link": "",
-            "font": "var(--font-subheading--family)",
-            "font_size": "0.875rem",
-            "weight": "",
-            "letter_spacing": "normal",
-            "case": "none"
-          },
-          "blocks": {}
+        "n4": {
+          "type": "notice",
+          "settings": { "text": "A curated Islamic gifting house since 2017." }
         }
       },
-      "block_order": [
-        "announcement_BxgCk9",
-        "announcement_6VQc4E",
-        "announcement_UaWTkK",
-        "announcement_inmcKM"
-      ],
-      "name": "t:names.announcement_bar",
+      "block_order": ["n1", "n2", "n3", "n4"],
+      "name": "TSS · Header",
       "settings": {
-        "speed": 4,
-        "section_width": "full-width",
-        "color_scheme": "scheme-1",
-        "divider_width": 0,
-        "padding-block-start": 15,
-        "padding-block-end": 15
-      }
-    },
-    "cus_gift_box_announcement_design_HQCeKJ": {
-      "type": "cus-gift-box-announcement-design",
-      "name": "Cus Gift Box A.Bar",
-      "settings": {
-        "section_width": "full",
-        "button_text": "Create Your Own Gift Box",
-        "button_url": "shopify://pages/custom-gift-box",
-        "icon_emoji": "🎁",
-        "show_icon": true,
-        "show_arrow": true,
-        "bg_color": "#fafafa",
-        "bg_hover_color": "#edf5e8",
-        "text_color": "#1c1c1a",
-        "arrow_bg_color": "#1c1c1a",
-        "arrow_text_color": "#ffffff",
-        "arrow_border_color": "#ffffff"
-      }
-    },
-    "header_section": {
-      "type": "header",
-      "blocks": {
-        "header-logo": {
-          "type": "_header-logo",
-          "static": true,
-          "settings": {
-            "hide_logo_on_home_page": false,
-            "padding-block-start": 0,
-            "padding-block-end": 7
-          },
-          "blocks": {}
-        },
-        "header-menu": {
-          "type": "_header-menu",
-          "static": true,
-          "settings": {
-            "menu": "main-menu-2-horizon",
-            "color_scheme": "",
-            "type_font_primary_size": "0.875rem",
-            "menu_font_style": "inverse",
-            "type_font_primary_link": "body",
-            "type_case_primary_link": "none",
-            "menu_style": "featured_products",
-            "featured_products_aspect_ratio": "4 / 5",
-            "featured_collections_aspect_ratio": "16 / 9",
-            "image_border_radius": 0,
-            "navigation_bar": true,
-            "color_scheme_navigation_bar": "",
-            "drawer_accordion": true,
-            "drawer_accordion_expand_first": true,
-            "drawer_dividers": true
-          },
-          "blocks": {}
-        }
-      },
-      "settings": {
-        "logo_position": "left",
-        "menu_position": "center",
-        "menu_row": "top",
-        "customer_account_menu": "main-menu-2-horizon",
-        "show_search": true,
-        "search_position": "right",
-        "search_row": "top",
-        "show_country": false,
-        "country_selector_style": true,
-        "show_language": true,
-        "localization_font": "heading",
-        "localization_font_size": "0.875rem",
-        "localization_position": "right",
-        "localization_row": "top",
-        "section_width": "page-width",
-        "section_height": "standard",
-        "enable_sticky_header": "always",
-        "divider_width": 0,
-        "divider_size": "page-width",
-        "border_width": 0,
-        "actions_display_style": "icon",
-        "actions_font_size": "0.875rem",
-        "actions_font": "body",
-        "actions_text_case": "none",
-        "color_scheme_top": "scheme-2",
-        "color_scheme_bottom": "",
-        "color_scheme_transparent": "scheme-6",
-        "enable_transparent_header_home": false,
-        "home_color_scheme": "inverse",
-        "enable_transparent_header_product": false,
-        "product_color_scheme": "default",
-        "enable_transparent_header_collection": false,
-        "collection_color_scheme": "default"
+        "wordmark": "THE SUNNAH STORE",
+        "menu": "main-menu-2-horizon",
+        "search_placeholder": "What are you looking for?",
+        "show_utility": true,
+        "notice_seconds": 5
       }
     }
   },
-  "order": [
-    "header_announcements_9jGBFp",
-    "cus_gift_box_announcement_design_HQCeKJ",
-    "header_section"
-  ]
+  "order": ["tss_header"]
 }

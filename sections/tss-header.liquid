@@ -1,0 +1,486 @@
+{% comment %}
+  TSS — Header
+  Fixed stack: emerald utility bar (region toggle + rotating notice) above an
+  ivory bar holding the menu trigger, serif wordmark, search and bag.
+  Hides on scroll down, returns on scroll up.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+  assign menu = linklists[s.menu]
+-%}
+
+<style>
+  #tss-header-{{ uid }} {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: 50;
+    transition: transform 0.4s ease-out;
+  }
+
+  #tss-header-{{ uid }}[data-hidden='true'] {
+    transform: translateY(-100%);
+  }
+
+  #tss-header-{{ uid }} .tss-head__utility {
+    display: flex;
+    height: 32px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--tss-green);
+    padding-inline: var(--tss-gutter);
+    color: var(--tss-ivory);
+  }
+
+  #tss-header-{{ uid }} .tss-head__notices {
+    position: relative;
+    height: 16px;
+    flex: 1;
+    overflow: hidden;
+    text-align: right;
+  }
+
+  @media (min-width: 40rem) {
+    #tss-header-{{ uid }} .tss-head__notices {
+      text-align: center;
+    }
+  }
+
+  #tss-header-{{ uid }} .tss-head__notice {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-family: var(--tss-sans);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: rgb(245 240 232 / 0.7);
+    opacity: 0;
+    transition: opacity 0.6s var(--tss-ease);
+  }
+
+  #tss-header-{{ uid }} .tss-head__notice.is-active {
+    opacity: 1;
+  }
+
+  #tss-header-{{ uid }} .tss-head__bar {
+    display: flex;
+    height: 56px;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgb(8 41 30 / 0.12);
+    background: var(--tss-ivory);
+    padding-inline: 12px;
+  }
+
+  #tss-header-{{ uid }} .tss-head__icon {
+    display: flex;
+    width: 48px;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: var(--tss-ink);
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+  }
+
+  #tss-header-{{ uid }} .tss-head__icon .tss-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  #tss-header-{{ uid }} .tss-head__actions {
+    display: flex;
+    align-items: center;
+  }
+
+  #tss-header-{{ uid }} .tss-head__wordmark {
+    font-family: var(--tss-serif);
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    color: var(--tss-green);
+    text-decoration: none;
+  }
+
+  #tss-header-{{ uid }} .tss-head__logo {
+    display: block;
+    max-height: 32px;
+    width: auto;
+  }
+
+  #tss-header-{{ uid }} .tss-head__count {
+    position: absolute;
+    top: 8px;
+    right: 6px;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    background: var(--tss-gold);
+    color: var(--tss-green-dark);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 16px;
+    text-align: center;
+  }
+
+  /* Spacer so page content clears the fixed stack */
+  .tss-head__spacer-{{ uid }} {
+    height: 88px;
+  }
+
+  /* Drawer */
+  #tss-drawer-{{ uid }} {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  #tss-drawer-{{ uid }}[data-open='true'] {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  #tss-drawer-{{ uid }} .tss-drawer__scrim {
+    position: absolute;
+    inset: 0;
+    background: rgb(5 30 22 / 0.5);
+    opacity: 0;
+    transition: opacity 0.4s var(--tss-ease);
+  }
+
+  #tss-drawer-{{ uid }}[data-open='true'] .tss-drawer__scrim {
+    opacity: 1;
+  }
+
+  #tss-drawer-{{ uid }} .tss-drawer__panel {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: min(86vw, 380px);
+    background: var(--tss-ivory);
+    padding: 24px var(--tss-gutter);
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.5s var(--tss-ease);
+  }
+
+  #tss-drawer-{{ uid }}[data-open='true'] .tss-drawer__panel {
+    transform: none;
+  }
+
+  #tss-drawer-{{ uid }} .tss-drawer__close {
+    margin-bottom: 24px;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-family: var(--tss-sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(28 28 26 / 0.5);
+    cursor: pointer;
+  }
+
+  #tss-drawer-{{ uid }} .tss-drawer__link {
+    display: block;
+    padding: 14px 0;
+    border-bottom: 1px solid rgb(8 41 30 / 0.1);
+    font-family: var(--tss-serif);
+    font-size: 22px;
+    color: var(--tss-green);
+    text-decoration: none;
+    transition: color 0.4s ease;
+  }
+
+  #tss-drawer-{{ uid }} .tss-drawer__link:hover {
+    color: var(--tss-gold);
+  }
+
+  #tss-drawer-{{ uid }} .tss-drawer__sub {
+    display: block;
+    padding: 8px 0 8px 16px;
+    font-size: 14px;
+    font-weight: 300;
+    color: rgb(28 28 26 / 0.7);
+    text-decoration: none;
+  }
+
+  #tss-drawer-{{ uid }} .tss-drawer__sub:hover {
+    color: var(--tss-gold);
+  }
+
+  /* Search overlay */
+  #tss-search-{{ uid }} {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: rgb(245 240 232 / 0.98);
+    padding: 96px var(--tss-gutter) 0;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.35s var(--tss-ease), visibility 0.35s;
+  }
+
+  #tss-search-{{ uid }}[data-open='true'] {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  #tss-search-{{ uid }} form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-inline: auto;
+    max-width: 40rem;
+    border-bottom: 1px solid rgb(8 41 30 / 0.3);
+    padding-bottom: 12px;
+  }
+
+  #tss-search-{{ uid }} input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    font-family: var(--tss-serif);
+    font-size: 26px;
+    color: var(--tss-green);
+  }
+
+  #tss-search-{{ uid }} input:focus {
+    outline: none;
+  }
+
+  #tss-search-{{ uid }} .tss-search__close {
+    margin: 24px auto 0;
+    display: block;
+    border: 0;
+    background: transparent;
+    font-family: var(--tss-sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(28 28 26 / 0.5);
+    cursor: pointer;
+  }
+</style>
+
+<div id="tss-header-{{ uid }}" class="tss-section" data-hidden="false">
+  {%- if s.show_utility -%}
+    <div class="tss-head__utility">
+      {% render 'tss-region-toggle' %}
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="tss-head__notices" data-tss-notices data-interval="{{ s.notice_seconds | default: 5 | times: 1000 }}">
+          {%- for block in section.blocks -%}
+            <span class="tss-head__notice{% if forloop.first %} is-active{% endif %}" {{ block.shopify_attributes }}>
+              {{- block.settings.text | escape -}}
+            </span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <header class="tss-head__bar">
+    <button
+      type="button"
+      class="tss-head__icon"
+      aria-label="Open menu"
+      aria-expanded="false"
+      data-tss-open="drawer"
+    >
+      {% render 'tss-icon', icon: 'menu', size: 20, stroke: 1.5 %}
+    </button>
+
+    <a href="{{ routes.root_url }}" class="tss-head__wordmark" aria-label="{{ shop.name | escape }}, home">
+      {%- if s.logo != blank -%}
+        {{ s.logo | image_url: width: 400 | image_tag: class: 'tss-head__logo', alt: shop.name }}
+      {%- else -%}
+        {{- s.wordmark | default: shop.name | escape -}}
+      {%- endif -%}
+    </a>
+
+    <div class="tss-head__actions">
+      <button type="button" class="tss-head__icon" aria-label="Search" data-tss-open="search">
+        {% render 'tss-icon', icon: 'search', size: 20, stroke: 1.5 %}
+      </button>
+
+      <a href="{{ routes.cart_url }}" class="tss-head__icon" aria-label="Your bag">
+        {% render 'tss-icon', icon: 'shopping-bag', size: 20, stroke: 1.5 %}
+        {%- if cart.item_count > 0 -%}
+          <span class="tss-head__count">{{ cart.item_count }}</span>
+        {%- endif -%}
+      </a>
+    </div>
+  </header>
+</div>
+
+<div class="tss-head__spacer-{{ uid }}" aria-hidden="true"></div>
+
+{%- comment -%} Menu drawer {%- endcomment -%}
+<div id="tss-drawer-{{ uid }}" class="tss-section" data-open="false" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="tss-drawer__scrim" data-tss-close></div>
+  <div class="tss-drawer__panel">
+    <button type="button" class="tss-drawer__close" data-tss-close>Close</button>
+    <nav>
+      {%- for link in menu.links -%}
+        <a href="{{ link.url }}" class="tss-drawer__link">{{ link.title | escape }}</a>
+        {%- for child in link.links -%}
+          <a href="{{ child.url }}" class="tss-drawer__sub">{{ child.title | escape }}</a>
+        {%- endfor -%}
+      {%- endfor -%}
+    </nav>
+  </div>
+</div>
+
+{%- comment -%} Search overlay {%- endcomment -%}
+<div id="tss-search-{{ uid }}" class="tss-section" data-open="false" role="dialog" aria-modal="true" aria-label="Search">
+  <form action="{{ routes.search_url }}" method="get" role="search">
+    <label for="tss-search-input-{{ uid }}" class="tss-sr-only">Search</label>
+    <input
+      id="tss-search-input-{{ uid }}"
+      type="search"
+      name="q"
+      placeholder="{{ s.search_placeholder | default: 'What are you looking for?' | escape }}"
+      autocomplete="off"
+    >
+    <button type="submit" class="tss-head__icon" aria-label="Search">
+      {% render 'tss-icon', icon: 'search', size: 20, stroke: 1.5 %}
+    </button>
+  </form>
+  <button type="button" class="tss-search__close" data-tss-close>Close</button>
+</div>
+
+<script>
+  (function () {
+    var header = document.getElementById('tss-header-{{ uid }}');
+    if (!header || header.__tssBound) return;
+    header.__tssBound = true;
+
+    var drawer = document.getElementById('tss-drawer-{{ uid }}');
+    var search = document.getElementById('tss-search-{{ uid }}');
+
+    function open(el) {
+      if (!el) return;
+      el.setAttribute('data-open', 'true');
+      document.documentElement.style.overflow = 'hidden';
+      var field = el.querySelector('input[type="search"]');
+      if (field) setTimeout(function () { field.focus(); }, 120);
+    }
+
+    function closeAll() {
+      [drawer, search].forEach(function (el) {
+        if (el) el.setAttribute('data-open', 'false');
+      });
+      document.documentElement.style.overflow = '';
+    }
+
+    header.addEventListener('click', function (e) {
+      var trigger = e.target.closest('[data-tss-open]');
+      if (!trigger) return;
+      open(trigger.getAttribute('data-tss-open') === 'search' ? search : drawer);
+    });
+
+    [drawer, search].forEach(function (el) {
+      if (!el) return;
+      el.addEventListener('click', function (e) {
+        if (e.target.closest('[data-tss-close]')) closeAll();
+      });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeAll();
+    });
+
+    // Hide on scroll down, reveal on scroll up
+    var last = window.scrollY;
+    var ticking = false;
+    window.addEventListener(
+      'scroll',
+      function () {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          var y = window.scrollY;
+          var down = y > last && y > 120;
+          header.setAttribute('data-hidden', String(down));
+          last = y;
+          ticking = false;
+        });
+      },
+      { passive: true }
+    );
+
+    // Rotating utility notices
+    var stage = header.querySelector('[data-tss-notices]');
+    if (stage) {
+      var notices = stage.querySelectorAll('.tss-head__notice');
+      if (notices.length > 1) {
+        var i = 0;
+        setInterval(function () {
+          notices[i].classList.remove('is-active');
+          i = (i + 1) % notices.length;
+          notices[i].classList.add('is-active');
+        }, parseInt(stage.getAttribute('data-interval'), 10) || 5000);
+      }
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "TSS · Header",
+  "settings": [
+    { "type": "header", "content": "Identity" },
+    { "type": "image_picker", "id": "logo", "label": "Logo", "info": "Falls back to the wordmark below." },
+    { "type": "text", "id": "wordmark", "label": "Wordmark", "default": "THE SUNNAH STORE" },
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
+    { "type": "text", "id": "search_placeholder", "label": "Search placeholder", "default": "What are you looking for?" },
+    { "type": "header", "content": "Utility bar" },
+    { "type": "checkbox", "id": "show_utility", "label": "Show utility bar", "default": true },
+    {
+      "type": "range",
+      "id": "notice_seconds",
+      "label": "Rotate notices every",
+      "min": 3,
+      "max": 15,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "notice",
+      "name": "Notice",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Complimentary gift wrapping on every order."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "TSS · Header",
+      "blocks": [{ "type": "notice" }]
+    }
+  ]
+}
+{% endschema %}

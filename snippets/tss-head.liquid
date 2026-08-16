@@ -1,0 +1,39 @@
+{% comment %}
+  TSS section header — eyebrow, line-masked serif title, lede.
+
+  Accepts:
+    eyebrow  - small uppercase gold label
+    title    - headline; each newline becomes its own masked reveal line
+    lede     - supporting paragraph
+    on_dark  - true when sitting on the emerald ground (ivory type)
+
+  Usage:
+    {% render 'tss-head',
+       eyebrow: s.eyebrow, title: s.title, lede: s.lede, on_dark: true %}
+{% endcomment %}
+
+<div class="tss-head{% if on_dark %} tss-head--dark{% endif %}">
+  {%- if eyebrow != blank -%}
+    <div class="tss-rise">
+      <p class="tss-eyebrow">{{ eyebrow | escape }}</p>
+    </div>
+  {%- endif -%}
+
+  {%- if title != blank -%}
+    <span class="tss-head-title tss-reveal">
+      {%- assign tss_head_lines = title | strip | newline_to_br | split: '<br />' -%}
+      {%- for line in tss_head_lines -%}
+        {%- assign trimmed = line | strip -%}
+        {%- if trimmed != blank -%}
+          <span class="tss-line"><span>{{ trimmed | escape }}</span></span>
+        {%- endif -%}
+      {%- endfor -%}
+    </span>
+  {%- endif -%}
+
+  {%- if lede != blank -%}
+    <div class="tss-rise">
+      <p class="tss-head-lede">{{ lede | escape }}</p>
+    </div>
+  {%- endif -%}
+</div>

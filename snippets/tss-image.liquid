@@ -1,0 +1,73 @@
+{% comment %}
+  TSS image — renders a merchant-picked image when there is one, otherwise the
+  bundled theme asset, otherwise a placeholder.
+
+  Accepts:
+    image   - image_picker value (wins when set)
+    asset   - filename in assets/, e.g. 'tss-hero.jpg'
+    class   - css class for the <img>
+    alt     - alt text
+    width   - largest width to request from the CDN
+    asset_width / asset_height - intrinsic size of the theme asset (default 900)
+    widths  - srcset widths for picked images
+    sizes   - sizes attribute
+    loading - 'lazy' (default) or 'eager'
+    priority- true to set fetchpriority="high"
+    placeholder - placeholder_svg name when nothing is set
+
+  Usage:
+    {% render 'tss-image', image: b.image, asset: b.image_asset,
+       class: 'tss-img-34', sizes: '78vw', alt: b.name %}
+{% endcomment %}
+
+{%- liquid
+  assign img_class = class | default: 'tss-img-34'
+  assign img_width = width | default: 900
+  assign img_widths = widths | default: '320,480,640,900'
+  assign img_sizes = sizes | default: '100vw'
+  assign img_loading = loading | default: 'lazy'
+  assign img_placeholder = placeholder | default: 'product-1'
+-%}
+
+{%- if image != blank -%}
+  {%- if priority -%}
+    {{
+      image
+      | image_url: width: img_width
+      | image_tag:
+        class: img_class,
+        widths: img_widths,
+        sizes: img_sizes,
+        fetchpriority: 'high',
+        alt: image.alt | default: alt
+    }}
+  {%- else -%}
+    {{
+      image
+      | image_url: width: img_width
+      | image_tag:
+        class: img_class,
+        widths: img_widths,
+        sizes: img_sizes,
+        loading: img_loading,
+        alt: image.alt | default: alt
+    }}
+  {%- endif -%}
+
+{%- elsif asset != blank -%}
+  <img
+    class="{{ img_class }}"
+    src="{{ asset | asset_url }}"
+    alt="{{ alt | escape }}"
+    width="{{ asset_width | default: 900 }}"
+    height="{{ asset_height | default: 900 }}"
+    {% if priority %}
+      fetchpriority="high"
+    {% else %}
+      loading="{{ img_loading }}" decoding="async"
+    {% endif %}
+  >
+
+{%- else -%}
+  {{ img_placeholder | placeholder_svg_tag: img_class }}
+{%- endif -%}

@@ -1,0 +1,37 @@
+{% comment %}
+  TSS region / currency toggle.
+  Submits Shopify's localization form so prices switch market.
+
+  Usage:
+    {% render 'tss-region-toggle' %}            → ৳ / £
+    {% render 'tss-region-toggle', long: true %} → বাংলাদেশ ৳ / United Kingdom £
+{% endcomment %}
+
+{%- if localization.available_countries.size > 1 -%}
+  {%- form 'localization', class: 'tss-region' -%}
+    <input type="hidden" name="return_to" value="{{ request.path }}">
+
+    {%- for country in localization.available_countries -%}
+      {%- assign is_current = false -%}
+      {%- if country.iso_code == localization.country.iso_code -%}
+        {%- assign is_current = true -%}
+      {%- endif -%}
+
+      <span class="tss-region__item">
+        <button
+          type="submit"
+          name="country_code"
+          value="{{ country.iso_code }}"
+          class="tss-region__btn{% if is_current %} is-current{% endif %}"
+          aria-pressed="{{ is_current }}"
+          aria-label="Shop {{ country.name }}, prices in {{ country.currency.symbol }}"
+        >
+          {%- if long -%}{{ country.name }} {% endif %}{{ country.currency.symbol }}
+        </button>
+        {%- unless forloop.last -%}
+          <span aria-hidden="true" class="tss-region__sep">/</span>
+        {%- endunless -%}
+      </span>
+    {%- endfor -%}
+  {%- endform -%}
+{%- endif -%}

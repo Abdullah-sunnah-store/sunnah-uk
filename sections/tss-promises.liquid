@@ -1,0 +1,141 @@
+{% comment %}
+  TSS 09 — Our promises
+  Quiet ivory-2 band: outline icon over a short uppercase line, 2-up on
+  handsets and 4-up from 40rem.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+-%}
+
+<style>
+  #tss-promises-{{ uid }} {
+    background: var(--tss-ivory-2);
+    padding-block: {{ s.padding_top | default: 56 }}px {{ s.padding_bottom | default: 56 }}px;
+  }
+
+  #tss-promises-{{ uid }} .tss-promises__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+    row-gap: 40px;
+    margin-inline: auto;
+    max-width: 48rem;
+    padding-inline: var(--tss-gutter);
+  }
+
+  @media (min-width: 40rem) {
+    #tss-promises-{{ uid }} .tss-promises__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  #tss-promises-{{ uid }} li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+  }
+
+  #tss-promises-{{ uid }} .tss-icon {
+    color: var(--tss-green-mid);
+  }
+
+  #tss-promises-{{ uid }} .tss-promises__label {
+    max-width: 16ch;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    line-height: 1.5;
+    color: rgb(28 28 26 / 0.7);
+  }
+</style>
+
+<section
+  id="tss-promises-{{ uid }}"
+  class="tss-section"
+  aria-label="{{ s.aria_label | default: 'Our promises' | escape }}"
+>
+  <div class="tss-rise">
+    <ul class="tss-promises__grid">
+      {%- for block in section.blocks -%}
+        <li {{ block.shopify_attributes }}>
+          {% render 'tss-icon', icon: block.settings.icon, size: 20, stroke: 1.25 %}
+          <span class="tss-promises__label">{{ block.settings.label | escape }}</span>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "TSS 09 · Promises",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    { "type": "text", "id": "aria_label", "label": "Section label", "default": "Our promises" }
+  ],
+  "blocks": [
+    {
+      "type": "promise",
+      "name": "Promise",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "badge-check", "label": "Badge check" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "hand-coins", "label": "Hand with coins" },
+            { "value": "undo-2", "label": "Returns arrow" },
+            { "value": "truck", "label": "Delivery" },
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "shield-check", "label": "Shield" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "package", "label": "Package" }
+          ],
+          "default": "badge-check"
+        },
+        { "type": "text", "id": "label", "label": "Label", "default": "Halal & Ethically Sourced" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "TSS 09 · Promises",
+      "blocks": [
+        { "type": "promise", "settings": { "icon": "badge-check", "label": "Halal & Ethically Sourced" } },
+        { "type": "promise", "settings": { "icon": "gift", "label": "Gift-Ready Packaging" } },
+        { "type": "promise", "settings": { "icon": "hand-coins", "label": "Cash on Delivery (BD)" } },
+        { "type": "promise", "settings": { "icon": "undo-2", "label": "Easy Returns" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
