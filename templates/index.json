@@ -173,28 +173,29 @@
         "g1": {
           "type": "item",
           "settings": {
-            "product": "al-quran-al-kareem",
+            "product": "masnoon-dua-cards",
+            "vendor": "The Sunnah Store",
             "image_asset": "tss-gift-03.jpg"
           }
         },
         "g2": {
           "type": "item",
           "settings": {
-            "product": "turkish-standard-prayer-mat",
+            "product": "solid-color-prayer-mat",
             "image_asset": "tss-gift-02.jpg"
           }
         },
         "g3": {
           "type": "item",
           "settings": {
-            "product": "crystal-tasbeeh",
+            "product": "oud-al-hind-natural-attar",
             "image_asset": "tss-gift-01.jpg"
           }
         },
         "g4": {
           "type": "item",
           "settings": {
-            "product": "the-barakah-family-set-gift-box",
+            "product": "islamic-premium-gift-box",
             "image_asset": "tss-gift-04.jpg"
           }
         }

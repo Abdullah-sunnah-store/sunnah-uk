@@ -173,7 +173,15 @@
             </div>
 
             <div class="tss-mg__body">
-              <span class="tss-mg__serial" aria-hidden="true">{{ serial }}</span>
+              {%- comment -%}
+                The serial only earns its place next to copy. A block whose
+                product handle no longer resolves inherits nothing, and an
+                unconditional serial then rendered as a lone ghosted number
+                beside the image with no vendor, title or price under it.
+              {%- endcomment -%}
+              {%- if i_title != blank -%}
+                <span class="tss-mg__serial" aria-hidden="true">{{ serial }}</span>
+              {%- endif -%}
 
               {%- if i_vendor != blank -%}
                 <p class="tss-mg__vendor">{{ i_vendor | escape }}</p>
