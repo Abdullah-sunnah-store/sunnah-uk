@@ -378,7 +378,11 @@ body {
   max-width: 100%;
 }
 
-.tss-section a {
+/* Neutralise the theme's link colour for plain anchors only. `.tss-section a`
+   outranks the single-class TSS components, so anchors carrying one (.tss-btn--*,
+   .tss-link-gold) must be excluded, or they drop their own colour and
+   inherit the surrounding ink, which is what turned the ivory hero CTA black. */
+.tss-section a:not([class*='tss-btn']):not([class*='tss-link']) {
   color: inherit;
 }
 
