@@ -35,7 +35,7 @@
       "name": "TSS · Header",
       "settings": {
         "wordmark": "THE SUNNAH STORE",
-        "menu": "main-menu-2-horizon",
+        "menu": "main-menu",
         "search_placeholder": "What are you looking for?",
         "show_utility": true,
         "notice_seconds": 5

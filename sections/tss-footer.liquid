@@ -182,7 +182,14 @@
   {%- if section.blocks.size > 0 -%}
     <div class="tss-foot__cols">
       {%- for block in section.blocks -%}
-        {%- assign menu = linklists[block.settings.menu] -%}
+        {%- liquid
+          assign menu = linklists[block.settings.menu]
+          # Fall back to the store's default menu when the chosen link list is missing or empty
+          assign menu_size = menu.links.size | default: 0
+          if menu_size == 0
+            assign menu = linklists['main-menu']
+          endif
+        -%}
         <div class="tss-foot__col" {{ block.shopify_attributes }}>
           <button
             type="button"
