@@ -413,7 +413,7 @@
     align-items: center;
     justify-content: center;
     border: 0;
-    border-radius: 2px;
+    border-radius: 0;
     background: var(--tss-gold);
     font-family: var(--tss-sans);
     font-size: 14px;
@@ -892,8 +892,8 @@
     #tss-bb-{{ uid }} .tss-bb__pills,
     #tss-bb-{{ uid }} .tss-bb__grid,
     #tss-bb-{{ uid }} .tss-bb__tray-inner {
-      max-width: var(--tss-max);
-      margin-inline: auto;
+      /* Same measure as the footer: content spans --tss-max, gutter only as a floor. */
+      padding-inline: max(var(--tss-gutter), calc((100% - var(--tss-max)) / 2));
     }
 
     #tss-bb-{{ uid }} .tss-bb__title {
@@ -1091,12 +1091,13 @@
           </div>
 
           <div class="tss-bb__slots" data-bb-slots aria-hidden="true"></div>
+        </div>
 
-          <div class="tss-bb__tray-cta">
-            <button type="button" data-bb-continue>
-              {{- s.continue_label | default: 'Continue' | escape -}}
-            </button>
-          </div>
+        {% comment %} Outside the inner measure so the button runs edge to edge. {% endcomment %}
+        <div class="tss-bb__tray-cta">
+          <button type="button" data-bb-continue>
+            {{- s.continue_label | default: 'Continue' | escape -}}
+          </button>
         </div>
         <div class="tss-bb__tray-safe"></div>
       </div>
