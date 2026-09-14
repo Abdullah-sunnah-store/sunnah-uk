@@ -1,0 +1,469 @@
+{% comment %}
+  TSS — Pairs well with
+  A left-headed rail of companion products beneath the product page.
+
+  Uses Shopify's product recommendations when they are available and falls back
+  to a chosen collection (or the product's own) on the first paint, which is
+  also what non-JS visitors keep.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+  assign limit = s.limit | default: 4
+
+  assign items = recommendations.products
+  unless recommendations.performed
+    assign fallback = collections[s.collection]
+    if fallback == blank or fallback.products.size == 0
+      assign fallback = product.collections.first
+    endif
+    assign items = fallback.products
+  endunless
+-%}
+
+<style>
+  #tss-pairs-{{ uid }} {
+    background: var(--tss-ivory);
+    padding-block: {{ s.padding_top | default: 72 }}px {{ s.padding_bottom | default: 72 }}px;
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__head {
+    padding-inline: var(--tss-gutter);
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__title {
+    font-family: var(--tss-serif);
+    font-size: {{ s.title_size | default: 30 }}px;
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--tss-ink);
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__lede {
+    margin-top: 12px;
+    max-width: 34ch;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: rgb(28 28 26 / 0.65);
+  }
+
+  #tss-pairs-{{ uid }} .tss-rail {
+    margin-top: 28px;
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__media {
+    position: relative;
+    background: var(--tss-ivory-2);
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__media a {
+    display: block;
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__save {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: 12px;
+    inset-inline-end: 12px;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 50%;
+    padding: 0;
+    /* The rail runs over merchant photography, so the heart needs its own
+       ground to stay readable on a dark image. */
+    background: rgb(245 240 232 / 0.85);
+    color: rgb(28 28 26 / 0.55);
+    cursor: pointer;
+    transition: color 0.3s ease, background-color 0.3s ease;
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__save:hover,
+  #tss-pairs-{{ uid }} .tss-pw__save[aria-pressed='true'] {
+    background: var(--tss-ivory);
+    color: var(--tss-gold);
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__save:focus-visible {
+    outline: 2px solid var(--tss-gold);
+    outline-offset: 2px;
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__save[aria-pressed='true'] .tss-icon {
+    fill: currentColor;
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__vendor {
+    margin-top: 14px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(28 28 26 / 0.5);
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__name {
+    margin-top: 6px;
+    font-family: var(--tss-serif);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--tss-ink);
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__name a {
+    text-decoration: none;
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__name a:hover {
+    color: var(--tss-green-mid);
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__price {
+    margin-top: 6px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--tss-gold);
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__add {
+    align-self: flex-start;
+    border: 1px solid rgb(8 41 30 / 0.22);
+    border-radius: 2px;
+    /* auto keeps the row of buttons on one line when a neighbour's title
+       wraps; 14px is the floor when it does not. */
+    margin-top: auto;
+    padding: 10px 20px;
+    background: transparent;
+    font-family: var(--tss-sans);
+    font-size: 12px;
+    text-transform: none;
+    color: var(--tss-green);
+    cursor: pointer;
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__add:hover:not(:disabled) {
+    border-color: var(--tss-ink);
+    background: var(--tss-ink);
+    color: var(--tss-ivory);
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  #tss-pairs-{{ uid }} .tss-pw__empty {
+    padding-inline: var(--tss-gutter);
+    font-size: 14px;
+    color: rgb(28 28 26 / 0.55);
+  }
+
+  @media (min-width: 64rem) {
+    #tss-pairs-{{ uid }} .tss-pw__head {
+      max-width: var(--tss-max);
+      margin-inline: auto;
+    }
+
+    #tss-pairs-{{ uid }} .tss-pw__title {
+      font-size: {{ s.title_size | default: 30 | plus: 6 }}px;
+    }
+
+    #tss-pairs-{{ uid }} .tss-pw__lede {
+      max-width: 44ch;
+      font-size: 15px;
+    }
+  }
+</style>
+
+<section
+  id="tss-pairs-{{ uid }}"
+  class="tss-section"
+  data-tss-pairs
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ limit }}"
+  data-performed="{{ recommendations.performed }}"
+  aria-labelledby="tss-pw-heading-{{ uid }}"
+>
+  <div data-pairs-inner>
+    <div class="tss-pw__head tss-rise">
+      <h2 class="tss-pw__title" id="tss-pw-heading-{{ uid }}">{{ s.title | default: 'Pairs well with' | escape }}</h2>
+      {%- if s.lede != blank -%}
+        <p class="tss-pw__lede">{{ s.lede | escape }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- if items.size > 0 -%}
+      <div
+        class="tss-rail"
+        id="tss-pw-rail-{{ uid }}"
+        data-progress="tss-pw-prog-{{ uid }}"
+        role="group"
+        aria-label="{{ s.title | default: 'Pairs well with' | escape }}"
+        tabindex="0"
+      >
+        {%- for item in items limit: limit -%}
+          {%- if item.id == product.id -%}
+            {%- continue -%}
+          {%- endif -%}
+          {%- assign iv = item.selected_or_first_available_variant -%}
+
+          <article class="tss-pw__card">
+            <div class="tss-pw__media">
+              {%- comment -%}
+                The reveal wrapper holds the image alone. `.tss-clip > *` sets
+                width:100% and a clip-path, which stretched and hid the save
+                button back when it was a sibling of the image inside it.
+              {%- endcomment -%}
+              <div class="tss-clip">
+                <a href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+                  {% render 'tss-image',
+                    image: item.featured_image,
+                    width: 700,
+                    widths: '280,420,560,700',
+                    sizes: '(min-width: 64rem) 280px, 78vw',
+                    alt: item.title,
+                    placeholder: 'product-2'
+                  %}
+                </a>
+              </div>
+
+              {%- if s.show_save -%}
+                <button
+                  type="button"
+                  class="tss-pw__save"
+                  data-save="{{ item.id }}"
+                  aria-pressed="false"
+                  aria-label="Save {{ item.title | escape }}"
+                >
+                  {% render 'tss-icon', icon: 'heart', size: 18, stroke: 1.25 %}
+                </button>
+              {%- endif -%}
+            </div>
+
+            {%- if item.vendor != blank -%}
+              <p class="tss-pw__vendor">{{ item.vendor | escape }}</p>
+            {%- endif -%}
+
+            <h3 class="tss-pw__name"><a href="{{ item.url }}">{{ item.title | escape }}</a></h3>
+
+            <p class="tss-pw__price">
+              {%- if item.price_varies -%}
+                {{ s.from_label | default: 'From' | escape }} {{ item.price_min | money }}
+              {%- else -%}
+                {{ item.price | money }}
+              {%- endif -%}
+            </p>
+
+            {%- if s.show_quick_add -%}
+              <button
+                type="button"
+                class="tss-pw__add"
+                data-quick-add="{{ iv.id }}"
+                data-label="{{ s.add_label | default: 'Add to Bag' | escape }}"
+                data-added="{{ s.added_label | default: 'Added' | escape }}"
+                {% unless iv.available %}disabled{% endunless %}
+              >
+                {%- if iv.available -%}
+                  {{ s.add_label | default: 'Add to Bag' | escape }}
+                {%- else -%}
+                  {{ s.sold_out_label | default: 'Sold out' | escape }}
+                {%- endif -%}
+              </button>
+            {%- endif -%}
+          </article>
+        {%- endfor -%}
+      </div>
+
+      <div class="tss-progress" id="tss-pw-prog-{{ uid }}" aria-hidden="true"><span></span></div>
+    {%- else -%}
+      <p class="tss-pw__empty">{{ s.empty_text | default: 'Nothing to pair just yet.' | escape }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+  (function () {
+    var root = document.getElementById('tss-pairs-{{ uid }}');
+    if (!root || root.__tssPairsBound) return;
+    root.__tssPairsBound = true;
+
+    var ADD_URL = {{ routes.cart_add_url | append: '.js' | json }};
+    var CART_URL = {{ routes.cart_url | json }};
+    var AFTER_ADD = {{ s.after_add | default: 'stay' | json }};
+    var SAVE_KEY = 'tss:saved';
+
+    function saved() {
+      try {
+        return JSON.parse(window.localStorage.getItem(SAVE_KEY) || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function paintSaves(scope) {
+      var list = saved();
+      var buttons = scope.querySelectorAll('[data-save]');
+      for (var i = 0; i < buttons.length; i++) {
+        var id = buttons[i].getAttribute('data-save');
+        buttons[i].setAttribute('aria-pressed', list.indexOf(id) > -1 ? 'true' : 'false');
+      }
+    }
+
+    root.addEventListener('click', function (e) {
+      var save = e.target.closest('[data-save]');
+      if (save) {
+        var id = save.getAttribute('data-save');
+        var list = saved();
+        var at = list.indexOf(id);
+        if (at > -1) list.splice(at, 1);
+        else list.push(id);
+        try {
+          window.localStorage.setItem(SAVE_KEY, JSON.stringify(list));
+        } catch (err) {
+          /* private mode — the button still reflects the tap this session */
+        }
+        save.setAttribute('aria-pressed', at > -1 ? 'false' : 'true');
+        return;
+      }
+
+      var add = e.target.closest('[data-quick-add]');
+      if (!add || add.disabled) return;
+
+      var label = add.getAttribute('data-label');
+      add.disabled = true;
+
+      fetch(ADD_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ items: [{ id: parseInt(add.getAttribute('data-quick-add'), 10), quantity: 1 }] })
+      })
+        .then(function (response) {
+          if (!response.ok) throw response;
+          return response.json();
+        })
+        .then(function () {
+          if (AFTER_ADD === 'cart') {
+            window.location.href = CART_URL;
+            return;
+          }
+          add.textContent = add.getAttribute('data-added');
+          setTimeout(function () {
+            add.textContent = label;
+            add.disabled = false;
+          }, 1800);
+        })
+        .catch(function () {
+          add.disabled = false;
+          add.textContent = label;
+        });
+    });
+
+    /* Swap the fallback rail for Shopify's own recommendations once they load. */
+    var inner = root.querySelector('[data-pairs-inner]');
+    if (root.getAttribute('data-performed') !== 'true' && inner && window.fetch) {
+      fetch(root.getAttribute('data-url'))
+        .then(function (response) {
+          return response.ok ? response.text() : Promise.reject(response);
+        })
+        .then(function (text) {
+          var fresh = new DOMParser().parseFromString(text, 'text/html').querySelector('[data-pairs-inner]');
+          if (!fresh || !fresh.querySelector('.tss-rail')) return;
+          inner.innerHTML = fresh.innerHTML;
+          root.setAttribute('data-performed', 'true');
+          if (window.tssInit) window.tssInit(root);
+          paintSaves(root);
+        })
+        .catch(function () {
+          /* keep the fallback rail */
+        });
+    }
+
+    paintSaves(root);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "TSS · Pairs well with",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading", "default": "Pairs well with" },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 52,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "textarea",
+      "id": "lede",
+      "label": "Supporting text",
+      "default": "A few things we would send alongside it — chosen by the same hand."
+    },
+    { "type": "range", "id": "limit", "label": "Products", "min": 2, "max": 10, "step": 1, "default": 4 },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Fallback collection",
+      "info": "Shown before Shopify's recommendations load, and to visitors without JavaScript."
+    },
+    { "type": "text", "id": "empty_text", "label": "Empty text", "default": "Nothing to pair just yet." },
+    { "type": "text", "id": "from_label", "label": "\"From\" label", "default": "From" },
+    { "type": "header", "content": "Card" },
+    { "type": "checkbox", "id": "show_save", "label": "Show the save heart", "default": true },
+    { "type": "checkbox", "id": "show_quick_add", "label": "Show Add to Bag", "default": true },
+    { "type": "text", "id": "add_label", "label": "Add label", "default": "Add to Bag" },
+    { "type": "text", "id": "added_label", "label": "Added label", "default": "Added" },
+    { "type": "text", "id": "sold_out_label", "label": "Sold out label", "default": "Sold out" },
+    {
+      "type": "select",
+      "id": "after_add",
+      "label": "After adding",
+      "options": [
+        { "value": "stay", "label": "Stay on the page" },
+        { "value": "cart", "label": "Go to the cart" }
+      ],
+      "default": "stay"
+    },
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    }
+  ],
+  "presets": [{ "name": "TSS · Pairs well with" }]
+}
+{% endschema %}

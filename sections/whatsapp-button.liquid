@@ -1,0 +1,320 @@
+<div class="whatsapp-container">
+  <a href="#" class="whatsapp-float" id="whatsappButton">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.63"/>
+    </svg>
+    <!-- Hide button -->
+    <button class="whatsapp-hide-btn" id="whatsappHide" title="Hide WhatsApp button">×</button>
+  </a>
+
+  <!-- WhatsApp Popup -->
+  <div class="whatsapp-popup" id="whatsappPopup">
+    <div class="whatsapp-popup-header">
+      <img src="https://cdn.shopify.com/s/files/1/0737/6525/7459/files/images.png?v=1757407224" alt="Customer Service">
+      <div>
+        <div style="font-weight: bold;">Customer Service</div>
+        <div style="font-size: 12px;">Online</div>
+      </div>
+      <button class="whatsapp-close" id="whatsappClose">&times;</button>
+    </div>
+    <div class="whatsapp-popup-body">
+      <div class="whatsapp-popup-message">
+        As-Salamu Alaikum! 👋<br>
+        How can we help you today?
+      </div>
+      <button class="whatsapp-start-chat" id="startChat">Start Chat</button>
+    </div>
+  </div>
+</div>
+
+<style>
+/* WhatsApp Floating Button */
+.whatsapp-float {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  bottom: 20px;
+  right: 20px;
+  background-color: #25d366;
+  color: #FFF;
+  border-radius: 50px;
+  text-align: center;
+  font-size: 30px;
+  box-shadow: 2px 2px 3px #999;
+  z-index: 100;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.whatsapp-float:hover {
+  background-color: #20ba5a;
+  transform: scale(1.1);
+  color: #FFF;
+  text-decoration: none;
+}
+
+.whatsapp-float.hidden {
+  display: none;
+}
+
+/* Hide button */
+.whatsapp-hide-btn {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 101;
+  transition: all 0.2s ease;
+}
+
+.whatsapp-hide-btn:hover {
+  background-color: #cc0000;
+  transform: scale(1.1);
+}
+
+.whatsapp-float:hover .whatsapp-hide-btn {
+  display: flex;
+}
+
+/* Popup styles */
+.whatsapp-popup {
+  position: fixed;
+  bottom: 120px;
+  right: 40px;
+  width: 300px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  z-index: 101;
+  display: none;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.whatsapp-popup-header {
+  background: #075e54;
+  color: white;
+  padding: 15px;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  align-items: center;
+}
+
+.whatsapp-popup-header img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.whatsapp-popup-body {
+  padding: 20px;
+}
+
+.whatsapp-popup-message {
+  background: #f1f1f1;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.whatsapp-popup-message:before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 10px;
+  border: 8px solid transparent;
+  border-right-color: #f1f1f1;
+}
+
+.whatsapp-start-chat {
+  background: #25d366;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  width: 100%;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s ease;
+}
+
+.whatsapp-start-chat:hover {
+  background: #20ba5a;
+}
+
+.whatsapp-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .whatsapp-float {
+    width: 50px;
+    height: 50px;
+    bottom: 20px;
+    right: 20px;
+    font-size: 25px;
+  }
+  
+  .whatsapp-popup {
+    width: 280px;
+    right: 20px;
+    bottom: 80px;
+  }
+  
+  .whatsapp-hide-btn {
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    top: -3px;
+    right: -3px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Replace with your WhatsApp number (include country code, no + sign)
+  const whatsappNumber = '+8801911242132'; 
+  
+  // Customize your message
+  const defaultMessage = 'Hi! I\'m interested in your products.';
+  
+  const whatsappButton = document.getElementById('whatsappButton');
+  const whatsappPopup = document.getElementById('whatsappPopup');
+  const whatsappClose = document.getElementById('whatsappClose');
+  const whatsappHide = document.getElementById('whatsappHide');
+  const startChat = document.getElementById('startChat');
+  
+  let popupOpen = false;
+  
+  // Toggle popup
+  whatsappButton.addEventListener('click', function(e) {
+    e.preventDefault();
+    // Don't open popup if hide button was clicked
+    if (e.target === whatsappHide) {
+      return;
+    }
+    
+    if (!popupOpen) {
+      whatsappPopup.style.display = 'block';
+      popupOpen = true;
+    } else {
+      whatsappPopup.style.display = 'none';
+      popupOpen = false;
+    }
+  });
+  
+  // Hide WhatsApp button
+  whatsappHide.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Hide the popup if it's open
+    if (popupOpen) {
+      whatsappPopup.style.display = 'none';
+      popupOpen = false;
+    }
+    
+    // Hide the main button with animation
+    whatsappButton.style.transform = 'scale(0)';
+    whatsappButton.style.opacity = '0';
+    
+    setTimeout(function() {
+      whatsappButton.classList.add('hidden');
+    }, 300);
+  });
+  
+  // Close popup
+  whatsappClose.addEventListener('click', function() {
+    whatsappPopup.style.display = 'none';
+    popupOpen = false;
+  });
+  
+  // Start chat
+  startChat.addEventListener('click', function() {
+    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(defaultMessage)}`;
+    window.open(whatsappURL, '_blank');
+    whatsappPopup.style.display = 'none';
+    popupOpen = false;
+  });
+  
+  // Close popup when clicking outside
+  document.addEventListener('click', function(e) {
+    if (popupOpen && !whatsappPopup.contains(e.target) && !whatsappButton.contains(e.target)) {
+      whatsappPopup.style.display = 'none';
+      popupOpen = false;
+    }
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "WhatsApp Button",
+  "settings": [
+    {
+      "type": "text",
+      "id": "whatsapp_number",
+      "label": "WhatsApp Number",
+      "info": "Include country code without + sign (e.g., 1234567890)"
+    },
+    {
+      "type": "text",
+      "id": "greeting_message",
+      "label": "Greeting Message",
+      "default": "Hi! I'm interested in your products."
+    },
+    {
+      "type": "text",
+      "id": "popup_title",
+      "label": "Popup Title",
+      "default": "Customer Service"
+    },
+    {
+      "type": "textarea",
+      "id": "popup_message",
+      "label": "Popup Message",
+      "default": "Hi there! 👋\nHow can we help you today?"
+    }
+  ],
+  "presets": [
+    {
+      "name": "WhatsApp Button"
+    }
+  ]
+}
+{% endschema %}

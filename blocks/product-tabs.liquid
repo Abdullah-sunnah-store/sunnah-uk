@@ -1,0 +1,247 @@
+{% comment %}
+  Product Tabs — ported from the live theme (snippets/product-tabs.liquid).
+  Horizon block: reads tab content from product metafields (custom.tab_*)
+  with fallback to the block's default richtext settings.
+{% endcomment %}
+
+{% liquid
+  assign product = closest.product
+  if request.visual_preview_mode and product == blank
+    assign product = collections.all.products.first
+  endif
+%}
+
+<style>
+  #product-tabs-{{ block.id }}.product-tabs {
+    margin-top: 0;
+  }
+
+  #product-tabs-{{ block.id }} .tab-buttons {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  #product-tabs-{{ block.id }} .tab-buttons::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+
+  #product-tabs-{{ block.id }} .tab-button {
+    background: transparent;
+    border: none;
+    padding: 0.75rem 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    color: rgb(var(--color-foreground-rgb) / 0.55);
+    position: relative;
+    transition: color 0.3s ease;
+    font-family: var(--font-body--family);
+    white-space: nowrap;
+  }
+
+  #product-tabs-{{ block.id }} .tab-button::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--color-foreground);
+    transition: width 0.3s ease;
+  }
+
+  #product-tabs-{{ block.id }} .tab-button:hover { color: var(--color-foreground); }
+  #product-tabs-{{ block.id }} .tab-button:hover::after { width: 100%; }
+  #product-tabs-{{ block.id }} .tab-button.active { color: var(--color-foreground); }
+  #product-tabs-{{ block.id }} .tab-button.active::after { width: 100%; }
+
+  #product-tabs-{{ block.id }} .tab-content {
+    display: none;
+    animation: fadeIn-{{ block.id }} 0.3s ease-in;
+  }
+
+  #product-tabs-{{ block.id }} .tab-content.active { display: block; }
+
+  @keyframes fadeIn-{{ block.id }} {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  #product-tabs-{{ block.id }} .tab-content,
+  #product-tabs-{{ block.id }} .tab-content p {
+    margin-bottom: 1rem;
+    line-height: var(--font-paragraph--line-height, 1.6);
+    color: var(--color-foreground);
+    font-family: var(--font-body--family);
+    font-size: var(--font-paragraph--size, 0.875rem);
+  }
+
+  #product-tabs-{{ block.id }} .tab-content p:last-child { margin-bottom: 0; }
+
+  #product-tabs-{{ block.id }} .feature-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    color: rgb(var(--color-foreground-rgb) / 0.6);
+    font-size: 0.9rem;
+  }
+
+  #product-tabs-{{ block.id }} .feature-icon svg { width: 20px; height: 20px; }
+</style>
+
+{%- assign tab_1_title = block.settings.tab_1_title | default: 'DESCRIPTION' -%}
+{%- assign tab_2_title = block.settings.tab_2_title | default: 'DETAILS' -%}
+{%- assign tab_5_title = block.settings.tab_5_title | default: 'ABOUT' -%}
+{%- assign tab_3_title = block.settings.tab_3_title | default: 'SPECIFICATIONS' -%}
+{%- assign tab_4_title = block.settings.tab_4_title | default: 'HIGHLIGHTS' -%}
+
+{%- assign has_description = false -%}
+{%- assign has_details = false -%}
+{%- assign has_about = false -%}
+{%- assign has_specifications = false -%}
+{%- assign has_delivery = false -%}
+
+{%- if product.metafields.custom.tab_description != blank or block.settings.default_description != blank -%}
+  {%- assign has_description = true -%}
+{%- endif -%}
+{%- if product.metafields.custom.tab_details != blank or block.settings.default_details != blank -%}
+  {%- assign has_details = true -%}
+{%- endif -%}
+{%- if product.metafields.custom.tab_about != blank or block.settings.default_about != blank -%}
+  {%- assign has_about = true -%}
+{%- endif -%}
+{%- if product.metafields.custom.tab_specifications != blank or block.settings.default_specifications != blank -%}
+  {%- assign has_specifications = true -%}
+{%- endif -%}
+{%- if product.metafields.custom.tab_delivery != blank or block.settings.default_delivery != blank -%}
+  {%- assign has_delivery = true -%}
+{%- endif -%}
+
+{%- if has_description or has_details or has_about or has_specifications or has_delivery -%}
+
+<div class="product-tabs" id="product-tabs-{{ block.id }}" {{ block.shopify_attributes }}>
+  <div class="tab-buttons">
+    {%- if has_description -%}
+      <button class="tab-button active" data-tab="description-{{ block.id }}">{{ tab_1_title }}</button>
+    {%- endif -%}
+    {%- if has_details -%}
+      <button class="tab-button{% unless has_description %} active{% endunless %}" data-tab="details-{{ block.id }}">{{ tab_2_title }}</button>
+    {%- endif -%}
+    {%- if has_about -%}
+      <button class="tab-button{% unless has_description or has_details %} active{% endunless %}" data-tab="about-{{ block.id }}">{{ tab_5_title }}</button>
+    {%- endif -%}
+    {%- if has_specifications -%}
+      <button class="tab-button{% unless has_description or has_details or has_about %} active{% endunless %}" data-tab="specifications-{{ block.id }}">{{ tab_3_title }}</button>
+    {%- endif -%}
+    {%- if has_delivery -%}
+      <button class="tab-button{% unless has_description or has_details or has_about or has_specifications %} active{% endunless %}" data-tab="delivery-{{ block.id }}">{{ tab_4_title }}</button>
+    {%- endif -%}
+  </div>
+
+  {%- if has_description -%}
+    <div class="tab-content active" id="description-{{ block.id }}">
+      {%- if product.metafields.custom.tab_description != blank -%}
+        {%- if product.metafields.custom.tab_description.type == 'rich_text_field' -%}{{ product.metafields.custom.tab_description | metafield_tag }}{%- else -%}{{ product.metafields.custom.tab_description }}{%- endif -%}
+      {%- else -%}{{ block.settings.default_description }}{%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if has_details -%}
+    <div class="tab-content{% unless has_description %} active{% endunless %}" id="details-{{ block.id }}">
+      {%- if product.metafields.custom.tab_details != blank -%}
+        {%- if product.metafields.custom.tab_details.type == 'rich_text_field' -%}{{ product.metafields.custom.tab_details | metafield_tag }}{%- else -%}{{ product.metafields.custom.tab_details }}{%- endif -%}
+      {%- else -%}{{ block.settings.default_details }}{%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if has_about -%}
+    <div class="tab-content{% unless has_description or has_details %} active{% endunless %}" id="about-{{ block.id }}">
+      {%- if product.metafields.custom.tab_about != blank -%}
+        {%- if product.metafields.custom.tab_about.type == 'rich_text_field' -%}{{ product.metafields.custom.tab_about | metafield_tag }}{%- else -%}{{ product.metafields.custom.tab_about }}{%- endif -%}
+      {%- else -%}{{ block.settings.default_about }}{%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if has_specifications -%}
+    <div class="tab-content{% unless has_description or has_details or has_about %} active{% endunless %}" id="specifications-{{ block.id }}">
+      {%- if product.metafields.custom.tab_specifications != blank -%}
+        {%- if product.metafields.custom.tab_specifications.type == 'rich_text_field' -%}{{ product.metafields.custom.tab_specifications | metafield_tag }}{%- else -%}{{ product.metafields.custom.tab_specifications }}{%- endif -%}
+      {%- else -%}{{ block.settings.default_specifications }}{%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if has_delivery -%}
+    <div class="tab-content{% unless has_description or has_details or has_about or has_specifications %} active{% endunless %}" id="delivery-{{ block.id }}">
+      {%- if product.metafields.custom.tab_delivery != blank -%}
+        {%- if product.metafields.custom.tab_delivery.type == 'rich_text_field' -%}{{ product.metafields.custom.tab_delivery | metafield_tag }}{%- else -%}{{ product.metafields.custom.tab_delivery }}{%- endif -%}
+      {%- else -%}{{ block.settings.default_delivery }}{%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if block.settings.show_badge -%}
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+      {{ block.settings.badge_text | default: 'Designed in New York City' }}
+    </div>
+  {%- endif -%}
+</div>
+
+<script>
+  (function() {
+    var root = document.getElementById('product-tabs-{{ block.id }}');
+    if (!root) return;
+    var tabButtons = root.querySelectorAll('.tab-button');
+    var tabContents = root.querySelectorAll('.tab-content');
+    tabButtons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        var targetTab = this.getAttribute('data-tab');
+        tabButtons.forEach(function(btn) { btn.classList.remove('active'); });
+        tabContents.forEach(function(content) { content.classList.remove('active'); });
+        this.classList.add('active');
+        var targetContent = document.getElementById(targetTab);
+        if (targetContent) targetContent.classList.add('active');
+      });
+    });
+  })();
+</script>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product Tabs",
+  "tag": null,
+  "settings": [
+    { "type": "header", "content": "Tab Titles" },
+    { "type": "text", "id": "tab_1_title", "label": "Tab 1 Title", "default": "DESCRIPTION" },
+    { "type": "text", "id": "tab_2_title", "label": "Tab 2 Title", "default": "DETAILS" },
+    { "type": "text", "id": "tab_5_title", "label": "Tab 5 Title (About)", "default": "ABOUT" },
+    { "type": "text", "id": "tab_3_title", "label": "Tab 3 Title", "default": "SPECIFICATIONS" },
+    { "type": "text", "id": "tab_4_title", "label": "Tab 4 Title", "default": "HIGHLIGHTS" },
+    { "type": "header", "content": "Default Content", "info": "Used when a product has no matching metafield (custom.tab_description, tab_details, tab_about, tab_specifications, tab_delivery)." },
+    { "type": "richtext", "id": "default_description", "label": "Default Description" },
+    { "type": "richtext", "id": "default_details", "label": "Default Details" },
+    { "type": "richtext", "id": "default_about", "label": "Default About" },
+    { "type": "richtext", "id": "default_specifications", "label": "Default Specifications" },
+    { "type": "richtext", "id": "default_delivery", "label": "Default Delivery / Highlights Info" },
+    { "type": "header", "content": "Badge Settings" },
+    { "type": "checkbox", "id": "show_badge", "label": "Show 'Designed in' badge", "default": true },
+    { "type": "text", "id": "badge_text", "label": "Badge text", "default": "Designed in New York City" }
+  ],
+  "presets": [
+    {
+      "name": "Product Tabs",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

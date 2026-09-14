@@ -1,0 +1,2092 @@
+{% comment %}
+  TSS — Build your own box
+
+  Mirrors the reference build at /build-your-own-box, which moved away from the
+  old "pick a tier first" flow. There is no tier screen any more:
+
+    1. Pieces      — header, category pills, a two-up portrait grid where each
+                     card carries an Add button that becomes a −/qty/+ stepper,
+                     and a sticky tray that names the box, counts the places and
+                     shows the pieces as thumbnails.
+    2. Personalise — wrapping, occasion card, a hand-written message with a
+                     character count, and the hide-the-price option.
+    3. Your box    — the pieces read back, optional finishing touches, the
+                     total, and the line(s) added to the cart.
+
+  The tier is inferred rather than chosen: the box grows to the smallest tier
+  that holds everything picked so far, and the tray renames itself as it grows.
+  The tier's product carries the fixed price and is the single line added to the
+  cart, with the pieces recorded on it as line item properties. Where a tier has
+  no product set the builder falls back to adding each piece as its own line, so
+  the page still functions before the tier products exist in Shopify.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+
+  assign tier_blocks = section.blocks | where: 'type', 'tier'
+  assign collection_blocks = section.blocks | where: 'type', 'collection'
+-%}
+
+<style>
+  #tss-bb-{{ uid }} {
+    background: var(--tss-ivory);
+  }
+
+  /* ---------- step rule ---------- */
+  #tss-bb-{{ uid }} .tss-bb__progress {
+    display: flex;
+    gap: 8px;
+    padding: 20px var(--tss-gutter);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__progress span {
+    height: 1px;
+    flex: 1;
+    background: rgb(26 74 58 / 0.2);
+    transition: background-color 0.4s var(--tss-ease);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__progress span[data-on='true'] {
+    background: var(--tss-gold);
+  }
+
+  /* ---------- steps ---------- */
+  #tss-bb-{{ uid }} .tss-bb__step[hidden] {
+    display: none;
+  }
+
+  /* ---------- 1 · header ---------- */
+  #tss-bb-{{ uid }} .tss-bb__head {
+    padding: 40px var(--tss-gutter) 0;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__eyebrow {
+    font-family: var(--tss-sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgb(184 134 11 / 0.8);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__title {
+    margin-top: 12px;
+    font-family: var(--tss-serif);
+    font-size: {{ s.title_size | default: 34 }}px;
+    font-weight: 400;
+    line-height: 1.05;
+    text-wrap: balance;
+    color: var(--tss-ink);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__lede {
+    margin-top: 12px;
+    max-width: 42ch;
+    font-family: var(--tss-serif);
+    font-size: 17px;
+    font-style: italic;
+    line-height: 1.375;
+    text-wrap: pretty;
+    color: rgb(28 28 26 / 0.7);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__sub {
+    margin-top: 12px;
+    max-width: 42ch;
+    font-family: var(--tss-sans);
+    font-size: 13px;
+    line-height: 1.625;
+    color: rgb(28 28 26 / 0.55);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__ready {
+    display: inline-block;
+    margin-top: 12px;
+    border-bottom: 1px solid rgb(184 134 11 / 0.5);
+    font-family: var(--tss-serif);
+    font-size: 15px;
+    font-style: italic;
+    color: var(--tss-ink);
+    text-decoration: none;
+    transition: color 0.4s ease, border-color 0.4s ease;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__ready:hover {
+    border-color: var(--tss-gold);
+    color: var(--tss-gold);
+  }
+
+  /* ---------- 1 · pills ---------- */
+  #tss-bb-{{ uid }} .tss-bb__pills {
+    display: flex;
+    margin-top: 24px;
+    gap: 8px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    padding: 8px var(--tss-gutter);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__pill {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    border: 1px solid rgb(26 74 58 / 0.25);
+    border-radius: 999px;
+    background: transparent;
+    padding: 8px 16px;
+    font-family: var(--tss-sans);
+    font-size: 13px;
+    color: var(--tss-ink);
+    cursor: pointer;
+    transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__pill[aria-pressed='true'] {
+    border-color: var(--tss-green-mid);
+    background: var(--tss-green-mid);
+    color: var(--tss-ivory);
+  }
+
+  /* ---------- 1 · grid ---------- */
+  #tss-bb-{{ uid }} .tss-bb__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 16px;
+    padding: 16px var(--tss-gutter) 0;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__card[hidden] {
+    display: none;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__card-media {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    width: 100%;
+    background: var(--tss-ivory-2);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__card-media img,
+  #tss-bb-{{ uid }} .tss-bb__card-media svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__card-vendor {
+    margin-top: 12px;
+    font-family: var(--tss-sans);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(28 28 26 / 0.55);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__card-title {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-top: 4px;
+    font-family: var(--tss-serif);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.375;
+    color: var(--tss-ink);
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__card-price {
+    margin-top: 4px;
+    font-family: var(--tss-sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--tss-gold);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__variants {
+    margin-top: 8px;
+    width: 100%;
+    border: 1px solid rgb(26 74 58 / 0.25);
+    border-radius: 2px;
+    background: transparent;
+    padding: 6px 8px;
+    font-family: var(--tss-sans);
+    font-size: 12px;
+    color: var(--tss-ink);
+  }
+
+  /* One bordered box holds either the Add button or the stepper, so the card
+     keeps its height when a piece goes in. */
+  #tss-bb-{{ uid }} .tss-bb__action {
+    display: flex;
+    height: 44px;
+    align-items: center;
+    margin-top: 12px;
+    border: 1px solid var(--tss-green-mid);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__add {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    font-family: var(--tss-sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--tss-green-mid);
+    cursor: pointer;
+    transition: opacity 0.4s ease;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__add:hover {
+    opacity: 0.7;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__stepper {
+    display: none;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__card[data-qty]:not([data-qty='0']) .tss-bb__add {
+    display: none;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__card[data-qty]:not([data-qty='0']) .tss-bb__stepper {
+    display: flex;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__step-btn {
+    display: flex;
+    width: 44px;
+    height: 100%;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    font-family: var(--tss-sans);
+    font-size: 17px;
+    line-height: 1;
+    color: var(--tss-green-mid);
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__step-btn[disabled] {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__qty {
+    font-family: var(--tss-sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--tss-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* When the largest box is full there is nowhere left to put a new piece. */
+  #tss-bb-{{ uid }} .tss-bb__card[data-mute='true'] .tss-bb__add {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__empty {
+    padding: 48px var(--tss-gutter);
+    text-align: center;
+    font-family: var(--tss-serif);
+    font-size: 17px;
+    font-style: italic;
+    color: rgb(28 28 26 / 0.55);
+  }
+
+  /* ---------- 1 · sticky tray ---------- */
+  #tss-bb-{{ uid }} .tss-bb__tray {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    /* Above the site's own sticky bottom nav (z-index 40), which this bar is
+       tall enough to cover outright while the builder is open. */
+    z-index: 45;
+    border-top: 1px solid rgb(26 74 58 / 0.12);
+    background: var(--tss-ivory);
+    transform: translateY(100%);
+    transition: transform 0.5s var(--tss-ease);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__tray[data-shown='true'] {
+    transform: none;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__tray-inner {
+    padding: 12px var(--tss-gutter) 0;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__tray-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__tray-name {
+    font-family: var(--tss-serif);
+    font-size: 15px;
+    line-height: 1;
+    color: var(--tss-ink);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__tray-count {
+    margin-top: 4px;
+    font-family: var(--tss-sans);
+    font-size: 11px;
+    color: rgb(28 28 26 / 0.55);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__tray-price {
+    flex-shrink: 0;
+    font-family: var(--tss-sans);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--tss-gold);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__slots {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+    gap: 6px;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__slot {
+    position: relative;
+    aspect-ratio: 1;
+    min-width: 0;
+    max-width: 36px;
+    flex: 1;
+    overflow: hidden;
+    border: 1px solid rgb(26 74 58 / 0.25);
+    border-radius: 2px;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__tray-cta {
+    display: block;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.5s var(--tss-ease), margin-top 0.5s var(--tss-ease);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__tray[data-filled='true'] .tss-bb__tray-cta {
+    margin-top: 12px;
+    max-height: 64px;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__tray-cta button {
+    display: flex;
+    width: 100%;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 2px;
+    background: var(--tss-green-mid);
+    font-family: var(--tss-sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--tss-ivory);
+    cursor: pointer;
+    transition: opacity 0.4s ease;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__tray-cta button:hover {
+    opacity: 0.9;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__tray-safe {
+    height: calc(12px + env(safe-area-inset-bottom));
+  }
+
+  /* The tray owns the bottom edge while it is up, so lift the WhatsApp
+     launcher that tss-base.css had already parked above the sticky nav. */
+  body[data-tss-bb-tray='true'] .whatsapp-float {
+    bottom: calc(190px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body[data-tss-bb-tray='true'] .whatsapp-popup {
+    bottom: calc(290px + env(safe-area-inset-bottom)) !important;
+  }
+
+  /* Keeps the last row of the grid clear of the tray. */
+  #tss-bb-{{ uid }} .tss-bb__tray-spacer {
+    height: calc(180px + env(safe-area-inset-bottom));
+  }
+
+  /* ---------- 2 · personalise ---------- */
+  #tss-bb-{{ uid }} .tss-bb__pane {
+    padding: 40px var(--tss-gutter) 64px;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__back {
+    display: block;
+    margin-bottom: 16px;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-family: var(--tss-sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(28 28 26 / 0.55);
+    cursor: pointer;
+    transition: color 0.4s ease;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__back:hover {
+    color: var(--tss-gold);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__pane-title {
+    font-family: var(--tss-serif);
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1.1;
+    text-wrap: balance;
+    color: var(--tss-ink);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__pane-lede {
+    margin-top: 12px;
+    max-width: 42ch;
+    font-family: var(--tss-sans);
+    font-size: 14px;
+    line-height: 1.625;
+    color: rgb(28 28 26 / 0.6);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__fields {
+    display: flex;
+    flex-direction: column;
+    margin-top: 40px;
+    gap: 32px;
+    border: 0;
+    padding: 0;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__field {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__label {
+    display: block;
+    padding: 0;
+    font-family: var(--tss-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(28 28 26 / 0.55);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__choices {
+    display: grid;
+    margin-top: 12px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__choice {
+    display: flex;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(26 74 58 / 0.25);
+    border-radius: 2px;
+    background: transparent;
+    padding: 0 8px;
+    text-align: center;
+    font-family: var(--tss-sans);
+    font-size: 12px;
+    line-height: 1.25;
+    color: var(--tss-ink);
+    cursor: pointer;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__choice[aria-pressed='true'] {
+    border-color: var(--tss-green-mid);
+    background: rgb(26 74 58 / 0.06);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__cards-row {
+    display: flex;
+    margin-top: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__input,
+  #tss-bb-{{ uid }} .tss-bb__textarea {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    border: 1px solid rgb(26 74 58 / 0.25);
+    border-radius: 2px;
+    background: transparent;
+    padding: 12px;
+    font-family: var(--tss-sans);
+    font-size: 14px;
+    line-height: 1.625;
+    color: var(--tss-ink);
+    transition: border-color 0.4s ease;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__textarea {
+    min-height: 104px;
+    resize: none;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__input:focus,
+  #tss-bb-{{ uid }} .tss-bb__textarea:focus {
+    border-color: var(--tss-green-mid);
+    outline: none;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__count {
+    margin-top: 4px;
+    text-align: right;
+    font-family: var(--tss-sans);
+    font-size: 11px;
+    color: rgb(28 28 26 / 0.45);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__check {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__check-box {
+    display: flex;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(26 74 58 / 0.35);
+    border-radius: 2px;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__check[aria-pressed='true'] .tss-bb__check-box {
+    border-color: var(--tss-green-mid);
+    background: var(--tss-green-mid);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__check-box svg {
+    width: 12px;
+    height: 12px;
+    color: var(--tss-ivory);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__check[aria-pressed='true'] .tss-bb__check-box svg {
+    opacity: 1;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__check-label {
+    font-family: var(--tss-sans);
+    font-size: 14px;
+    color: var(--tss-ink);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__cta {
+    display: flex;
+    width: 100%;
+    height: 56px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 48px;
+    border: 0;
+    border-radius: 2px;
+    background: var(--tss-gold);
+    font-family: var(--tss-sans);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--tss-green-dark);
+    cursor: pointer;
+    transition: opacity 0.4s ease;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__cta:hover {
+    opacity: 0.9;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__cta[disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* ---------- 3 · review ---------- */
+  #tss-bb-{{ uid }} .tss-bb__summary {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 32px;
+    border-bottom: 1px solid rgb(26 74 58 / 0.15);
+    padding-bottom: 16px;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__summary-name {
+    font-family: var(--tss-serif);
+    font-size: 20px;
+    color: var(--tss-ink);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__summary-price {
+    font-family: var(--tss-sans);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--tss-gold);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgb(26 74 58 / 0.1);
+    padding: 12px 0;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__line-media {
+    width: 48px;
+    flex-shrink: 0;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 2px;
+    background: var(--tss-ivory-2);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__line-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__line-body {
+    min-width: 0;
+    flex: 1;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__line-vendor {
+    display: block;
+    font-family: var(--tss-sans);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(28 28 26 / 0.55);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__line-title {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--tss-serif);
+    font-size: 15px;
+    line-height: 1.375;
+    color: var(--tss-ink);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__line-remove {
+    flex-shrink: 0;
+    border: 0;
+    background: transparent;
+    padding: 4px;
+    font-family: var(--tss-sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(28 28 26 / 0.45);
+    cursor: pointer;
+    transition: color 0.4s ease;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__line-remove:hover {
+    color: var(--tss-gold);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__notes {
+    margin-top: 24px;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__note {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 6px 0;
+    font-family: var(--tss-sans);
+    font-size: 13px;
+    color: rgb(28 28 26 / 0.7);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__note dt {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    font-weight: 500;
+    color: rgb(28 28 26 / 0.45);
+    padding-top: 2px;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__note dd {
+    margin: 0;
+    text-align: right;
+    text-wrap: pretty;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__addons {
+    margin-top: 40px;
+    border-top: 1px solid rgb(26 74 58 / 0.15);
+    padding-top: 24px;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__addon {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__addon-media {
+    width: 48px;
+    flex-shrink: 0;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 2px;
+    background: var(--tss-ivory-2);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__addon-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__addon-body {
+    min-width: 0;
+    flex: 1;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__addon-title {
+    display: block;
+    font-family: var(--tss-serif);
+    font-size: 15px;
+    color: var(--tss-ink);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__addon-price {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--tss-sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--tss-gold);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__addon-toggle {
+    flex-shrink: 0;
+    border: 1px solid var(--tss-green-mid);
+    border-radius: 2px;
+    background: transparent;
+    padding: 8px 16px;
+    font-family: var(--tss-sans);
+    font-size: 12px;
+    color: var(--tss-green-mid);
+    cursor: pointer;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__addon-toggle[aria-pressed='true'] {
+    background: var(--tss-green-mid);
+    color: var(--tss-ivory);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: 32px;
+    border-top: 1px solid rgb(26 74 58 / 0.15);
+    padding-top: 24px;
+    font-family: var(--tss-sans);
+    font-size: 14px;
+    color: var(--tss-ink);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__total-value {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--tss-gold);
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__error {
+    margin-top: 16px;
+    font-family: var(--tss-sans);
+    font-size: 13px;
+    color: #a8352a;
+  }
+
+  #tss-bb-{{ uid }} .tss-bb__error[hidden] {
+    display: none;
+  }
+
+  /* ---------- larger screens ---------- */
+  @media (min-width: 40rem) {
+    #tss-bb-{{ uid }} .tss-bb__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 40px 20px;
+    }
+
+    #tss-bb-{{ uid }} .tss-bb__tray-row {
+      align-items: center;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    #tss-bb-{{ uid }} .tss-bb__progress,
+    #tss-bb-{{ uid }} .tss-bb__head,
+    #tss-bb-{{ uid }} .tss-bb__pills,
+    #tss-bb-{{ uid }} .tss-bb__grid,
+    #tss-bb-{{ uid }} .tss-bb__tray-inner {
+      max-width: var(--tss-max);
+      margin-inline: auto;
+    }
+
+    #tss-bb-{{ uid }} .tss-bb__title {
+      font-size: {{ s.title_size | default: 34 | times: 1.35 | round }}px;
+    }
+
+    #tss-bb-{{ uid }} .tss-bb__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    /* The tray runs the width of the viewport but its contents stay on the
+       same measure as the grid above it. */
+    #tss-bb-{{ uid }} .tss-bb__tray-cta {
+      max-width: 320px;
+      margin-inline-start: auto;
+    }
+
+    /* Steps 2 and 3 read as a letter, not a full-bleed form. */
+    #tss-bb-{{ uid }} .tss-bb__pane {
+      max-width: 640px;
+      margin-inline: auto;
+    }
+  }
+</style>
+
+<section
+  id="tss-bb-{{ uid }}"
+  class="tss-section tss-bb"
+  data-tss-bb
+  aria-labelledby="tss-bb-title-{{ uid }}"
+>
+  {% comment %} Step rule — one segment per step. {% endcomment %}
+  <div class="tss-bb__progress" role="presentation">
+    <span data-on="true"></span>
+    <span data-on="false"></span>
+    <span data-on="false"></span>
+  </div>
+
+  <div class="tss-bb__steps">
+    {% comment %} ---------- 1 · choose the pieces ---------- {% endcomment %}
+    <div class="tss-bb__step" data-step="1">
+      <header class="tss-bb__head">
+        {%- if s.eyebrow != blank -%}
+          <p class="tss-bb__eyebrow">{{ s.eyebrow | escape }}</p>
+        {%- endif -%}
+        <h1 id="tss-bb-title-{{ uid }}" class="tss-bb__title">
+          {{- s.title | default: 'Build your own box' | escape -}}
+        </h1>
+        {%- if s.lede != blank -%}
+          <p class="tss-bb__lede">{{ s.lede | escape }}</p>
+        {%- endif -%}
+        {%- if s.sub_lede != blank -%}
+          <p class="tss-bb__sub">{{ s.sub_lede | escape }}</p>
+        {%- endif -%}
+        {%- if s.ready_made_label != blank -%}
+          <a class="tss-bb__ready" href="{{ s.ready_made_link | default: '#' }}">
+            {{- s.ready_made_label | escape -}}
+          </a>
+        {%- endif -%}
+      </header>
+
+      <div class="tss-bb__pills" role="group" aria-label="{{ s.filter_label | default: 'Filter by category' | escape }}">
+        <button type="button" class="tss-bb__pill" aria-pressed="true" data-filter="all">
+          {{- s.all_label | default: 'All' | escape -}}
+        </button>
+        {%- for block in collection_blocks -%}
+          {%- liquid
+            assign col = collections[block.settings.collection]
+            assign pill_label = block.settings.custom_name | strip
+            if pill_label == blank
+              assign pill_label = col.title
+            endif
+          -%}
+          {%- if col != blank and col.products.size > 0 -%}
+            <button type="button" class="tss-bb__pill" aria-pressed="false" data-filter="{{ col.handle }}">
+              {{- pill_label | escape -}}
+            </button>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      <div class="tss-bb__grid" data-bb-grid>
+        {%- assign seen = '' -%}
+        {%- for block in collection_blocks -%}
+          {%- assign col = collections[block.settings.collection] -%}
+          {%- if col != blank -%}
+            {%- for product in col.products -%}
+              {%- assign seen_key = '|' | append: product.id | append: '|' -%}
+              {%- unless seen contains seen_key -%}
+                {%- if product.available -%}
+                  {%- liquid
+                    assign seen = seen | append: seen_key
+
+                    assign fv = null
+                    for v in product.variants
+                      if v.available and fv == null
+                        assign fv = v
+                      endif
+                    endfor
+                    if fv == null
+                      assign fv = product.variants.first
+                    endif
+
+                    assign card_image = fv.image | default: product.featured_image
+                  -%}
+
+                  <div
+                    class="tss-bb__card"
+                    data-bb-card
+                    data-qty="0"
+                    data-collection="{{ col.handle }}"
+                    data-product-id="{{ product.id }}"
+                    data-variant="{{ fv.id }}"
+                    data-title="{{ product.title | escape }}"
+                    data-vendor="{{ product.vendor | escape }}"
+                    data-price="{{ fv.price }}"
+                    data-price-text="{{ fv.price | money | escape }}"
+                    data-image="{% if card_image %}{{ card_image | image_url: width: 200 }}{% endif %}"
+                  >
+                    <span class="tss-bb__card-media">
+                      {% render 'tss-image',
+                        image: card_image,
+                        width: 600,
+                        widths: '200,300,400,600',
+                        sizes: '(min-width: 64rem) 300px, 46vw',
+                        alt: product.title
+                      %}
+                    </span>
+
+                    {%- if product.vendor != blank -%}
+                      <p class="tss-bb__card-vendor">{{ product.vendor | escape }}</p>
+                    {%- endif -%}
+                    <h3 class="tss-bb__card-title">{{ product.title | escape }}</h3>
+                    <p class="tss-bb__card-price" data-bb-card-price>{{ fv.price | money }}</p>
+
+                    {%- if product.variants.size > 1 -%}
+                      <label class="tss-sr-only" for="tss-bb-var-{{ uid }}-{{ product.id }}">
+                        {{ product.title | escape }} options
+                      </label>
+                      <select
+                        id="tss-bb-var-{{ uid }}-{{ product.id }}"
+                        class="tss-bb__variants"
+                        data-bb-variants
+                      >
+                        {%- for v in product.variants -%}
+                          <option
+                            value="{{ v.id }}"
+                            data-price="{{ v.price }}"
+                            data-price-text="{{ v.price | money | escape }}"
+                            data-image="{% if v.image %}{{ v.image | image_url: width: 200 }}{% else %}{{ product.featured_image | image_url: width: 200 }}{% endif %}"
+                            {% unless v.available %}disabled{% endunless %}
+                            {% if v.id == fv.id %}selected{% endif %}
+                          >
+                            {{- v.title | escape -}}
+                          </option>
+                        {%- endfor -%}
+                      </select>
+                    {%- endif -%}
+
+                    <div class="tss-bb__action">
+                      <button type="button" class="tss-bb__add" data-bb-add>
+                        {{- s.add_label | default: 'Add' | escape -}}
+                      </button>
+                      <div class="tss-bb__stepper">
+                        <button
+                          type="button"
+                          class="tss-bb__step-btn"
+                          data-bb-minus
+                          aria-label="{{ 'Remove one' | escape }} {{ product.title | escape }}"
+                        >&minus;</button>
+                        <span class="tss-bb__qty" data-bb-qty aria-live="polite">0</span>
+                        <button
+                          type="button"
+                          class="tss-bb__step-btn"
+                          data-bb-plus
+                          aria-label="{{ 'Add one more' | escape }} {{ product.title | escape }}"
+                        >+</button>
+                      </div>
+                    </div>
+                  </div>
+                {%- endif -%}
+              {%- endunless -%}
+            {%- endfor -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      <p class="tss-bb__empty" data-bb-no-results hidden>
+        {{- s.empty_label | default: 'Nothing in this category yet.' | escape -}}
+      </p>
+
+      <div class="tss-bb__tray-spacer"></div>
+
+      <div class="tss-bb__tray" data-bb-tray data-shown="false" data-filled="false">
+        <div class="tss-bb__tray-inner">
+          <div class="tss-bb__tray-row">
+            <div>
+              <p class="tss-bb__tray-name" data-bb-tray-name></p>
+              <p class="tss-bb__tray-count" data-bb-count aria-live="polite"></p>
+            </div>
+            <span class="tss-bb__tray-price" data-bb-tray-price></span>
+          </div>
+
+          <div class="tss-bb__slots" data-bb-slots aria-hidden="true"></div>
+
+          <div class="tss-bb__tray-cta">
+            <button type="button" data-bb-continue>
+              {{- s.continue_label | default: 'Continue' | escape -}}
+            </button>
+          </div>
+        </div>
+        <div class="tss-bb__tray-safe"></div>
+      </div>
+    </div>
+
+    {% comment %} ---------- 2 · personalise ---------- {% endcomment %}
+    <div class="tss-bb__step" data-step="2" hidden>
+      <div class="tss-bb__pane">
+        <button type="button" class="tss-bb__back" data-bb-back="1">
+          &larr; {{ s.back_label | default: 'Back' | escape }}
+        </button>
+
+        <h2 class="tss-bb__pane-title">
+          {{- s.personalise_title | default: 'Personalise it.' | escape -}}
+        </h2>
+        {%- if s.personalise_lede != blank -%}
+          <p class="tss-bb__pane-lede">{{ s.personalise_lede | escape }}</p>
+        {%- endif -%}
+
+        <div class="tss-bb__fields">
+          {%- assign wrapping_list = s.wrapping_options | split: ',' -%}
+          {%- if wrapping_list.size > 0 -%}
+            <fieldset class="tss-bb__field">
+              <legend class="tss-bb__label">{{ s.wrapping_label | default: 'Wrapping' | escape }}</legend>
+              <div class="tss-bb__choices">
+                {%- for option in wrapping_list -%}
+                  <button
+                    type="button"
+                    class="tss-bb__choice"
+                    aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+                    data-bb-wrapping
+                    data-value="{{ option | strip | escape }}"
+                  >
+                    {{- option | strip | escape -}}
+                  </button>
+                {%- endfor -%}
+              </div>
+            </fieldset>
+          {%- endif -%}
+
+          {%- assign occasion_list = s.occasions | split: ',' -%}
+          {%- if occasion_list.size > 0 -%}
+            <fieldset class="tss-bb__field">
+              <legend class="tss-bb__label">{{ s.occasion_label | default: 'Occasion card' | escape }}</legend>
+              <div class="tss-bb__cards-row">
+                {%- for occasion in occasion_list -%}
+                  <button
+                    type="button"
+                    class="tss-bb__pill"
+                    aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+                    data-bb-occasion
+                    data-value="{{ occasion | strip | escape }}"
+                  >
+                    {{- occasion | strip | escape -}}
+                  </button>
+                {%- endfor -%}
+              </div>
+            </fieldset>
+          {%- endif -%}
+
+          {%- if s.recipient_label != blank -%}
+            <div class="tss-bb__field">
+              <label class="tss-bb__label" for="tss-bb-to-{{ uid }}">
+                {{- s.recipient_label | escape -}}
+              </label>
+              <input
+                id="tss-bb-to-{{ uid }}"
+                class="tss-bb__input"
+                type="text"
+                data-bb-recipient
+                placeholder="{{ s.recipient_placeholder | default: 'Their name' | escape }}"
+                maxlength="60"
+              >
+            </div>
+          {%- endif -%}
+
+          <div class="tss-bb__field">
+            <label class="tss-bb__label" for="tss-bb-message-{{ uid }}">
+              {{- s.message_label | default: 'Message' | escape -}}
+            </label>
+            <textarea
+              id="tss-bb-message-{{ uid }}"
+              class="tss-bb__textarea"
+              data-bb-message
+              maxlength="{{ s.message_max | default: 200 }}"
+              placeholder="{{ s.message_placeholder | default: 'A few words to go on the card — we’ll write them by hand.' | escape }}"
+            ></textarea>
+            <p class="tss-bb__count">
+              <span data-bb-message-count>0</span> / {{ s.message_max | default: 200 }}
+            </p>
+          </div>
+
+          {%- if s.hide_price_label != blank -%}
+            <button type="button" class="tss-bb__check" aria-pressed="true" data-bb-hide-price>
+              <span class="tss-bb__check-box" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span class="tss-bb__check-label">{{ s.hide_price_label | escape }}</span>
+            </button>
+          {%- endif -%}
+        </div>
+
+        <button type="button" class="tss-bb__cta" data-bb-to-review>
+          {{- s.continue_label | default: 'Continue' | escape -}}
+        </button>
+      </div>
+    </div>
+
+    {% comment %} ---------- 3 · review and add to cart ---------- {% endcomment %}
+    <div class="tss-bb__step" data-step="3" hidden>
+      <div class="tss-bb__pane">
+        <button type="button" class="tss-bb__back" data-bb-back="2">
+          &larr; {{ s.back_label | default: 'Back' | escape }}
+        </button>
+
+        <h2 class="tss-bb__pane-title">{{ s.review_title | default: 'Your box' | escape }}</h2>
+        {%- if s.review_lede != blank -%}
+          <p class="tss-bb__pane-lede">{{ s.review_lede | escape }}</p>
+        {%- endif -%}
+
+        <div class="tss-bb__summary">
+          <span class="tss-bb__summary-name" data-bb-summary-name></span>
+          <span class="tss-bb__summary-price" data-bb-summary-price></span>
+        </div>
+
+        <div class="tss-bb__lines" data-bb-lines></div>
+
+        <dl class="tss-bb__notes" data-bb-notes></dl>
+
+        {%- assign addon_keys = 'addon_product_1,addon_product_2' | split: ',' -%}
+        {%- assign has_addons = false -%}
+        {%- for key in addon_keys -%}
+          {%- if s[key] != blank -%}{%- assign has_addons = true -%}{%- endif -%}
+        {%- endfor -%}
+
+        {%- if has_addons -%}
+          <div class="tss-bb__addons">
+            <p class="tss-bb__label">{{ s.addons_label | default: 'A finishing touch' | escape }}</p>
+            {%- for key in addon_keys -%}
+              {%- liquid
+                assign ap = s[key]
+                if ap != blank and ap.handle == blank
+                  assign ap = all_products[s[key]]
+                endif
+              -%}
+              {%- if ap != blank and ap.handle != blank -%}
+                {%- liquid
+                  assign afv = null
+                  for v in ap.variants
+                    if v.available and afv == null
+                      assign afv = v
+                    endif
+                  endfor
+                  if afv == null
+                    assign afv = ap.variants.first
+                  endif
+                  assign addon_image = afv.image | default: ap.featured_image
+                -%}
+                <div class="tss-bb__addon">
+                  <span class="tss-bb__addon-media">
+                    {%- if addon_image -%}
+                      <img src="{{ addon_image | image_url: width: 120 }}" alt="" width="60" height="60" loading="lazy">
+                    {%- endif -%}
+                  </span>
+                  <span class="tss-bb__addon-body">
+                    <span class="tss-bb__addon-title">{{ ap.title | escape }}</span>
+                    <span class="tss-bb__addon-price">{{ afv.price | money }}</span>
+                  </span>
+                  <button
+                    type="button"
+                    class="tss-bb__addon-toggle"
+                    aria-pressed="false"
+                    data-bb-addon
+                    data-variant="{{ afv.id }}"
+                    data-title="{{ ap.title | escape }}"
+                    data-price="{{ afv.price }}"
+                  >
+                    {{- s.addon_add_label | default: 'Add' | escape -}}
+                  </button>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <div class="tss-bb__total">
+          <span>{{ s.total_label | default: 'Total' | escape }}</span>
+          <span class="tss-bb__total-value" data-bb-total></span>
+        </div>
+
+        <button type="button" class="tss-bb__cta" data-bb-submit>
+          {{- s.submit_label | default: 'Add to Cart' | escape -}}
+        </button>
+        <p class="tss-bb__error" data-bb-error hidden></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var root = document.getElementById('tss-bb-{{ uid }}');
+    if (!root || root.__tssBBBound) return;
+    root.__tssBBBound = true;
+
+    var MONEY_FORMAT = {{ shop.money_format | strip_html | json }};
+    var CART_URL = {{ routes.cart_url | json }};
+    var ADD_URL = {{ routes.cart_add_url | append: '.js' | json }};
+
+    var PLACES_WORD = {{ s.places_word | default: 'places' | json }};
+    var PIECES_WORD = {{ s.pieces_word | default: 'pieces' | json }};
+    var ADD_LABEL = {{ s.addon_add_label | default: 'Add' | json }};
+    var ADDED_LABEL = {{ s.addon_added_label | default: 'Added' | json }};
+    var SUBMIT_LABEL = {{ s.submit_label | default: 'Add to Cart' | json }};
+    var WORKING_LABEL = {{ s.working_label | default: 'Adding…' | json }};
+    var ERROR_LABEL = {{ s.error_label | default: 'Something went wrong. Please try again.' | json }};
+    var EMPTY_ERROR = {{ s.empty_error | default: 'Choose at least one piece for your box.' | json }};
+
+    var LABELS = {
+      wrapping: {{ s.wrapping_label | default: 'Wrapping' | json }},
+      occasion: {{ s.occasion_label | default: 'Occasion card' | json }},
+      recipient: {{ s.recipient_label | default: 'For' | json }},
+      message: {{ s.message_label | default: 'Message' | json }},
+      hidePrice: {{ s.hide_price_label | default: 'Hide the price on the delivery note' | json }}
+    };
+
+    // Tiers, smallest first. The box grows into the first one that fits.
+    var TIERS = [
+      {%- for block in tier_blocks -%}
+        {%- liquid
+          assign b = block.settings
+          assign tier_product = b.product
+          if tier_product != blank and tier_product.handle == blank
+            assign tier_product = all_products[b.product]
+          endif
+
+          assign tier_variant = null
+          for v in tier_product.variants
+            if v.available and tier_variant == null
+              assign tier_variant = v
+            endif
+          endfor
+          if tier_variant == null
+            assign tier_variant = tier_product.variants.first
+          endif
+
+          assign tier_name = b.name
+          if tier_name == blank
+            assign tier_name = tier_product.title
+          endif
+
+          assign tier_price_text = b.price_text
+          if tier_variant != null
+            assign tier_price_text = tier_variant.price | money
+          endif
+        -%}
+        {
+          name: {{ tier_name | json }},
+          pieces: {{ b.pieces | default: 6 | json }},
+          variantId: {{ tier_variant.id | default: '' | json }},
+          price: {{ tier_variant.price | default: 0 | json }},
+          priceText: {{ tier_price_text | default: '' | json }}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ];
+
+    TIERS.sort(function (a, b) { return a.pieces - b.pieces; });
+
+    // Before any box sizes are set up the builder still has to hold something,
+    // so fall back to a single six-place box priced by its pieces.
+    if (!TIERS.length) {
+      TIERS = [{ name: {{ s.review_title | default: 'Your box' | json }}, pieces: 6, variantId: '', price: 0, priceText: '' }];
+    }
+
+    // Shopify's money_format is a Liquid fragment, not a number format, so
+    // render the one placeholder it carries rather than guessing at currency.
+    function money(cents) {
+      var value = (cents || 0) / 100;
+      function withCommas(n) {
+        var parts = n.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return parts.join('.');
+      }
+      return String(MONEY_FORMAT).replace(/\{\{\s*(\w+)\s*\}\}/, function (_, token) {
+        switch (token) {
+          case 'amount_no_decimals':
+            return withCommas(String(Math.round(value)));
+          case 'amount_with_comma_separator':
+            return withCommas(value.toFixed(2)).replace(/,/g, ' ').replace('.', ',');
+          case 'amount_no_decimals_with_comma_separator':
+            return withCommas(String(Math.round(value))).replace(/,/g, '.');
+          case 'amount_no_decimals_with_space_separator':
+            return withCommas(String(Math.round(value))).replace(/,/g, ' ');
+          default:
+            return withCommas(value.toFixed(2));
+        }
+      });
+    }
+
+    var state = {
+      step: 1,
+      picks: [],
+      addons: [],
+      wrapping: '',
+      occasion: '',
+      recipient: '',
+      message: '',
+      hidePrice: true
+    };
+
+    var els = {
+      progress: root.querySelectorAll('.tss-bb__progress span'),
+      steps: root.querySelectorAll('.tss-bb__step'),
+      cards: root.querySelectorAll('[data-bb-card]'),
+      pills: root.querySelectorAll('[data-filter]'),
+      noResults: root.querySelector('[data-bb-no-results]'),
+      tray: root.querySelector('[data-bb-tray]'),
+      trayName: root.querySelector('[data-bb-tray-name]'),
+      trayPrice: root.querySelector('[data-bb-tray-price]'),
+      count: root.querySelector('[data-bb-count]'),
+      slots: root.querySelector('[data-bb-slots]'),
+      cont: root.querySelector('[data-bb-continue]'),
+      toReview: root.querySelector('[data-bb-to-review]'),
+      summaryName: root.querySelector('[data-bb-summary-name]'),
+      summaryPrice: root.querySelector('[data-bb-summary-price]'),
+      lines: root.querySelector('[data-bb-lines]'),
+      notes: root.querySelector('[data-bb-notes]'),
+      total: root.querySelector('[data-bb-total]'),
+      recipient: root.querySelector('[data-bb-recipient]'),
+      message: root.querySelector('[data-bb-message]'),
+      messageCount: root.querySelector('[data-bb-message-count]'),
+      hidePrice: root.querySelector('[data-bb-hide-price]'),
+      submit: root.querySelector('[data-bb-submit]'),
+      error: root.querySelector('[data-bb-error]')
+    };
+
+    // ---------- tiers ----------
+    function placesUsed() {
+      return state.picks.reduce(function (sum, pick) { return sum + pick.qty; }, 0);
+    }
+
+    function maxPlaces() {
+      return TIERS.length ? TIERS[TIERS.length - 1].pieces : 0;
+    }
+
+    // The smallest box that still holds everything chosen. An empty box shows
+    // the smallest tier, so the tray reads as an invitation rather than a sum.
+    function currentTier() {
+      if (!TIERS.length) return null;
+      var used = Math.max(placesUsed(), 1);
+      for (var i = 0; i < TIERS.length; i++) {
+        if (TIERS[i].pieces >= used) return TIERS[i];
+      }
+      return TIERS[TIERS.length - 1];
+    }
+
+    function boxPrice() {
+      var tier = currentTier();
+      if (tier && tier.variantId) return tier.price;
+      // No tier product set: fall back to charging for the pieces themselves.
+      return state.picks.reduce(function (sum, pick) {
+        return sum + pick.price * pick.qty;
+      }, 0);
+    }
+
+    // ---------- steps ----------
+    function goto(step, scroll) {
+      state.step = step;
+      for (var i = 0; i < els.steps.length; i++) {
+        var panel = els.steps[i];
+        panel.hidden = Number(panel.getAttribute('data-step')) !== step;
+      }
+      for (var j = 0; j < els.progress.length; j++) {
+        els.progress[j].setAttribute('data-on', j < step ? 'true' : 'false');
+      }
+      showTray(step === 1);
+      if (step === 3) renderReview();
+      if (window.tssInit) window.tssInit(root);
+      if (scroll !== false) root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function showTray(on) {
+      if (!els.tray) return;
+      els.tray.setAttribute('data-shown', on ? 'true' : 'false');
+      document.body.setAttribute('data-tss-bb-tray', on ? 'true' : 'false');
+    }
+
+    // ---------- 1 · filter ----------
+    root.addEventListener('click', function (e) {
+      var pill = e.target.closest('[data-filter]');
+      if (!pill || !root.contains(pill)) return;
+
+      var handle = pill.getAttribute('data-filter');
+      for (var i = 0; i < els.pills.length; i++) {
+        els.pills[i].setAttribute('aria-pressed', String(els.pills[i] === pill));
+      }
+
+      var shown = 0;
+      for (var j = 0; j < els.cards.length; j++) {
+        var card = els.cards[j];
+        var on = handle === 'all' || card.getAttribute('data-collection') === handle;
+        card.hidden = !on;
+        if (on) shown++;
+      }
+      if (els.noResults) els.noResults.hidden = shown > 0;
+    });
+
+    // ---------- 1 · variant swap ----------
+    root.addEventListener('change', function (e) {
+      var select = e.target.closest('[data-bb-variants]');
+      if (!select || !root.contains(select)) return;
+
+      var card = select.closest('[data-bb-card]');
+      var option = select.options[select.selectedIndex];
+      if (!card || !option) return;
+
+      var previous = card.getAttribute('data-variant');
+      card.setAttribute('data-variant', option.value);
+      card.setAttribute('data-price', option.getAttribute('data-price') || '0');
+      card.setAttribute('data-price-text', option.getAttribute('data-price-text') || '');
+      card.setAttribute('data-image', option.getAttribute('data-image') || '');
+
+      var priceEl = card.querySelector('[data-bb-card-price]');
+      if (priceEl) priceEl.textContent = option.getAttribute('data-price-text') || '';
+
+      // A piece already in the box follows its variant rather than silently
+      // sending the old one to the cart.
+      var at = indexOfPick(previous);
+      if (at > -1) {
+        var qty = state.picks[at].qty;
+        state.picks[at] = readCard(card);
+        state.picks[at].qty = qty;
+      }
+      sync();
+    });
+
+    function readCard(card) {
+      return {
+        variantId: card.getAttribute('data-variant'),
+        qty: 0,
+        title: card.getAttribute('data-title') || '',
+        vendor: card.getAttribute('data-vendor') || '',
+        price: parseInt(card.getAttribute('data-price'), 10) || 0,
+        priceText: card.getAttribute('data-price-text') || '',
+        image: card.getAttribute('data-image') || '',
+        variantLabel: variantLabel(card)
+      };
+    }
+
+    function variantLabel(card) {
+      var select = card.querySelector('[data-bb-variants]');
+      if (!select) return '';
+      var option = select.options[select.selectedIndex];
+      var label = option ? option.textContent.trim() : '';
+      return label === 'Default Title' ? '' : label;
+    }
+
+    function indexOfPick(variantId) {
+      for (var i = 0; i < state.picks.length; i++) {
+        if (state.picks[i].variantId === variantId) return i;
+      }
+      return -1;
+    }
+
+    // ---------- 1 · add / step ----------
+    root.addEventListener('click', function (e) {
+      var button = e.target.closest('[data-bb-add], [data-bb-plus], [data-bb-minus]');
+      if (!button || !root.contains(button)) return;
+
+      var card = button.closest('[data-bb-card]');
+      if (!card) return;
+
+      var down = button.hasAttribute('data-bb-minus');
+      var variantId = card.getAttribute('data-variant');
+      var at = indexOfPick(variantId);
+
+      if (down) {
+        if (at < 0) return;
+        state.picks[at].qty -= 1;
+        if (state.picks[at].qty < 1) state.picks.splice(at, 1);
+      } else {
+        if (placesUsed() >= maxPlaces()) return;
+        if (at > -1) {
+          state.picks[at].qty += 1;
+        } else {
+          var pick = readCard(card);
+          pick.qty = 1;
+          state.picks.push(pick);
+        }
+      }
+      sync();
+    });
+
+    // ---------- tray + card state ----------
+    function sync() {
+      var tier = currentTier();
+      var capacity = tier ? tier.pieces : 0;
+      var used = placesUsed();
+      var atMax = used >= maxPlaces();
+
+      for (var i = 0; i < els.cards.length; i++) {
+        var card = els.cards[i];
+        var at = indexOfPick(card.getAttribute('data-variant'));
+        var qty = at > -1 ? state.picks[at].qty : 0;
+
+        card.setAttribute('data-qty', String(qty));
+        card.setAttribute('data-mute', String(atMax && qty === 0));
+
+        var qtyEl = card.querySelector('[data-bb-qty]');
+        if (qtyEl) qtyEl.textContent = String(qty);
+
+        var plus = card.querySelector('[data-bb-plus]');
+        if (plus) plus.disabled = atMax;
+        var add = card.querySelector('[data-bb-add]');
+        if (add) add.disabled = atMax;
+      }
+
+      if (els.trayName) els.trayName.textContent = tier ? tier.name : '';
+      if (els.count) {
+        els.count.textContent = used + ' of ' + capacity + ' ' + PLACES_WORD;
+      }
+      if (els.trayPrice) els.trayPrice.textContent = money(boxPrice());
+
+      if (els.slots) {
+        els.slots.innerHTML = '';
+        var filled = [];
+        state.picks.forEach(function (pick) {
+          for (var n = 0; n < pick.qty; n++) filled.push(pick);
+        });
+        for (var j = 0; j < capacity; j++) {
+          var slot = document.createElement('div');
+          slot.className = 'tss-bb__slot';
+          var chosen = filled[j];
+          if (chosen && chosen.image) {
+            var img = document.createElement('img');
+            img.src = chosen.image;
+            img.alt = '';
+            img.loading = 'lazy';
+            slot.appendChild(img);
+          }
+          els.slots.appendChild(slot);
+        }
+      }
+
+      if (els.tray) els.tray.setAttribute('data-filled', used > 0 ? 'true' : 'false');
+    }
+
+    if (els.cont) {
+      els.cont.addEventListener('click', function () {
+        if (placesUsed() > 0) goto(2);
+      });
+    }
+
+    if (els.toReview) {
+      els.toReview.addEventListener('click', function () {
+        goto(3);
+      });
+    }
+
+    // ---------- back ----------
+    root.addEventListener('click', function (e) {
+      var back = e.target.closest('[data-bb-back]');
+      if (!back || !root.contains(back)) return;
+      goto(parseInt(back.getAttribute('data-bb-back'), 10) || 1);
+    });
+
+    // ---------- 2 · choices ----------
+    function bindChoice(selector, key) {
+      var buttons = root.querySelectorAll(selector);
+      if (!buttons.length) return;
+      state[key] = buttons[0].getAttribute('data-value') || '';
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].addEventListener('click', function () {
+          for (var j = 0; j < buttons.length; j++) {
+            buttons[j].setAttribute('aria-pressed', String(buttons[j] === this));
+          }
+          state[key] = this.getAttribute('data-value') || '';
+        });
+      }
+    }
+
+    bindChoice('[data-bb-wrapping]', 'wrapping');
+    bindChoice('[data-bb-occasion]', 'occasion');
+
+    if (els.hidePrice) {
+      els.hidePrice.addEventListener('click', function () {
+        state.hidePrice = !state.hidePrice;
+        els.hidePrice.setAttribute('aria-pressed', String(state.hidePrice));
+      });
+    }
+
+    if (els.message && els.messageCount) {
+      els.message.addEventListener('input', function () {
+        state.message = els.message.value;
+        els.messageCount.textContent = String(els.message.value.length);
+      });
+    }
+
+    if (els.recipient) {
+      els.recipient.addEventListener('input', function () {
+        state.recipient = els.recipient.value;
+      });
+    }
+
+    // ---------- 3 · add-ons ----------
+    root.addEventListener('click', function (e) {
+      var toggle = e.target.closest('[data-bb-addon]');
+      if (!toggle || !root.contains(toggle)) return;
+
+      var variantId = toggle.getAttribute('data-variant');
+      var at = -1;
+      for (var i = 0; i < state.addons.length; i++) {
+        if (state.addons[i].variantId === variantId) at = i;
+      }
+
+      if (at > -1) {
+        state.addons.splice(at, 1);
+        toggle.setAttribute('aria-pressed', 'false');
+        toggle.textContent = ADD_LABEL;
+      } else {
+        state.addons.push({
+          variantId: variantId,
+          title: toggle.getAttribute('data-title') || '',
+          price: parseInt(toggle.getAttribute('data-price'), 10) || 0
+        });
+        toggle.setAttribute('aria-pressed', 'true');
+        toggle.textContent = ADDED_LABEL;
+      }
+      renderTotal();
+    });
+
+    // ---------- 3 · review ----------
+    function pieceLabel(pick) {
+      var label = pick.variantLabel ? pick.title + ' — ' + pick.variantLabel : pick.title;
+      return pick.qty > 1 ? label + ' × ' + pick.qty : label;
+    }
+
+    function renderReview() {
+      var tier = currentTier();
+
+      if (els.summaryName) {
+        els.summaryName.textContent = tier
+          ? tier.name + ' · ' + tier.pieces + ' ' + PIECES_WORD
+          : '';
+      }
+      if (els.summaryPrice) els.summaryPrice.textContent = money(boxPrice());
+
+      if (els.lines) {
+        els.lines.innerHTML = '';
+        state.picks.forEach(function (pick) {
+          var line = document.createElement('div');
+          line.className = 'tss-bb__line';
+
+          var media = document.createElement('span');
+          media.className = 'tss-bb__line-media';
+          if (pick.image) {
+            var img = document.createElement('img');
+            img.src = pick.image;
+            img.alt = '';
+            img.loading = 'lazy';
+            media.appendChild(img);
+          }
+
+          var body = document.createElement('span');
+          body.className = 'tss-bb__line-body';
+
+          if (pick.vendor) {
+            var vendor = document.createElement('span');
+            vendor.className = 'tss-bb__line-vendor';
+            vendor.textContent = pick.vendor;
+            body.appendChild(vendor);
+          }
+
+          var title = document.createElement('span');
+          title.className = 'tss-bb__line-title';
+          title.textContent = pieceLabel(pick);
+          body.appendChild(title);
+
+          var remove = document.createElement('button');
+          remove.type = 'button';
+          remove.className = 'tss-bb__line-remove';
+          remove.textContent = 'Remove';
+          remove.addEventListener('click', function () {
+            var at = indexOfPick(pick.variantId);
+            if (at > -1) state.picks.splice(at, 1);
+            sync();
+            if (placesUsed() === 0) {
+              goto(1);
+            } else {
+              renderReview();
+            }
+          });
+
+          line.appendChild(media);
+          line.appendChild(body);
+          line.appendChild(remove);
+          els.lines.appendChild(line);
+        });
+      }
+
+      if (els.notes) {
+        els.notes.innerHTML = '';
+        addNote(LABELS.wrapping, state.wrapping);
+        addNote(LABELS.occasion, state.occasion);
+        addNote(LABELS.recipient, state.recipient);
+        addNote(LABELS.message, state.message);
+        if (state.hidePrice && els.hidePrice) addNote(LABELS.hidePrice, 'Yes');
+      }
+
+      renderTotal();
+    }
+
+    function addNote(term, value) {
+      if (!value) return;
+      var row = document.createElement('div');
+      row.className = 'tss-bb__note';
+      var dt = document.createElement('dt');
+      dt.textContent = term;
+      var dd = document.createElement('dd');
+      dd.textContent = value;
+      row.appendChild(dt);
+      row.appendChild(dd);
+      els.notes.appendChild(row);
+    }
+
+    function renderTotal() {
+      if (!els.total) return;
+      // Fixed per tier: the pieces are already paid for by the box price, so
+      // only the finishing touches move the total.
+      var total = boxPrice();
+      state.addons.forEach(function (addon) {
+        total += addon.price;
+      });
+      els.total.textContent = money(total);
+    }
+
+    // ---------- 3 · submit ----------
+    if (els.submit) {
+      els.submit.addEventListener('click', function () {
+        if (placesUsed() === 0) {
+          setError(EMPTY_ERROR);
+          return;
+        }
+
+        setError('');
+        els.submit.disabled = true;
+        els.submit.textContent = WORKING_LABEL;
+
+        var tier = currentTier();
+        var properties = {};
+        state.picks.forEach(function (pick, index) {
+          properties['Piece ' + (index + 1)] = pieceLabel(pick);
+        });
+        if (state.wrapping) properties[LABELS.wrapping] = state.wrapping;
+        if (state.occasion) properties[LABELS.occasion] = state.occasion;
+        if (state.recipient) properties[LABELS.recipient] = state.recipient;
+        if (state.message) properties[LABELS.message] = state.message;
+        if (state.hidePrice && els.hidePrice) properties[LABELS.hidePrice] = 'Yes';
+
+        var items;
+        if (tier && tier.variantId) {
+          // Fixed box price: one line for the box, the pieces recorded on it.
+          properties['Box'] = tier.name + ' · ' + tier.pieces + ' ' + PIECES_WORD;
+          items = [{ id: tier.variantId, quantity: 1, properties: properties }];
+        } else {
+          // No tier product yet — bill the pieces individually, grouped by a
+          // shared property so the order still reads as one box.
+          var boxRef = (tier ? tier.name : 'Custom') + ' box';
+          items = state.picks.map(function (pick) {
+            return {
+              id: pick.variantId,
+              quantity: pick.qty,
+              properties: Object.assign({ Box: boxRef }, properties)
+            };
+          });
+        }
+
+        state.addons.forEach(function (addon) {
+          items.push({ id: addon.variantId, quantity: 1 });
+        });
+
+        fetch(ADD_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ items: items })
+        })
+          .then(function (response) {
+            if (!response.ok) return response.json().then(function (body) { throw body; });
+            return response.json();
+          })
+          .then(function () {
+            window.location.href = CART_URL;
+          })
+          .catch(function (err) {
+            setError((err && (err.description || err.message)) || ERROR_LABEL);
+            els.submit.disabled = false;
+            els.submit.textContent = SUBMIT_LABEL;
+          });
+      });
+    }
+
+    function setError(text) {
+      if (!els.error) return;
+      els.error.textContent = text;
+      els.error.hidden = !text;
+    }
+
+    sync();
+    showTray(true);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "TSS · Build your own box",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Step 1 · Header" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our Signature" },
+    { "type": "text", "id": "title", "label": "Headline", "default": "Build your own box" },
+    {
+      "type": "textarea",
+      "id": "lede",
+      "label": "Supporting line",
+      "default": "Choose each piece yourself. We'll size the box, wrap it by hand, and send it as one considered whole."
+    },
+    {
+      "type": "textarea",
+      "id": "sub_lede",
+      "label": "Second line",
+      "default": "The box and the wrapping are ours. You pay only for what's inside."
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Headline size",
+      "min": 24,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "default": 34,
+      "info": "Scales up by a third on desktop."
+    },
+    { "type": "text", "id": "ready_made_label", "label": "Ready-made link label", "default": "Prefer a ready-made box? →" },
+    { "type": "url", "id": "ready_made_link", "label": "Ready-made link" },
+
+    { "type": "header", "content": "Step 1 · Pieces" },
+    { "type": "text", "id": "all_label", "label": "\"All\" filter label", "default": "All" },
+    { "type": "text", "id": "add_label", "label": "Add button", "default": "Add" },
+    { "type": "text", "id": "places_word", "label": "Word for places", "default": "places", "info": "Shown in the tray as \"2 of 6 places\"." },
+    { "type": "text", "id": "pieces_word", "label": "Word for pieces", "default": "pieces" },
+    { "type": "text", "id": "continue_label", "label": "Continue label", "default": "Continue" },
+    { "type": "text", "id": "back_label", "label": "Back label", "default": "Back" },
+    { "type": "text", "id": "empty_label", "label": "Empty category text", "default": "Nothing in this category yet." },
+
+    { "type": "header", "content": "Step 2 · Personalise" },
+    { "type": "text", "id": "personalise_title", "label": "Heading", "default": "Personalise it." },
+    {
+      "type": "textarea",
+      "id": "personalise_lede",
+      "label": "Supporting line",
+      "default": "The card is written by hand, and your message goes on exactly as you type it — so take your time with the words."
+    },
+    { "type": "text", "id": "wrapping_label", "label": "Wrapping label", "default": "Wrapping" },
+    {
+      "type": "text",
+      "id": "wrapping_options",
+      "label": "Wrapping options",
+      "info": "Comma separated. The first is selected by default. Leave blank to hide.",
+      "default": "Ivory & Twine, Deep Green, No wrapping"
+    },
+    { "type": "text", "id": "occasion_label", "label": "Occasion card label", "default": "Occasion card" },
+    {
+      "type": "text",
+      "id": "occasions",
+      "label": "Occasion cards",
+      "info": "Comma separated. The first is selected by default. Leave blank to hide.",
+      "default": "Eid, Wedding, New Baby, Thank You, No card"
+    },
+    {
+      "type": "text",
+      "id": "recipient_label",
+      "label": "Recipient label",
+      "info": "Leave blank to hide the recipient field.",
+      "default": "For"
+    },
+    { "type": "text", "id": "recipient_placeholder", "label": "Recipient placeholder", "default": "Their name" },
+    { "type": "text", "id": "message_label", "label": "Message label", "default": "Message" },
+    {
+      "type": "text",
+      "id": "message_placeholder",
+      "label": "Message placeholder",
+      "default": "A few words to go on the card — we’ll write them by hand."
+    },
+    {
+      "type": "range",
+      "id": "message_max",
+      "label": "Message limit",
+      "min": 80,
+      "max": 500,
+      "step": 20,
+      "unit": "ch",
+      "default": 200
+    },
+    {
+      "type": "text",
+      "id": "hide_price_label",
+      "label": "Hide-price option",
+      "info": "Leave blank to hide the option.",
+      "default": "Hide the price on the delivery note"
+    },
+
+    { "type": "header", "content": "Step 3 · Your box" },
+    { "type": "text", "id": "review_title", "label": "Heading", "default": "Your box" },
+    { "type": "textarea", "id": "review_lede", "label": "Supporting line" },
+    { "type": "text", "id": "total_label", "label": "Total label", "default": "Total" },
+    { "type": "text", "id": "submit_label", "label": "Submit label", "default": "Add to Cart" },
+    { "type": "text", "id": "empty_error", "label": "Empty box message", "default": "Choose at least one piece for your box." },
+
+    { "type": "header", "content": "Finishing touches" },
+    {
+      "type": "product",
+      "id": "addon_product_1",
+      "label": "Add-on 1",
+      "info": "Offered on the last step and charged as its own line."
+    },
+    { "type": "product", "id": "addon_product_2", "label": "Add-on 2" },
+    { "type": "text", "id": "addons_label", "label": "Add-ons heading", "default": "A finishing touch" },
+    { "type": "text", "id": "addon_add_label", "label": "Add-on button", "default": "Add" },
+    { "type": "text", "id": "addon_added_label", "label": "Add-on button when on", "default": "Added" }
+  ],
+  "blocks": [
+    {
+      "type": "tier",
+      "name": "Box size",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Noor" },
+        {
+          "type": "range",
+          "id": "pieces",
+          "label": "Places",
+          "min": 1,
+          "max": 12,
+          "step": 1,
+          "default": 6,
+          "info": "The box grows into the smallest size that holds everything chosen."
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Box product",
+          "info": "Carries the fixed price and is the line added to the cart, with the chosen pieces recorded on it. Without one the builder charges for the pieces individually instead."
+        },
+        {
+          "type": "text",
+          "id": "price_text",
+          "label": "Price if no product is set",
+          "info": "Display only — plain text, not charged."
+        }
+      ]
+    },
+    {
+      "type": "collection",
+      "name": "Category",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "text", "id": "custom_name", "label": "Filter label", "info": "Defaults to the collection title." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "TSS · Build your own box",
+      "blocks": [
+        { "type": "tier", "settings": { "name": "Barakah", "pieces": 3 } },
+        { "type": "tier", "settings": { "name": "Noor", "pieces": 6 } },
+        { "type": "tier", "settings": { "name": "Ihsan", "pieces": 9 } },
+        { "type": "tier", "settings": { "name": "Jannah", "pieces": 12 } },
+        { "type": "collection" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,122 @@
+{% comment %}
+  TSS region / currency toggle.
+  Submits Shopify's localization form so prices switch market.
+
+  One entry per available *currency*, not per country. A market usually ships to
+  dozens of countries on a single currency, and one button each floods the
+  utility bar ("£ / £ / £ …") and shoves the rotating notice off centre. The
+  reference build renders exactly two: ৳ / £. Renders nothing at all when there
+  is only one currency, so the notice keeps the whole bar.
+
+  Usage:
+    {% render 'tss-region-toggle' %}              → ৳ / £
+    {% render 'tss-region-toggle', long: true %}  → বাংলাদেশ ৳ / United Kingdom £
+    {% render 'tss-region-toggle', max_inline: 2 %} → drop to a <select> past 2
+{% endcomment %}
+
+{%- liquid
+  # Distinct currencies, in the order Shopify lists their countries.
+  assign seen = ','
+  assign ordered = ''
+
+  for country in localization.available_countries
+    assign code = country.currency.iso_code
+    assign probe = ',' | append: code | append: ','
+    unless seen contains probe
+      assign seen = seen | append: code | append: ','
+      if ordered == blank
+        assign ordered = code
+      else
+        assign ordered = ordered | append: ',' | append: code
+      endif
+    endunless
+  endfor
+
+  assign currency_list = ordered | split: ','
+  assign limit = max_inline | default: 4
+-%}
+
+{%- if currency_list.size > 1 -%}
+  {%- form 'localization', class: 'tss-region' -%}
+    <input type="hidden" name="return_to" value="{{ request.path }}">
+
+    {%- comment -%}
+      Each currency is represented by one country: the shopper's own when it
+      belongs to that currency, otherwise the first Shopify offers.
+    {%- endcomment -%}
+
+    {%- if currency_list.size > limit -%}
+      <label for="tss-region-select" class="tss-sr-only">Region and currency</label>
+      <select id="tss-region-select" name="country_code" class="tss-region__select">
+        {%- for code in currency_list -%}
+          {%- liquid
+            assign rep = false
+            for country in localization.available_countries
+              if country.currency.iso_code == code
+                if rep == false
+                  assign rep = country
+                endif
+                if country.iso_code == localization.country.iso_code
+                  assign rep = country
+                  break
+                endif
+              endif
+            endfor
+          -%}
+          {%- if rep -%}
+            <option
+              value="{{ rep.iso_code }}"
+              {% if code == localization.country.currency.iso_code %}selected{% endif %}
+            >
+              {{- rep.name }} {{ rep.currency.symbol -}}
+            </option>
+          {%- endif -%}
+        {%- endfor -%}
+      </select>
+      <button type="submit" class="tss-region__btn tss-region__go">Update</button>
+    {%- else -%}
+      {%- for code in currency_list -%}
+        {%- liquid
+          # Captured before the inner loop shadows forloop.
+          assign is_last = forloop.last
+
+          assign rep = false
+          for country in localization.available_countries
+            if country.currency.iso_code == code
+              if rep == false
+                assign rep = country
+              endif
+              if country.iso_code == localization.country.iso_code
+                assign rep = country
+                break
+              endif
+            endif
+          endfor
+
+          assign is_current = false
+          if code == localization.country.currency.iso_code
+            assign is_current = true
+          endif
+        -%}
+
+        {%- if rep -%}
+          <span class="tss-region__item">
+            <button
+              type="submit"
+              name="country_code"
+              value="{{ rep.iso_code }}"
+              class="tss-region__btn{% if is_current %} is-current{% endif %}"
+              aria-pressed="{{ is_current }}"
+              aria-label="Shop {{ rep.name }}, prices in {{ rep.currency.symbol }}"
+            >
+              {%- if long -%}{{ rep.name }} {% endif %}{{ rep.currency.symbol }}
+            </button>
+            {%- unless is_last -%}
+              <span aria-hidden="true" class="tss-region__sep">/</span>
+            {%- endunless -%}
+          </span>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endform -%}
+{%- endif -%}

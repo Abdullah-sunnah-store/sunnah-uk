@@ -1,0 +1,336 @@
+{% comment %}
+  TSS — Collection header
+  The emerald band that opens a collection: a gold breadcrumb, a small vendor
+  eyebrow, the collection name in serif and an italic lede. Mirrors the
+  reference build at
+  thesunnahstoremarketplace.vercel.app/collections/hijabs
+
+  Everything falls back to the collection it sits on, so the section needs no
+  per-collection setup: the title, the description and the eyebrow (built from
+  the makers actually stocked in the collection) all fill themselves in.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+
+  assign heading = s.title
+  if heading == blank
+    assign heading = collection.title
+  endif
+  if heading == blank
+    assign heading = page.title
+  endif
+
+  assign crumb = s.crumb_current
+  if crumb == blank
+    assign crumb = heading
+  endif
+
+  assign lede = s.lede
+  if lede == blank
+    assign lede = collection.description | strip_html | strip
+  endif
+
+  comment
+    Eyebrow: the makers in this collection, in the reference's own shorthand —
+    one name, two names joined, or the first name and "and others".
+  endcomment
+  assign eyebrow = s.eyebrow
+  if eyebrow == blank and collection != blank
+    assign vendors = ''
+    for product in collection.products limit: 24
+      unless vendors contains product.vendor
+        assign vendors = vendors | append: product.vendor | append: '|~|'
+      endunless
+    endfor
+    assign vendor_list = vendors | split: '|~|'
+    case vendor_list.size
+      when 0
+        assign eyebrow = ''
+      when 1
+        assign eyebrow = vendor_list[0]
+      when 2
+        assign eyebrow = vendor_list | join: ' · '
+      else
+        assign eyebrow = vendor_list[0] | append: ' · and others'
+    endcase
+  endif
+-%}
+
+<style>
+  #tss-cheader-{{ uid }} {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: {{ s.height | default: 52 }}svh;
+    padding: 96px var(--tss-gutter) {{ s.padding_bottom | default: 40 }}px;
+    overflow: hidden;
+    background: linear-gradient(to bottom, var(--tss-green), var(--tss-green-dark));
+  }
+
+  #tss-cheader-{{ uid }} .tss-cheader__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #tss-cheader-{{ uid }} .tss-cheader__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(5, 30, 22, {{ s.scrim | default: 85 | divided_by: 100.0 }}) 0%,
+      rgba(5, 30, 22, {{ s.scrim | default: 85 | times: 0.72 | divided_by: 100.0 }}) 55%,
+      rgba(5, 30, 22, {{ s.scrim | default: 85 | times: 0.45 | divided_by: 100.0 }}) 100%
+    );
+  }
+
+  #tss-cheader-{{ uid }} .tss-cheader__inner {
+    position: relative;
+    max-width: 34ch;
+  }
+
+  #tss-cheader-{{ uid }} .tss-cheader__crumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgb(212 168 48 / 0.7);
+  }
+
+  #tss-cheader-{{ uid }} .tss-cheader__crumb a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.4s ease;
+  }
+
+  #tss-cheader-{{ uid }} .tss-cheader__crumb a:hover {
+    color: var(--tss-ivory);
+  }
+
+  #tss-cheader-{{ uid }} .tss-cheader__crumb span[aria-hidden] {
+    opacity: 0.55;
+  }
+
+  #tss-cheader-{{ uid }} .tss-cheader__eyebrow {
+    display: block;
+    margin-top: 20px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--tss-gold-bright);
+  }
+
+  #tss-cheader-{{ uid }} .tss-cheader__title {
+    margin-top: 12px;
+    font-family: var(--tss-serif);
+    font-size: {{ s.title_size | default: 40 }}px;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    color: var(--tss-ivory);
+  }
+
+  #tss-cheader-{{ uid }} .tss-cheader__lede {
+    margin-top: 20px;
+    font-family: var(--tss-serif);
+    font-size: 18px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.375;
+    text-wrap: pretty;
+    color: rgb(245 240 232 / 0.85);
+  }
+
+  @media (min-width: 64rem) {
+    #tss-cheader-{{ uid }} {
+      padding-block: 128px {{ s.padding_bottom | default: 40 | plus: 24 }}px;
+    }
+
+    #tss-cheader-{{ uid }} .tss-cheader__inner {
+      max-width: var(--tss-max);
+      margin-inline: auto;
+      width: 100%;
+    }
+
+    #tss-cheader-{{ uid }} .tss-cheader__title {
+      max-width: 16ch;
+      font-size: {{ s.title_size | default: 40 | plus: 16 }}px;
+    }
+
+    #tss-cheader-{{ uid }} .tss-cheader__lede {
+      max-width: 42ch;
+      font-size: 21px;
+    }
+  }
+</style>
+
+<section id="tss-cheader-{{ uid }}" class="tss-section" {{ section.shopify_attributes }}>
+  {%- if s.image != blank or s.image_asset != blank -%}
+    {% render 'tss-image',
+      image: s.image,
+      asset: s.image_asset,
+      class: 'tss-cheader__img',
+      width: 1600,
+      widths: '480,720,960,1280,1600',
+      sizes: '100vw',
+      priority: true,
+      alt: heading
+    %}
+    <div class="tss-cheader__scrim" aria-hidden="true"></div>
+  {%- endif -%}
+
+  <div class="tss-cheader__inner tss-reveal">
+    {%- if s.crumb_parent != blank or crumb != blank -%}
+      <span class="tss-line">
+        <span>
+          <nav class="tss-cheader__crumb" aria-label="Breadcrumb">
+            {%- if s.crumb_parent != blank -%}
+              {%- if s.crumb_parent_url != blank -%}
+                <a href="{{ s.crumb_parent_url }}">{{ s.crumb_parent | escape }}</a>
+              {%- else -%}
+                <span>{{ s.crumb_parent | escape }}</span>
+              {%- endif -%}
+              <span aria-hidden="true">/</span>
+            {%- endif -%}
+            {%- if s.crumb_mid != blank -%}
+              {%- if s.crumb_mid_url != blank -%}
+                <a href="{{ s.crumb_mid_url }}">{{ s.crumb_mid | escape }}</a>
+              {%- else -%}
+                <span>{{ s.crumb_mid | escape }}</span>
+              {%- endif -%}
+              <span aria-hidden="true">/</span>
+            {%- endif -%}
+            <span aria-current="page">{{ crumb | escape }}</span>
+          </nav>
+        </span>
+      </span>
+    {%- endif -%}
+
+    {%- if eyebrow != blank -%}
+      <span class="tss-line">
+        <span><span class="tss-cheader__eyebrow">{{ eyebrow | escape }}</span></span>
+      </span>
+    {%- endif -%}
+
+    {%- if heading != blank -%}
+      <span class="tss-line">
+        <span><h1 class="tss-cheader__title">{{ heading | escape }}</h1></span>
+      </span>
+    {%- endif -%}
+
+    {%- if lede != blank -%}
+      <span class="tss-line">
+        <span><p class="tss-cheader__lede">{{ lede }}</p></span>
+      </span>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "TSS · Collection header",
+  "tag": "section",
+  "enabled_on": { "templates": ["collection", "search", "page"] },
+  "settings": [
+    { "type": "header", "content": "Breadcrumb" },
+    { "type": "text", "id": "crumb_parent", "label": "First level", "default": "The House" },
+    { "type": "url", "id": "crumb_parent_url", "label": "First level link" },
+    { "type": "text", "id": "crumb_mid", "label": "Second level" },
+    { "type": "url", "id": "crumb_mid_url", "label": "Second level link" },
+    {
+      "type": "text",
+      "id": "crumb_current",
+      "label": "Current label",
+      "info": "Falls back to the collection title."
+    },
+    { "type": "header", "content": "Text" },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "info": "Leave empty to list the makers stocked in this collection."
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "info": "Leave empty to use the collection title."
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size",
+      "min": 28,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "textarea",
+      "id": "lede",
+      "label": "Lede",
+      "info": "Leave empty to use the collection description."
+    },
+    { "type": "header", "content": "Background" },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Optional. The band is an emerald gradient when nothing is set."
+    },
+    {
+      "type": "text",
+      "id": "image_asset",
+      "label": "Theme asset",
+      "info": "Filename in assets/, used when no image is picked."
+    },
+    {
+      "type": "range",
+      "id": "scrim",
+      "label": "Image darkening",
+      "min": 40,
+      "max": 95,
+      "step": 5,
+      "unit": "%",
+      "default": 85
+    },
+    { "type": "header", "content": "Spacing" },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Band height",
+      "min": 30,
+      "max": 90,
+      "step": 2,
+      "unit": "%",
+      "default": 52,
+      "info": "Share of the viewport height."
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 16,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [{ "name": "TSS · Collection header" }]
+}
+{% endschema %}

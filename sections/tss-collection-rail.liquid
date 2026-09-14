@@ -1,0 +1,446 @@
+{% comment %}
+  TSS — Collection rail
+  The strip of small photographic tiles that sits directly under the collection
+  header: an "All" tile followed by the sub-collections, each captioned in
+  serif over a bottom-up scrim, the current one ringed in gold. A hairline
+  track below reports scroll position. Mirrors the fabric rail on
+  thesunnahstoremarketplace.vercel.app/collections/hijabs
+
+  Tiles come from, in order: the blocks below if any are added, otherwise the
+  navigation itself — the section finds the current collection in the menu and
+  shows that entry's sub-menu, so /collections/stationeries opens with
+  Notebook, Journals and Cards without anyone configuring it. A collection with
+  no sub-menu of its own shows its siblings instead, and one that isn't in the
+  menu at all shows no rail rather than something arbitrary.
+
+  A tile with no image resolves to a flat emerald ground rather than a
+  placeholder.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+  assign here = request.path
+
+  comment
+    Menu discovery. Walk the menu looking for the entry that is this
+    collection, three levels deep, and take its children as the tiles. A leaf
+    entry — a collection with nothing below it — falls back to its siblings, so
+    the rail still says where you are among your neighbours.
+
+    Matched on the link's path rather than its whole URL so that a menu entry
+    carrying tracking parameters still resolves, and on the linked collection
+    itself as a second signal.
+  endcomment
+  assign menu_name = s.menu | default: 'main-menu-2'
+  assign menu_links = linklists[menu_name].links
+  assign tile_links = blank
+  assign parent_link = blank
+  assign found = false
+  assign suppress_all = false
+
+  if section.blocks.size == 0
+    for l1 in menu_links
+      if found
+        break
+      endif
+
+      assign p1 = l1.url | split: '?' | first
+      assign hit1 = false
+      if p1 == here
+        assign hit1 = true
+      elsif collection != blank and l1.object.handle == collection.handle
+        assign hit1 = true
+      endif
+
+      if hit1
+        assign found = true
+        if l1.links.size > 0
+          assign tile_links = l1.links
+          assign parent_link = l1
+        else
+          comment
+            A top-level collection with nothing under it: its siblings are the
+            other top-level entries, which have no shared parent to point an
+            "All" tile at.
+          endcomment
+          assign tile_links = menu_links
+          assign suppress_all = true
+        endif
+        break
+      endif
+
+      for l2 in l1.links
+        if found
+          break
+        endif
+
+        assign p2 = l2.url | split: '?' | first
+        assign hit2 = false
+        if p2 == here
+          assign hit2 = true
+        elsif collection != blank and l2.object.handle == collection.handle
+          assign hit2 = true
+        endif
+
+        if hit2
+          assign found = true
+          if l2.links.size > 0
+            assign tile_links = l2.links
+            assign parent_link = l2
+          else
+            assign tile_links = l1.links
+            assign parent_link = l1
+          endif
+          break
+        endif
+
+        for l3 in l2.links
+          assign p3 = l3.url | split: '?' | first
+          assign hit3 = false
+          if p3 == here
+            assign hit3 = true
+          elsif collection != blank and l3.object.handle == collection.handle
+            assign hit3 = true
+          endif
+
+          if hit3
+            assign found = true
+            assign tile_links = l2.links
+            assign parent_link = l2
+            break
+          endif
+        endfor
+      endfor
+    endfor
+  endif
+
+  comment
+    The "All" tile points at whatever the tiles hang off: the picked
+    collection, else the menu parent the rail was built from, else the
+    collection being viewed.
+  endcomment
+  assign all_url = s.all_link
+  assign all_image = s.all_image
+
+  if all_url == blank
+    if s.all_collection != blank
+      assign all_url = s.all_collection.url
+    elsif parent_link != blank
+      assign all_url = parent_link.url
+    else
+      assign all_url = collection.url
+    endif
+  endif
+
+  if all_image == blank
+    if s.all_collection != blank
+      assign all_image = s.all_collection.image
+    elsif parent_link != blank
+      assign all_image = parent_link.object.image
+    else
+      assign all_image = collection.image
+    endif
+  endif
+
+  if all_image == blank and collection != blank
+    assign all_image = collection.products.first.featured_image
+  endif
+
+  assign all_label = s.all_label | default: 'All'
+-%}
+
+<style>
+  #tss-crail-{{ uid }} {
+    background: var(--tss-ivory);
+    padding-top: {{ s.padding_top | default: 24 }}px;
+    padding-bottom: {{ s.padding_bottom | default: 0 }}px;
+  }
+
+  #tss-crail-{{ uid }} .tss-rail {
+    gap: {{ s.gap | default: 8 }}px;
+    padding-bottom: 12px;
+  }
+
+  #tss-crail-{{ uid }} .tss-rail > * {
+    width: {{ s.tile_width | default: 120 }}px;
+  }
+
+  #tss-crail-{{ uid }} .tss-crail__tile {
+    position: relative;
+    display: block;
+    height: {{ s.tile_height | default: 150 }}px;
+    overflow: hidden;
+    background: var(--tss-ivory-2);
+    text-decoration: none;
+    transition: box-shadow 0.4s ease;
+  }
+
+  #tss-crail-{{ uid }} .tss-crail__tile--flat {
+    background: linear-gradient(to bottom, var(--tss-green-mid), var(--tss-green));
+  }
+
+  #tss-crail-{{ uid }} .tss-crail__tile.is-active {
+    box-shadow: inset 0 0 0 2px var(--tss-gold);
+  }
+
+  #tss-crail-{{ uid }} .tss-crail__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--tss-ease);
+  }
+
+  #tss-crail-{{ uid }} .tss-crail__tile:hover .tss-crail__img {
+    transform: scale(1.05);
+  }
+
+  #tss-crail-{{ uid }} .tss-crail__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(5, 30, 22, 0.65) 0%,
+      rgba(5, 30, 22, 0.1) 55%,
+      rgba(5, 30, 22, 0) 80%
+    );
+  }
+
+  #tss-crail-{{ uid }} .tss-crail__label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 10px;
+    text-align: left;
+    font-family: var(--tss-serif);
+    font-size: 15px;
+    line-height: 1.25;
+    color: var(--tss-ivory);
+  }
+
+  #tss-crail-{{ uid }} .tss-progress {
+    margin-top: 0;
+    height: 1px;
+    background: rgb(8 41 30 / 0.12);
+  }
+
+  @media (min-width: 64rem) {
+    #tss-crail-{{ uid }} .tss-rail {
+      gap: {{ s.gap | default: 8 | plus: 4 }}px;
+    }
+
+    #tss-crail-{{ uid }} .tss-rail > * {
+      width: {{ s.tile_width | default: 120 | plus: 28 }}px;
+    }
+
+    #tss-crail-{{ uid }} .tss-crail__tile {
+      height: {{ s.tile_height | default: 150 | plus: 36 }}px;
+    }
+
+    #tss-crail-{{ uid }} .tss-crail__label {
+      padding: 12px;
+      font-size: 17px;
+    }
+  }
+</style>
+
+{%- capture tiles -%}
+  {%- if section.blocks.size > 0 -%}
+    {%- for b in section.blocks -%}
+      {%- liquid
+        assign c = b.settings.collection
+        assign t_url = b.settings.link
+        if t_url == blank and c != blank
+          assign t_url = c.url
+        endif
+        assign t_label = b.settings.label
+        if t_label == blank and c != blank
+          assign t_label = c.title
+        endif
+        assign t_image = b.settings.image
+        if t_image == blank and c != blank
+          assign t_image = c.image
+          if t_image == blank
+            assign t_image = c.products.first.featured_image
+          endif
+        endif
+        assign t_active = false
+        assign t_path = t_url | split: '?' | first
+        if t_url != blank and t_path == here
+          assign t_active = true
+        endif
+      -%}
+      {%- if t_label != blank -%}
+        {% render 'tss-collection-tile',
+          url: t_url,
+          label: t_label,
+          image: t_image,
+          asset: b.settings.image_asset,
+          active: t_active,
+          attributes: b.shopify_attributes
+        %}
+      {%- endif -%}
+    {%- endfor -%}
+
+  {%- elsif found -%}
+    {%- for link in tile_links -%}
+      {%- liquid
+        assign t_url = link.url
+        assign t_label = link.title
+        assign t_image = ''
+        if link.type == 'collection_link'
+          assign t_image = link.object.image
+          if t_image == blank
+            assign t_image = link.object.products.first.featured_image
+          endif
+        endif
+        assign t_active = false
+        assign t_path = t_url | split: '?' | first
+        if t_path == here
+          assign t_active = true
+        endif
+      -%}
+      {% render 'tss-collection-tile',
+        url: t_url,
+        label: t_label,
+        image: t_image,
+        active: t_active
+      %}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if tiles contains 'tss-crail__tile' -%}
+  {%- liquid
+    comment
+      "All" reads as current whenever nothing narrower does.
+    endcomment
+    assign all_active = false
+    unless tiles contains 'is-active'
+      assign all_active = true
+    endunless
+  -%}
+  <section
+    id="tss-crail-{{ uid }}"
+    class="tss-section"
+    aria-label="{{ s.aria_label | default: 'Browse this collection' | escape }}"
+    {{ section.shopify_attributes }}
+  >
+    <div class="tss-rail" id="tss-crail-rail-{{ uid }}" data-progress="tss-crail-track-{{ uid }}">
+      {%- if s.show_all and suppress_all == false -%}
+        {% render 'tss-collection-tile',
+          url: all_url,
+          label: all_label,
+          image: all_image,
+          active: all_active
+        %}
+      {%- endif -%}
+
+      {{ tiles }}
+    </div>
+
+    <div class="tss-progress" id="tss-crail-track-{{ uid }}"><span></span></div>
+  </section>
+
+  <script>
+    (function () {
+      var rail = document.getElementById('tss-crail-rail-{{ uid }}');
+      if (!rail) return;
+      var active = rail.querySelector('.is-active');
+      if (!active) return;
+      var offset = active.offsetLeft - rail.clientWidth / 2 + active.clientWidth / 2;
+      if (offset > 0) rail.scrollLeft = offset;
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "TSS · Collection rail",
+  "tag": "section",
+  "max_blocks": 24,
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "info": "The rail finds this collection in the menu and shows its sub-menu. Defaults to main-menu-2. Adding tiles below overrides it."
+    },
+    { "type": "header", "content": "\"All\" tile" },
+    { "type": "checkbox", "id": "show_all", "label": "Show an \"All\" tile first", "default": true },
+    { "type": "text", "id": "all_label", "label": "Label", "default": "All" },
+    {
+      "type": "collection",
+      "id": "all_collection",
+      "label": "Collection",
+      "info": "Leave empty to link to the collection being viewed."
+    },
+    { "type": "url", "id": "all_link", "label": "Link override" },
+    { "type": "image_picker", "id": "all_image", "label": "Image override" },
+    { "type": "header", "content": "Tiles" },
+    {
+      "type": "range",
+      "id": "tile_width",
+      "label": "Tile width",
+      "min": 90,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "tile_height",
+      "label": "Tile height",
+      "min": 110,
+      "max": 260,
+      "step": 2,
+      "unit": "px",
+      "default": 150
+    },
+    { "type": "range", "id": "gap", "label": "Gap", "min": 0, "max": 32, "step": 2, "unit": "px", "default": 8 },
+    { "type": "header", "content": "Spacing" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "Tile",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection",
+          "info": "Fills in the label, link and image."
+        },
+        { "type": "text", "id": "label", "label": "Label" },
+        { "type": "url", "id": "link", "label": "Link override" },
+        { "type": "image_picker", "id": "image", "label": "Image override" },
+        { "type": "text", "id": "image_asset", "label": "Theme asset", "info": "Filename in assets/." }
+      ]
+    }
+  ],
+  "presets": [{ "name": "TSS · Collection rail" }]
+}
+{% endschema %}

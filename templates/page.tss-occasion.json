@@ -1,0 +1,93 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero": {
+      "type": "tss-collection-hero",
+      "settings": {
+        "crumb_parent": "Gifts",
+        "crumb_parent_url": "",
+        "crumb_current": "",
+        "title": "",
+        "title_size": 42,
+        "lede": "Every occasion asks for something different. Here is where we would begin.",
+        "scrim": 80,
+        "padding_top": 84,
+        "padding_bottom": 72
+      }
+    },
+    "rows": {
+      "type": "tss-collection-rows",
+      "blocks": {
+        "row_eid_fitr": {
+          "type": "row",
+          "settings": { "label": "Eid ul-Fitr" }
+        },
+        "row_eid_adha": {
+          "type": "row",
+          "settings": { "label": "Eid ul-Adha" }
+        },
+        "row_ramadan": {
+          "type": "row",
+          "settings": { "label": "Ramadan" }
+        },
+        "row_nikah": {
+          "type": "row",
+          "settings": { "label": "Nikah" }
+        },
+        "row_aqiqah": {
+          "type": "row",
+          "settings": { "label": "Aqiqah" }
+        },
+        "row_hajj": {
+          "type": "row",
+          "settings": { "label": "Hajj & Umrah" }
+        },
+        "row_housewarming": {
+          "type": "row",
+          "settings": { "label": "Housewarming" }
+        },
+        "row_graduation": {
+          "type": "row",
+          "settings": { "label": "Graduation" }
+        }
+      },
+      "block_order": [
+        "row_eid_fitr",
+        "row_eid_adha",
+        "row_ramadan",
+        "row_nikah",
+        "row_aqiqah",
+        "row_hajj",
+        "row_housewarming",
+        "row_graduation"
+      ],
+      "settings": {
+        "aria_label": "Gifts by occasion",
+        "row_height": 200,
+        "gap": 4,
+        "label_size": 26,
+        "scrim": 55,
+        "show_count": false,
+        "count_label": "gifts",
+        "foot_text": "Not sure yet? See everything we've chosen →",
+        "foot_url": "shopify://collections/all",
+        "padding_top": 0,
+        "padding_bottom": 64,
+        "empty_text": "Add a row to start this list."
+      }
+    },
+    "newsletter": {
+      "type": "tss-newsletter",
+      "settings": {}
+    }
+  },
+  "order": ["hero", "rows", "newsletter"]
+}

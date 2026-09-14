@@ -9,38 +9,65 @@
  */
 {
   "sections": {
-    "banner": {
-      "type": "main-collection-banner",
-      "disabled": true,
+    "tss_header": {
+      "type": "tss-collection-header",
       "settings": {
-        "show_collection_description": true,
-        "show_collection_image": false,
-        "color_scheme": "scheme-1"
+        "crumb_parent": "The House",
+        "crumb_parent_url": "/",
+        "crumb_mid": "",
+        "crumb_mid_url": "",
+        "crumb_current": "",
+        "eyebrow": "",
+        "title": "",
+        "title_size": 40,
+        "lede": "",
+        "image_asset": "",
+        "scrim": 85,
+        "height": 52,
+        "padding_bottom": 40
       }
     },
-    "product-grid": {
-      "type": "main-collection-product-grid",
+    "tss_rail": {
+      "type": "tss-collection-rail",
       "settings": {
-        "products_per_page": 36,
-        "columns_desktop": 4,
-        "color_scheme": "scheme-1",
-        "image_ratio": "portrait",
-        "image_shape": "default",
-        "show_secondary_image": true,
-        "show_vendor": false,
-        "show_rating": false,
-        "quick_add": "standard",
+        "menu": "main-menu-2",
+        "show_all": true,
+        "all_label": "All",
+        "all_link": "",
+        "tile_width": 120,
+        "tile_height": 150,
+        "gap": 8,
+        "padding_top": 24,
+        "padding_bottom": 0
+      }
+    },
+    "tss_grid": {
+      "type": "tss-collection-grid",
+      "settings": {
         "enable_filtering": true,
-        "filter_type": "vertical",
         "enable_sorting": true,
-        "columns_mobile": "2",
-        "padding_top": 0,
-        "padding_bottom": 36
+        "filter_label": "Filter & Sort",
+        "show_count": false,
+        "show_vendor": true,
+        "desktop_columns": 4,
+        "column_gap": 12,
+        "row_gap": 40,
+        "products_per_page": 24,
+        "empty_text": "Nothing here yet.",
+        "break_after": 6,
+        "break_asset": "",
+        "break_height": 400,
+        "break_text": "Chosen by the hand, not the screen — how a thing sits is the whole point.",
+        "break_link_label": "",
+        "break_link_url": "",
+        "padding_top": 24,
+        "padding_bottom": 48
       }
     }
   },
   "order": [
-    "banner",
-    "product-grid"
+    "tss_header",
+    "tss_rail",
+    "tss_grid"
   ]
 }

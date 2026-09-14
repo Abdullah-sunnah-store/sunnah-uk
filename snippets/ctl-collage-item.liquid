@@ -1,0 +1,37 @@
+{% comment %}
+  One item in a Complete-the-Look collage. Shows a custom image and/or a product.
+  When a product is present it also renders a Nike-style hotspot dot with a
+  product popover on hover/tap.
+  @param {object} p - product (optional)
+  @param {object} image - custom image, overrides the product image (optional)
+{% endcomment %}
+{% liquid
+  assign img = image
+  if img == blank and p != blank
+    assign img = p.featured_image
+  endif
+%}
+<span class="ctl-item">
+  {% if img != blank %}
+    <img src="{{ img | image_url: width: 400 }}" alt="{{ img.alt | default: p.title | escape }}" loading="lazy" width="200" height="200">
+  {% else %}
+    {{ 'product-1' | placeholder_svg_tag: 'ctl-placeholder' }}
+  {% endif %}
+
+  {% if p != blank %}
+    <span class="ctl-hotspot">
+      <button type="button" class="ctl-dot" aria-label="{{ p.title | escape }}"></button>
+      <a class="ctl-pop" href="{{ p.url }}">
+        <span class="ctl-pop__img">
+          {% if img != blank %}<img src="{{ img | image_url: width: 120 }}" alt="" width="44" height="44" loading="lazy">{% endif %}
+        </span>
+        <span class="ctl-pop__info">
+          {% if p.vendor != blank %}<span class="ctl-pop__vendor">{{ p.vendor }}</span>{% endif %}
+          <span class="ctl-pop__title">{{ p.title }}</span>
+          <span class="ctl-pop__price">{%- if p.price_varies -%}From {% endif -%}{{ p.price | money }}</span>
+        </span>
+        <span class="ctl-pop__arrow" aria-hidden="true">&rsaquo;</span>
+      </a>
+    </span>
+  {% endif %}
+</span>

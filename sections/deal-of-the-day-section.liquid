@@ -1,0 +1,616 @@
+{% comment %}
+  Deal of the Day — Fully Dynamic Shopify Section
+  • Left: auto-rotating image slider
+  • Right: product info
+  • All spacing, colors, typography, border-radius, shadow fully schema-driven
+{% endcomment %}
+
+{% liquid
+  assign sec = section.settings
+
+  assign pt  = sec.padding_top    | default: 40
+  assign pb  = sec.padding_bottom | default: 40
+  assign pl  = sec.padding_left   | default: 20
+  assign pr  = sec.padding_right  | default: 20
+  assign mt  = sec.margin_top     | default: 0
+  assign mb  = sec.margin_bottom  | default: 0
+
+  assign section_bg   = sec.section_bg_color   | default: '#dce9f5'
+  assign card_bg      = sec.card_bg_color      | default: '#ffffff'
+  assign card_radius  = sec.card_border_radius | default: 20
+  assign card_shadow  = sec.card_shadow        | default: true
+  assign card_max_w   = sec.card_max_width     | default: 900
+
+  assign heading_color  = sec.heading_color      | default: '#e0392d'
+  assign heading_rest_c = sec.heading_rest_color | default: '#1a2e4a'
+  assign badge_bg       = sec.badge_bg_color     | default: '#fde8e6'
+  assign badge_color    = sec.badge_text_color   | default: '#c0392b'
+  assign title_color    = sec.title_color        | default: '#1a2e4a'
+  assign sale_color     = sec.sale_price_color   | default: '#c0392b'
+  assign star_color     = sec.star_color         | default: '#D4A830'
+  assign btn_bg         = sec.button_bg_color    | default: '#e0392d'
+  assign btn_text_color = sec.button_text_color  | default: '#ffffff'
+  assign btn_radius     = sec.button_border_radius | default: 8
+
+  assign img_radius = sec.image_border_radius | default: 14
+%}
+
+<div
+  class="dotd-wrapper"
+  id="dotd-{{ section.id }}"
+  style="
+    background-color: {{ section_bg }};
+    padding: {{ pt }}px {{ pr }}px {{ pb }}px {{ pl }}px;
+    margin-top: {{ mt }}px;
+    margin-bottom: {{ mb }}px;
+  "
+>
+  <div
+    class="dotd-card"
+    style="
+      background: {{ card_bg }};
+      border-radius: {{ card_radius }}px;
+      max-width: {{ card_max_w }}px;
+      {% if card_shadow %}box-shadow: 0 4px 28px rgba(28, 28, 26, 0.09);{% else %}box-shadow: none;{% endif %}
+    "
+  >
+
+    {% comment %} ── LEFT: Image Slider ── {% endcomment %}
+    <div class="dotd-images" style="border-radius: {{ img_radius }}px;">
+      {% for block in section.blocks %}
+        {% if block.type == 'image' %}
+          <div
+            class="dotd-slide{% if forloop.first %} active{% endif %}"
+            data-index="{{ forloop.index0 }}"
+          >
+            {% if block.settings.image != blank %}
+              <img
+                src="{{ block.settings.image | img_url: '700x700', crop: 'center' }}"
+                alt="{{ block.settings.image_alt | escape }}"
+                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+              >
+            {% else %}
+              {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+
+      {% assign image_blocks = section.blocks | where: 'type', 'image' %}
+      {% if image_blocks.size > 1 %}
+        <div class="dotd-dots">
+          {% for block in image_blocks %}
+            <span
+              class="dotd-dot{% if forloop.first %} active{% endif %}"
+              data-index="{{ forloop.index0 }}"
+            ></span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% comment %} ── RIGHT: Content ── {% endcomment %}
+    <div class="dotd-content">
+
+      {% if sec.deal_label_bold != blank or sec.deal_label != blank %}
+        <p class="dotd-label">
+          <span style="color: {{ heading_color }};">{{ sec.deal_label_bold }}</span>
+          <span style="color: {{ heading_rest_c }};">{{ sec.deal_label }}</span>
+        </p>
+      {% endif %}
+
+      {% if sec.badge_text != blank %}
+        <div
+          class="dotd-badge"
+          style="background: {{ badge_bg }}; color: {{ badge_color }};"
+        >{{ sec.badge_text }}</div>
+      {% endif %}
+
+      {% if sec.product_title != blank %}
+        <h2 class="dotd-title" style="color: {{ title_color }}; font-size: {{ sec.title_font_size | default: 17 }}px;">
+          {{ sec.product_title }}
+        </h2>
+      {% endif %}
+
+      {% if sec.sale_price != blank %}
+        <div class="dotd-pricing">
+          <span class="dotd-price-sale" style="color: {{ sale_color }};">{{ sec.sale_price }}</span>
+          {% if sec.compare_price != blank %}
+            <span class="dotd-price-compare">{{ sec.compare_price }}</span>
+            <span class="dotd-comp-label">Comp. Value</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% assign rating = sec.star_rating %}
+      {% if rating > 0 %}
+        <div class="dotd-rating">
+          {% for i in (1..5) %}
+            <span class="star" style="color: {% if i <= rating %}{{ star_color }}{% else %}#ddd{% endif %};">&#9733;</span>
+          {% endfor %}
+          {% if sec.review_count != blank %}
+            <span class="dotd-review-count">({{ sec.review_count }})</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if sec.button_text != blank %}
+        <a
+          href="{{ sec.button_url }}"
+          class="dotd-btn"
+          style="font-size: {{ sec.button_font_size | default: 16 }}px;"
+          {% if sec.button_new_tab %}target="_blank" rel="noopener"{% endif %}
+        >
+          {{ sec.button_text }}
+        </a>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<style>
+  #dotd-{{ section.id }} .dotd-card {
+    display: flex;
+    align-items: center;
+    margin: 0 auto;
+    padding: 24px;
+    gap: 40px;
+    overflow: hidden;
+  }
+
+  #dotd-{{ section.id }} .dotd-images {
+    position: relative;
+    flex: 0 0 42%;
+    max-width: 42%;
+    overflow: hidden;
+    background: #f5f5f5;
+    aspect-ratio: 1 / 1;
+  }
+
+  #dotd-{{ section.id }} .dotd-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  #dotd-{{ section.id }} .dotd-slide.active {
+    opacity: 1;
+    position: relative;
+  }
+  #dotd-{{ section.id }} .dotd-slide img,
+  #dotd-{{ section.id }} .dotd-slide svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  #dotd-{{ section.id }} .dotd-dots {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+  }
+  #dotd-{{ section.id }} .dotd-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.45);
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  #dotd-{{ section.id }} .dotd-dot.active { background: #fff; }
+
+  #dotd-{{ section.id }} .dotd-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #dotd-{{ section.id }} .dotd-label {
+    font-size: var(--font-h2--size);
+    font-weight: var(--font-h2--weight);
+    margin: 0;
+    line-height: var(--font-h2--line-height);
+    letter-spacing: var(--font-h2--letter-spacing);
+    font-family: var(--font-heading--family);
+  }
+
+  #dotd-{{ section.id }} .dotd-badge {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    width: fit-content;
+  }
+
+  #dotd-{{ section.id }} .dotd-title { font-weight: 600; margin: 0; }
+
+  #dotd-{{ section.id }} .dotd-pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  #dotd-{{ section.id }} .dotd-price-sale { font-size: 18px; font-weight: 700; }
+  #dotd-{{ section.id }} .dotd-price-compare { font-size: 15px; color: #999; text-decoration: line-through; }
+  #dotd-{{ section.id }} .dotd-comp-label { font-size: 13px; color: #aaa; }
+
+  #dotd-{{ section.id }} .dotd-rating { display: flex; align-items: center; gap: 3px; }
+  #dotd-{{ section.id }} .star { font-size: 18px; line-height: 1; }
+  #dotd-{{ section.id }} .dotd-review-count { font-size: 13px; color: #888; margin-left: 4px; }
+
+  #dotd-{{ section.id }} .dotd-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    font-weight: 500;
+    padding: 14px 28px;
+    text-decoration: none;
+    text-align: center;
+    margin-top: 6px;
+    letter-spacing: 0.04em;
+    background-color: var(--color-primary-button-background, #111);
+    color: var(--color-primary-button-text, #fff);
+    border: 1.5px solid var(--color-primary-button-border, #111);
+    border-radius: var(--style-border-radius-buttons-primary, 14px);
+    font-family: var(--button-font-family-primary, var(--font-body--family));
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  #dotd-{{ section.id }} .dotd-btn:hover {
+    background-color: var(--color-primary-button-text, #fff);
+    color: var(--color-primary-button-background, #111);
+    border-color: var(--color-primary-button-background, #111);
+  }
+
+  @media (max-width: 640px) {
+    #dotd-{{ section.id }} .dotd-card {
+      flex-direction: column;
+      padding: 16px;
+      gap: 20px;
+    }
+    #dotd-{{ section.id }} .dotd-images {
+      flex: unset;
+      max-width: 100%;
+      width: 100%;
+    }
+    #dotd-{{ section.id }} .dotd-btn { width: 100%; }
+  }
+</style>
+
+<script>
+(function() {
+  var wrapper = document.getElementById('dotd-{{ section.id }}');
+  if (!wrapper) return;
+  var slides = wrapper.querySelectorAll('.dotd-slide');
+  var dots   = wrapper.querySelectorAll('.dotd-dot');
+  if (slides.length < 2) return;
+  var current  = 0;
+  var interval = {{ sec.slide_interval | default: 1000 }};
+
+  function goTo(i) {
+    slides[current].classList.remove('active');
+    if (dots[current]) dots[current].classList.remove('active');
+    current = (i + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    if (dots[current]) dots[current].classList.add('active');
+  }
+
+  dots.forEach(function(dot) {
+    dot.addEventListener('click', function() {
+      clearInterval(timer);
+      goTo(parseInt(dot.dataset.index));
+      timer = setInterval(function() { goTo(current + 1); }, interval);
+    });
+  });
+
+  var timer = setInterval(function() { goTo(current + 1); }, interval);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Deal of the Day",
+  "tag": "section",
+  "class": "deal-of-the-day",
+  "settings": [
+
+    {
+      "type": "header",
+      "content": "Section Background & Spacing"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section background color",
+      "default": "#dce9f5"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (px)",
+      "min": 0, "max": 120, "step": 4, "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (px)",
+      "min": 0, "max": 120, "step": 4, "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "Padding left (px)",
+      "min": 0, "max": 120, "step": 4, "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "Padding right (px)",
+      "min": 0, "max": 120, "step": 4, "default": 20
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top (px)",
+      "min": 0, "max": 120, "step": 4, "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom (px)",
+      "min": 0, "max": 120, "step": 4, "default": 0
+    },
+
+    {
+      "type": "header",
+      "content": "Card Style"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_max_width",
+      "label": "Card max width (px)",
+      "min": 400, "max": 1400, "step": 20, "default": 900
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Card border radius (px)",
+      "min": 0, "max": 40, "step": 2, "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow",
+      "label": "Show card drop shadow",
+      "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "Image Slider"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Image border radius (px)",
+      "min": 0, "max": 40, "step": 2, "default": 14
+    },
+    {
+      "type": "range",
+      "id": "slide_interval",
+      "label": "Slide interval (ms)",
+      "min": 500, "max": 5000, "step": 100, "default": 1000,
+      "info": "1000 = 1 second"
+    },
+
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "deal_label_bold",
+      "label": "Bold word (e.g. Deal)",
+      "default": "Deal"
+    },
+    {
+      "type": "text",
+      "id": "deal_label",
+      "label": "Rest of heading (e.g. of the Day)",
+      "default": "of the Day"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Bold word color",
+      "default": "#e0392d"
+    },
+    {
+      "type": "color",
+      "id": "heading_rest_color",
+      "label": "Rest of heading color",
+      "default": "#1a2e4a"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Heading font size (px)",
+      "min": 16, "max": 48, "step": 1, "default": 26
+    },
+
+    {
+      "type": "header",
+      "content": "Badge"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "SAVE 50%*"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg_color",
+      "label": "Badge background",
+      "default": "#fde8e6"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Badge text color",
+      "default": "#c0392b"
+    },
+
+    {
+      "type": "header",
+      "content": "Product Info"
+    },
+    {
+      "type": "text",
+      "id": "product_title",
+      "label": "Product title",
+      "default": "Heart Keepsake Boxes"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#1a2e4a"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Title font size (px)",
+      "min": 12, "max": 36, "step": 1, "default": 17
+    },
+    {
+      "type": "text",
+      "id": "sale_price",
+      "label": "Sale price",
+      "default": "$14.99"
+    },
+    {
+      "type": "color",
+      "id": "sale_price_color",
+      "label": "Sale price color",
+      "default": "#c0392b"
+    },
+    {
+      "type": "text",
+      "id": "compare_price",
+      "label": "Compare-at price",
+      "default": "$29.99"
+    },
+
+    {
+      "type": "header",
+      "content": "Star Rating"
+    },
+    {
+      "type": "range",
+      "id": "star_rating",
+      "label": "Star rating (0–5)",
+      "min": 0, "max": 5, "step": 1, "default": 5
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "default": "#D4A830"
+    },
+    {
+      "type": "text",
+      "id": "review_count",
+      "label": "Review count",
+      "default": "2"
+    },
+
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Starting at $14.99"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button background",
+      "default": "#e0392d"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Button border radius (px)",
+      "min": 0, "max": 40, "step": 2, "default": 8
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "Button font size (px)",
+      "min": 12, "max": 24, "step": 1, "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "button_new_tab",
+      "label": "Open link in new tab",
+      "default": false
+    }
+
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Slide Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Alt text",
+          "default": "Product image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Deal of the Day",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}

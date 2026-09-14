@@ -1,0 +1,542 @@
+{%- doc -%}
+  Inline "This is a gift" experience.
+
+  A toggle reveals gift wrap, occasion, gift message and a hide-price option.
+  Every choice is mirrored into hidden inputs on the product form so the values
+  travel with the line item as properties on the normal Add to Cart.
+
+  When a gift item is added, the cart attribute `gift_order` is set to true (read by a
+  Shopify Payment Customization to block Cash on Delivery).
+
+  All option lists and labels are editable in the block settings.
+{%- enddoc -%}
+
+{% liquid
+  assign s = block.settings
+  assign wrap_options = s.gift_wrap_options | newline_to_br | split: '<br />'
+  assign occasion_options = s.occasion_options | newline_to_br | split: '<br />'
+  assign uid = block.id
+%}
+
+<gift-options
+  class="gift-options"
+  data-form-selector="form[action$='/cart/add']"
+  data-attr-key="{{ s.cart_attribute_key | default: 'gift_order' }}"
+  {{ block.shopify_attributes }}
+>
+  <label class="gift-options__switch" for="GiftToggle-{{ uid }}">
+    <input
+      type="checkbox"
+      id="GiftToggle-{{ uid }}"
+      class="gift-options__switch-input"
+      data-gift-toggle
+    >
+    <span class="gift-options__switch-track" aria-hidden="true">
+      <span class="gift-options__switch-thumb"></span>
+    </span>
+    <span class="gift-options__switch-text">
+      <span class="gift-options__switch-title">
+        <span class="gift-options__switch-icon" aria-hidden="true">{{- 'icon-gift.svg' | inline_asset_content -}}</span>
+        {{ s.toggle_title | default: 'This is a gift' }}
+      </span>
+      {%- if s.toggle_subtitle != blank -%}
+        <span class="gift-options__switch-subtitle">{{ s.toggle_subtitle }}</span>
+      {%- endif -%}
+    </span>
+  </label>
+
+  <div class="gift-options__panel" data-gift-panel hidden>
+
+    {%- if wrap_options.size > 0 and s.gift_wrap_options != blank -%}
+      <fieldset class="gift-options__group">
+        <legend class="gift-options__legend">{{ s.gift_wrap_label | default: 'Gift wrap' }}</legend>
+        <div class="gift-options__choices">
+          {%- for opt in wrap_options -%}
+            {%- assign val = opt | strip -%}
+            {%- if val == blank -%}{% continue %}{%- endif -%}
+            <label class="gift-options__chip">
+              <input
+                type="radio"
+                name="gift-wrap-{{ uid }}"
+                value="{{ val | escape }}"
+                class="gift-options__chip-input"
+                data-gift-field="{{ s.gift_wrap_property | default: 'Gift Wrap' }}"
+                {% if forloop.first %}checked{% endif %}
+              >
+              <span class="gift-options__chip-label">{{ val }}</span>
+            </label>
+          {%- endfor -%}
+        </div>
+      </fieldset>
+    {%- endif -%}
+
+    {%- if occasion_options.size > 0 and s.occasion_options != blank -%}
+      <fieldset class="gift-options__group">
+        <legend class="gift-options__legend">{{ s.occasion_label | default: 'Occasion' }}</legend>
+        <div class="gift-options__choices">
+          {%- for opt in occasion_options -%}
+            {%- assign val = opt | strip -%}
+            {%- if val == blank -%}{% continue %}{%- endif -%}
+            <label class="gift-options__chip">
+              <input
+                type="radio"
+                name="gift-occasion-{{ uid }}"
+                value="{{ val | escape }}"
+                class="gift-options__chip-input"
+                data-gift-field="{{ s.occasion_property | default: 'Occasion' }}"
+                {% if forloop.first %}checked{% endif %}
+              >
+              <span class="gift-options__chip-label">{{ val }}</span>
+            </label>
+          {%- endfor -%}
+        </div>
+      </fieldset>
+    {%- endif -%}
+
+    {%- if s.show_message -%}
+      <div class="gift-options__group">
+        <label class="gift-options__legend" for="GiftMessage-{{ uid }}">
+          {{ s.message_label | default: 'Gift message (optional)' }}
+        </label>
+        <textarea
+          id="GiftMessage-{{ uid }}"
+          class="gift-options__textarea field__input"
+          rows="3"
+          placeholder="{{ s.message_placeholder | default: 'Write a message for the recipient…' | escape }}"
+          data-gift-field="{{ s.message_property | default: 'Gift Message' }}"
+        ></textarea>
+      </div>
+    {%- endif -%}
+
+    {%- if s.show_hide_price -%}
+      <label class="gift-options__hide-price" for="GiftHidePrice-{{ uid }}">
+        <input
+          type="checkbox"
+          id="GiftHidePrice-{{ uid }}"
+          class="gift-options__hide-price-input"
+          data-gift-field="{{ s.hide_price_property | default: 'Hide Price From Recipient' }}"
+          data-gift-checkbox-value="{{ s.hide_price_value | default: 'Yes' }}"
+        >
+        <span class="gift-options__hide-price-text">{{ s.hide_price_label | default: 'Hide price from recipient' }}</span>
+      </label>
+    {%- endif -%}
+
+  </div>
+</gift-options>
+
+<script>
+  (function () {
+    var EL = 'gift-options';
+    function init(root) {
+      if (!root || root.dataset.bound === 'true') return;
+      root.dataset.bound = 'true';
+
+      var formSel = root.dataset.formSelector || "form[action$='/cart/add']";
+      var attrKey = root.dataset.attrKey || 'gift_order';
+      var toggle = root.querySelector('[data-gift-toggle]');
+      var panel = root.querySelector('[data-gift-panel]');
+      var giftProp = {{ s.gift_property | default: 'Gift' | json }};
+      var giftValue = {{ s.gift_value | default: 'Yes' | json }};
+      var hiddenIds = [];
+
+      function form() { return document.querySelector(formSel); }
+
+      function setHidden(name, value) {
+        var f = form();
+        if (!f) return;
+        var id = 'gift-hidden-' + toggle.id + '-' + name.replace(/\W+/g, '_');
+        var input = document.getElementById(id);
+        if (!input) {
+          input = document.createElement('input');
+          input.type = 'hidden';
+          input.id = id;
+          f.appendChild(input);
+          if (hiddenIds.indexOf(id) === -1) hiddenIds.push(id);
+        }
+        input.name = 'properties[' + name + ']';
+        input.value = value;
+      }
+
+      function clearHidden() {
+        hiddenIds.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.remove();
+        });
+        hiddenIds = [];
+      }
+
+      function syncFields() {
+        if (!toggle.checked) return;
+        setHidden(giftProp, giftValue);
+        root.querySelectorAll('[data-gift-field]').forEach(function (field) {
+          var name = field.getAttribute('data-gift-field');
+          if (field.type === 'radio') {
+            if (field.checked) setHidden(name, field.value);
+          } else if (field.type === 'checkbox') {
+            if (field.checked) {
+              setHidden(name, field.getAttribute('data-gift-checkbox-value') || 'Yes');
+            }
+          } else {
+            if (field.value.trim()) setHidden(name, field.value.trim());
+          }
+        });
+      }
+
+      function refresh() {
+        if (toggle.checked) {
+          panel.hidden = false;
+          clearHidden();
+          syncFields();
+        } else {
+          panel.hidden = true;
+          clearHidden();
+        }
+      }
+
+      toggle.addEventListener('change', refresh);
+      root.querySelectorAll('[data-gift-field]').forEach(function (field) {
+        field.addEventListener('input', refresh);
+        field.addEventListener('change', refresh);
+      });
+      document.addEventListener('variant:changed', function () { if (toggle.checked) { clearHidden(); syncFields(); } });
+
+      // When a gift item is added to cart, flag the cart so a Payment
+      // Customization can block Cash on Delivery. Only ever sets the flag
+      // (never clears it) to avoid clobbering an earlier gift add.
+      document.addEventListener('cart:update', function () {
+        if (!toggle.checked) return;
+        var attrs = {};
+        attrs[attrKey] = 'true';
+        fetch('/cart/update.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ attributes: attrs })
+        }).catch(function () {});
+      });
+
+      refresh();
+    }
+
+    function boot() {
+      document.querySelectorAll(EL).forEach(init);
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+  })();
+</script>
+
+{% stylesheet %}
+  gift-options {
+    display: block;
+    width: 100%;
+  }
+
+  /* Hide the native inputs without revealing them on focus/active
+     (the theme's .visually-hidden un-hides on :focus/:active). */
+  .gift-options__switch-input,
+  .gift-options__chip-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .gift-options__switch {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm, 0.75rem);
+    padding: var(--padding-md, 1rem);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.15);
+    border-radius: var(--style-border-radius-inputs, 6px);
+    cursor: pointer;
+    background-color: var(--color-background);
+  }
+
+  .gift-options__switch-track {
+    position: relative;
+    flex-shrink: 0;
+    width: 2.6rem;
+    height: 1.5rem;
+    border-radius: 1rem;
+    background-color: rgb(var(--color-foreground-rgb) / 0.2);
+    transition: background-color 0.2s ease;
+  }
+
+  .gift-options__switch-thumb {
+    position: absolute;
+    top: 0.15rem;
+    left: 0.15rem;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background-color: #fff;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+  }
+
+  .gift-options__switch-input:checked + .gift-options__switch-track {
+    background-color: #1C4A3A;
+  }
+
+  .gift-options__switch-input:checked + .gift-options__switch-track .gift-options__switch-thumb {
+    transform: translateX(1.1rem);
+  }
+
+  .gift-options__switch-input:focus-visible + .gift-options__switch-track {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .gift-options__switch-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .gift-options__switch-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--font-paragraph--size, 1.5rem);
+    font-weight: 600;
+    color: #1C4A3A;
+  }
+
+  .gift-options__switch-icon svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .gift-options__switch-subtitle {
+    font-size: calc(var(--font-paragraph--size, 1.5rem) * 0.85);
+    color: rgb(var(--color-foreground-rgb) / 0.65);
+  }
+
+  .gift-options__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md, 1rem);
+    margin-top: var(--margin-sm, 0.75rem);
+  }
+
+  .gift-options__panel[hidden] {
+    display: none;
+  }
+
+  .gift-options__group {
+    border: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2xs, 0.5rem);
+  }
+
+  .gift-options__legend {
+    padding: 0;
+    font-size: calc(var(--font-paragraph--size, 1.5rem) * 0.85);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #B8860B;
+  }
+
+  .gift-options__choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-2xs, 0.5rem);
+  }
+
+  .gift-options__chip-label {
+    display: inline-block;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.25);
+    border-radius: var(--style-border-radius-inputs, 6px);
+    font-size: var(--font-paragraph--size, 1.5rem);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .gift-options__chip-input:checked + .gift-options__chip-label {
+    background-color: #1C4A3A;
+    border-color: #1C4A3A;
+    color: #fff;
+  }
+
+  .gift-options__chip-input:focus-visible + .gift-options__chip-label {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .gift-options__textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 5rem;
+  }
+
+  .gift-options__hide-price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: var(--font-paragraph--size, 1.4rem);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Gift Options",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "toggle_title",
+      "label": "Toggle title",
+      "default": "This is a gift"
+    },
+    {
+      "type": "text",
+      "id": "toggle_subtitle",
+      "label": "Toggle subtitle",
+      "default": "Add wrapping, occasion & message"
+    },
+    {
+      "type": "header",
+      "content": "Gift wrap"
+    },
+    {
+      "type": "text",
+      "id": "gift_wrap_label",
+      "label": "Section label",
+      "default": "Gift wrap"
+    },
+    {
+      "type": "textarea",
+      "id": "gift_wrap_options",
+      "label": "Options",
+      "info": "One per line. The selected option is saved as a line-item property (no fee is charged).",
+      "default": "Classic Ivory (Free)\nSignature Green (৳50)\nPremium Gold (৳100)"
+    },
+    {
+      "type": "text",
+      "id": "gift_wrap_property",
+      "label": "Property name",
+      "default": "Gift Wrap"
+    },
+    {
+      "type": "header",
+      "content": "Occasion"
+    },
+    {
+      "type": "text",
+      "id": "occasion_label",
+      "label": "Section label",
+      "default": "Occasion"
+    },
+    {
+      "type": "textarea",
+      "id": "occasion_options",
+      "label": "Options",
+      "info": "One per line.",
+      "default": "Eid\nRamadan\nNikah\nNew Baby\nBirthday\nJust Because"
+    },
+    {
+      "type": "text",
+      "id": "occasion_property",
+      "label": "Property name",
+      "default": "Occasion"
+    },
+    {
+      "type": "header",
+      "content": "Gift message"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_message",
+      "label": "Show gift message field",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "message_label",
+      "label": "Field label",
+      "default": "Gift message (optional)"
+    },
+    {
+      "type": "text",
+      "id": "message_placeholder",
+      "label": "Placeholder",
+      "default": "Write a message for the recipient…"
+    },
+    {
+      "type": "text",
+      "id": "message_property",
+      "label": "Property name",
+      "default": "Gift Message"
+    },
+    {
+      "type": "header",
+      "content": "Hide price"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hide_price",
+      "label": "Show \"hide price\" option",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "hide_price_label",
+      "label": "Label",
+      "default": "Hide price from recipient"
+    },
+    {
+      "type": "text",
+      "id": "hide_price_property",
+      "label": "Property name",
+      "default": "Hide Price From Recipient"
+    },
+    {
+      "type": "text",
+      "id": "hide_price_value",
+      "label": "Value when checked",
+      "default": "Yes"
+    },
+    {
+      "type": "header",
+      "content": "Cart attribute"
+    },
+    {
+      "type": "text",
+      "id": "gift_property",
+      "label": "\"Is a gift\" property name",
+      "default": "Gift"
+    },
+    {
+      "type": "text",
+      "id": "gift_value",
+      "label": "\"Is a gift\" property value",
+      "default": "Yes"
+    },
+    {
+      "type": "text",
+      "id": "cart_attribute_key",
+      "label": "Cart attribute key",
+      "default": "gift_order",
+      "info": "Set to 'true' on the cart when a gift item is added (e.g. to block Cash on Delivery)."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gift Options",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,371 @@
+{%- liquid
+  assign cols = section.blocks.size
+  if cols == 0
+    assign cols = 1
+  endif
+-%}
+
+<section
+  class="feature-columns feature-columns--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
+  style="
+    --fc-bg: {{ section.settings.background_color }};
+    --fc-heading-color: {{ section.settings.heading_color }};
+    --fc-text-color: {{ section.settings.text_color }};
+    --fc-cta-color: {{ section.settings.cta_color }};
+    --fc-columns: {{ section.settings.columns }};
+    --fc-padding-top: {{ section.settings.padding_top }}px;
+    --fc-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --fc-gap: {{ section.settings.column_gap }}px;
+    {%- if section.settings.section_width == 'custom' -%}
+      --fc-custom-width: {{ section.settings.custom_width }}px;
+    {%- endif -%}
+  "
+>
+  <div class="feature-columns__inner">
+    {%- for block in section.blocks -%}
+      <div class="feature-columns__col" {{ block.shopify_attributes }}>
+        {%- if block.settings.icon != blank -%}
+          <div class="feature-columns__icon">
+            {{
+              block.settings.icon
+              | image_url: width: 96
+              | image_tag: loading: 'lazy', widths: '48, 72, 96', alt: block.settings.heading
+            }}
+          </div>
+        {%- elsif block.settings.icon_emoji != blank -%}
+          <div class="feature-columns__icon feature-columns__icon--emoji">{{ block.settings.icon_emoji }}</div>
+        {%- endif -%}
+
+        {%- if block.settings.heading != blank -%}
+          <h3 class="feature-columns__heading">{{ block.settings.heading }}</h3>
+        {%- endif -%}
+
+        {%- if block.settings.description != blank -%}
+          <div class="feature-columns__text">{{ block.settings.description }}</div>
+        {%- endif -%}
+
+        {%- if block.settings.cta_label != blank and block.settings.cta_link != blank -%}
+          <a
+            href="{{ block.settings.cta_link }}"
+            class="feature-columns__cta"
+            {% if block.settings.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}
+          >
+            {{ block.settings.cta_label }}<span class="feature-columns__arrow" aria-hidden="true"> &rarr;</span>
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .feature-columns {
+    background-color: var(--fc-bg);
+    padding-block-start: var(--fc-padding-top);
+    padding-block-end: var(--fc-padding-bottom);
+  }
+
+  .feature-columns__inner {
+    margin-inline: auto;
+    padding-inline: var(--page-margin);
+    display: grid;
+    grid-template-columns: repeat(var(--fc-columns), minmax(0, 1fr));
+    gap: var(--fc-gap);
+    align-items: start;
+  }
+
+  /* Dynamic section width */
+  .feature-columns--page-width .feature-columns__inner {
+    max-width: var(--page-width);
+  }
+
+  .feature-columns--full-width .feature-columns__inner {
+    max-width: none;
+  }
+
+  .feature-columns--custom .feature-columns__inner {
+    max-width: calc(var(--fc-custom-width) + (var(--page-margin) * 2));
+  }
+
+  .feature-columns__col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .feature-columns__icon img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .feature-columns__icon--emoji {
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .feature-columns__heading {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--fc-heading-color);
+  }
+
+  .feature-columns__text {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--fc-text-color);
+  }
+
+  .feature-columns__text > :first-child {
+    margin-top: 0;
+  }
+
+  .feature-columns__text > :last-child {
+    margin-bottom: 0;
+  }
+
+  .feature-columns__cta {
+    margin-top: 6px;
+    display: inline-block;
+    width: fit-content;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: none;
+    color: var(--fc-cta-color);
+    text-decoration: none;
+    border-bottom: 1px solid var(--fc-cta-color);
+    padding-bottom: 2px;
+    transition: opacity 0.2s ease;
+  }
+
+  .feature-columns__cta:hover {
+    opacity: 0.75;
+  }
+
+  .feature-columns__arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+
+  .feature-columns__cta:hover .feature-columns__arrow {
+    transform: translateX(3px);
+  }
+
+  @media screen and (max-width: 749px) {
+    .feature-columns__inner {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Feature Columns",
+  "tag": "section",
+  "class": "feature-columns-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "Page width"
+        },
+        {
+          "value": "full-width",
+          "label": "Full width"
+        },
+        {
+          "value": "custom",
+          "label": "Custom width"
+        }
+      ],
+      "default": "full-width"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "Custom content width",
+      "min": 600,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "default": 1200,
+      "visible_if": "{{ section.settings.section_width == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "label": "Gap between columns",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#1C1C1A"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Description color",
+      "default": "#b3b3b3"
+    },
+    {
+      "type": "color",
+      "id": "cta_color",
+      "label": "CTA link color",
+      "default": "#b8860b"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "column",
+      "name": "Column",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon image",
+          "info": "Optional. Small icon shown above the heading. Leave empty to use the emoji field below."
+        },
+        {
+          "type": "text",
+          "id": "icon_emoji",
+          "label": "Icon emoji",
+          "info": "Used only if no icon image is set. e.g. 🖼️ 🎁 📐"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Add a short supporting line that explains this feature or benefit.</p>"
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "CTA label",
+          "default": "Learn more"
+        },
+        {
+          "type": "url",
+          "id": "cta_link",
+          "label": "CTA link"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_in_new_tab",
+          "label": "Open link in new tab",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Feature Columns",
+      "blocks": [
+        {
+          "type": "column",
+          "settings": {
+            "icon_emoji": "🖼️",
+            "heading": "Art for the believing home",
+            "description": "<p>Every piece is chosen because it deserves a wall in a Muslim home. Not decoration — dhikr made visible.</p>",
+            "cta_label": "Shop curated gift picks"
+          }
+        },
+        {
+          "type": "column",
+          "settings": {
+            "icon_emoji": "🎁",
+            "heading": "The most gifted category",
+            "description": "<p>Islamic art is the most loved gift in our range. Free gift wrapping on every frame in this collection.</p>",
+            "cta_label": "See gift boxes"
+          }
+        },
+        {
+          "type": "column",
+          "settings": {
+            "icon_emoji": "📐",
+            "heading": "Bespoke commissions welcome",
+            "description": "<p>Custom sizes, text, and framing available. WhatsApp our team to discuss your commission.</p>",
+            "cta_label": "Contact us on WhatsApp"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

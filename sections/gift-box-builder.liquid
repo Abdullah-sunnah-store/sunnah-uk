@@ -1,233 +1,1720 @@
-<div class="custom-box-section page-width">
+﻿<style>
+  /* ==================== HEADER ==================== */
+  .cgb-header-section {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 20px 0;
+  }
 
-  <!-- Step Indicator -->
-  <div class="step-indicator">
-  <div class="step active" data-step="0">
-    <span class="step-number">1</span> <span>Choose Products</span>
-  </div>
-  <div class="step" data-step="1">
-    <span class="step-number">2</span> <span>Choose Gift Box</span>
-  </div>
-  <div class="step" data-step="2">
-    <span class="step-number">3</span> <span>Confirm Box</span>
-  </div>
-</div>
+  .cgb-header-section__title {
+    font-size: 42px;
+    font-weight: 700;
+    color: #1C1C1A;
+    margin: 0 0 12px;
+    line-height: 1.2;
+  }
 
-<div class="custom-gift-box-section">
-  
-  <!-- Left Side: Filter Sidebar -->
-  <div class="filter-sidebar">
-    <h3>Filter:</h3>
-    
-    <!-- Category Filter -->
-    <div class="filter-group">
-      <h4>Category:</h4>
-      <div class="category-list">
+  .cgb-header-section__subtitle {
+    font-size: 18px;
+    color: #666;
+    margin: 0 auto;
+    font-weight: 400;
+    max-width: 700px;
+    line-height: 1.5;
+  }
+
+  /* ==================== LAYOUT ==================== */
+  .cgb-wrapper {
+    padding: 20px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 20px;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .cgb-content-area {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* ==================== FILTER SIDEBAR ==================== */
+  .cgb-filter-sidebar {
+    width: 250px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    padding: 20px;
+    position: sticky;
+    top: 70px;
+    height: fit-content;
+    box-shadow: 0 2px 4px rgba(28, 28, 26, 0.1);
+    display: none;
+  }
+
+  .cgb-filter-sidebar__heading {
+    margin: 0 0 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1C1C1A;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 10px;
+  }
+
+  .cgb-filter-group {
+    margin-bottom: 25px;
+  }
+
+  .cgb-filter-group__label {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+  }
+
+  .cgb-category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow: scroll;
+  }
+
+  .cgb-category-list__item,
+  .cgb-availability-list__item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: #495057;
+    padding: 2px 0;
+  }
+
+  .cgb-category-list__item input,
+  .cgb-availability-list__item input {
+    margin-right: 8px;
+    transform: scale(1.1);
+  }
+
+  .cgb-category-list__item:hover,
+  .cgb-availability-list__item:hover {
+    color: #1C1C1A;
+  }
+
+  .cgb-availability-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .cgb-price-info {
+    font-size: 13px;
+    color: #6c757d;
+    margin-bottom: 15px;
+  }
+
+  .cgb-price-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  .cgb-price-inputs input {
+    width: 80px;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+
+  .cgb-price-inputs span {
+    font-size: 14px;
+    color: #495057;
+  }
+
+  .cgb-price-slider-container {
+    position: relative;
+    height: 20px;
+    margin-bottom: 10px;
+  }
+
+  .cgb-price-slider {
+    position: absolute;
+    width: 100%;
+    height: 5px;
+    border-radius: 5px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .cgb-price-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #1C1C1A;
+    cursor: pointer;
+  }
+
+  .cgb-price-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #1C1C1A;
+    cursor: pointer;
+    border: none;
+  }
+
+  /* ==================== SEARCH & SORT ==================== */
+  .cgb-search-sort-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    gap: 15px;
+  }
+
+  .cgb-search-wrapper {
+    position: relative;
+    flex: 1;
+  }
+
+  .cgb-search-wrapper__input {
+    padding: 10px 40px 10px 12px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+
+  .cgb-search-wrapper__icon-btn {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cgb-search-wrapper__icon-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: #666;
+  }
+
+  .cgb-search-wrapper__icon-btn:hover svg {
+    stroke: #1C1C1A;
+  }
+
+  .cgb-suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 8px rgba(28, 28, 26, 0.06);
+  }
+
+  .cgb-suggestions-dropdown div {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .cgb-suggestions-dropdown div:hover {
+    background: #f8f9fa;
+  }
+
+  .cgb-sort-options {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background: #fff;
+    flex-shrink: 0;
+  }
+
+  /* ==================== COLLECTION TAB BAR ==================== */
+  .cgb-collection-tabs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;       /* Firefox */
+    -ms-overflow-style: none;    /* IE / Edge */
+    margin-bottom: 20px;
+    padding-bottom: 2px;
+    cursor: grab;
+  }
+
+  .cgb-collection-tabs:active {
+    cursor: grabbing;
+  }
+
+  .cgb-collection-tabs::-webkit-scrollbar {
+    display: none;               /* Chrome / Safari / Opera */
+  }
+
+  .cgb-collection-tabs__tab {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    padding: 7px 18px;
+    border: 1px solid #c0c0c0b3;
+    border-radius: 5px;
+    background: transparent;
+    color: #1C4A3A;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    flex-shrink: 0;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .cgb-collection-tabs__tab:hover {
+    background: #1C4A3A;
+    color: #fff;
+  }
+
+  .cgb-collection-tabs__tab--active {
+    background: #1C4A3A;
+    color: #fff;
+  }
+
+  /* ==================== SHOWCASE ==================== */
+  .cgb-showcase-section {
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #e9ecef;
+  }
+
+  .cgb-showcase-section__title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #1C1C1A;
+  }
+
+  /* ==================== PRODUCT BADGES ==================== */
+  .cgb-product-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 5px;
+    z-index: 2;
+    letter-spacing: 0.06em;
+  }
+
+  .cgb-product-badge--featured {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+  }
+
+  .cgb-product-badge--bestseller {
+    background: #D4A830;
+    color: #fff;
+  }
+
+  .cgb-product-badge--out-of-stock {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: #fff;
+  }
+
+  /* Discount badge: only shown when a real discount exists — hidden by default via Liquid */
+  .cgb-product-badge--discount {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    left: auto;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: none;
+    border-radius: 5px;
+    z-index: 2;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: #fff;
+  }
+
+  /* ==================== PRODUCT GRID & CARD ==================== */
+  .cgb-product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+
+  @media (min-width: 1440px) {
+    .cgb-product-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .cgb-product-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    text-align: center;
+    border-radius: 5px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: box-shadow 0.2s;
+    position: relative;
+  }
+
+  .cgb-product-card:hover {
+    box-shadow: 0 4px 12px rgba(28, 28, 26, 0.1);
+  }
+
+  .cgb-product-card__image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+
+  .cgb-product-card__vendor {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #1C4A3A !important;
+    text-align: left;
+  }
+
+  .cgb-product-card__title {
+    font-weight: 600;
+    font-family: 'Cormorant', serif;
+    margin: 4px 0 6px;
+    color: #1C1C1A !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    line-height: 1.3;
+    font-size: 15px;
+  }
+
+  .cgb-product-card__price-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .cgb-product-card__compare-price {
+    font-size: 13px;
+    color: #999;
+    text-decoration: line-through;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  .cgb-product-card__price {
+    font-size: 16px;
+    font-weight: 600;
+    color: #B8860B !important;
+    margin: 0;
+  }
+
+  .cgb-product-card__price--sale {
+    color: #e74c3c;
+  }
+
+  /* ==================== ADD TO BOX BUTTON ==================== */
+  .cgb-buy-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    margin-bottom: 10px;
+  }
+  .cgb-buy-row .cgb-product-card__price-wrapper { margin-bottom: 0; }
+  .cgb-buy-row .cgb-add-to-box-btn,
+  .cgb-buy-row .cgb-quantity-control { max-width: 100%; }
+
+  .cgb-add-to-box-btn {
+    position: relative;
+    background: transparent;
+    color: #1C4A3A;
+    font-size: 15px;
+    font-weight: 600;
+    border: 1px solid #1C4A3A;
+    border-radius: 5px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s;
+    z-index: 0;
+    padding: 10px 18px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  .cgb-add-to-box-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 50%, rgba(255,255,255,0.4) 70%, rgba(255,255,255,0) 80%);
+    transform: translateX(-100%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .cgb-add-to-box-btn:hover::before {
+    animation: cgb-shine 2s ease-in-out infinite;
+  }
+
+  .cgb-add-to-box-btn:hover {
+    color: #fff;
+    background: #1C4A3A;
+    border-color: #1C4A3A;
+  }
+
+  .cgb-add-to-box-btn:disabled {
+    opacity: 0.5;
+    background: #ccc !important;
+    color: #888 !important;
+    cursor: not-allowed !important;
+    border-color: #aaa !important;
+  }
+
+  .cgb-add-to-box-btn:disabled::before {
+    display: none;
+  }
+
+  @keyframes cgb-shine {
+    0% { transform: translateX(-100%); }
+    50%, 100% { transform: translateX(100%); }
+  }
+
+  /* ==================== QUANTITY CONTROLS ==================== */
+  .cgb-quantity-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 1px solid #1C1C1A;
+    border-radius: 5px;
+    padding: 6px 12px;
+    width: auto;
+    font-size: 14px;
+    margin-top: 0;
+    color: #1C1C1A;
+    flex-shrink: 0;
+  }
+
+  .cgb-quantity-control__btn {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #1C1C1A;
+  }
+
+  .cgb-quantity-control__qty {
+    min-width: 20px;
+    text-align: center;
+  }
+
+  .cgb-quantity-control__btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* ==================== VARIANT MODAL ==================== */
+  .cgb-variant-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cgb-variant-modal__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(28, 28, 26, 0.6);
+    z-index: 1;
+  }
+
+  .cgb-variant-modal__content {
+    position: relative;
+    background: #fff;
+    border-radius: 5px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 2;
+    box-shadow: 0 10px 40px rgba(28, 28, 26, 0.3);
+  }
+
+  .cgb-variant-modal__close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #f5f5f5;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    color: #1C1C1A;
+  }
+
+  .cgb-variant-modal__close:hover {
+    background: #e0e0e0;
+  }
+
+  .cgb-variant-modal__body {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .cgb-variant-modal__image {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .cgb-variant-modal__image img {
+    width: 100%;
+    height: auto;
+    max-height: 350px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+
+  .cgb-variant-modal__details h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 10px;
+    color: #1C1C1A;
+  }
+
+  .cgb-variant-modal__price-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .cgb-variant-modal__compare-price {
+    font-size: 16px;
+    color: #999;
+    text-decoration: line-through;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  .cgb-variant-modal__price {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1C1C1A;
+    margin: 0;
+  }
+
+  .cgb-variant-modal__price--sale {
+    color: #e74c3c;
+  }
+
+  .cgb-variant-modal__option-group {
+    margin-bottom: 20px;
+  }
+
+  .cgb-variant-modal__option-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #1C1C1A;
+  }
+
+  .cgb-variant-modal__option-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .cgb-variant-modal__option-btn {
+    padding: 10px 20px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    background: #fff;
+    color: #1C1C1A;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .cgb-variant-modal__option-btn:hover {
+    border-color: #1C1C1A;
+  }
+
+  .cgb-variant-modal__option-btn.active {
+    background: #1C1C1A;
+    color: #fff;
+    border-color: #1C1C1A;
+  }
+
+  .cgb-variant-modal__option-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f5f5f5;
+    color: #999;
+    border-color: #ddd;
+  }
+
+  .cgb-variant-modal__add-btn {
+    width: 100%;
+    background: #1C1C1A;
+    color: #fff;
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s;
+  }
+
+  .cgb-variant-modal__add-btn:hover {
+    background: #333;
+  }
+
+  .cgb-variant-modal__add-btn:disabled {
+    opacity: 0.5;
+    background: #ccc !important;
+    color: #888 !important;
+    cursor: not-allowed !important;
+  }
+
+  @media (min-width: 768px) {
+    .cgb-variant-modal__body {
+      flex-direction: row;
+      padding: 30px;
+      gap: 30px;
+    }
+
+    .cgb-variant-modal__image {
+      width: 45%;
+      margin-bottom: 0;
+    }
+
+    .cgb-variant-modal__details {
+      flex: 1;
+    }
+  }
+
+  /* ==================== MINI CART ==================== */
+  .cgb-mini-cart {
+    position: sticky;
+    top: 70px;
+    width: 350px;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 3;
+    box-shadow: 0 2px 10px rgba(28, 28, 26, 0.1);
+    height: fit-content;
+  }
+
+  .cgb-mini-cart__header {
+    display: block;
+  }
+
+  .cgb-mini-cart__title {
+    margin: 0 0 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1C1C1A;
+  }
+
+  .cgb-mini-cart__divider {
+    margin: 10px 0;
+  }
+
+  .cgb-mini-cart__close {
+    display: none;
+  }
+
+  /* ==================== CART ITEMS ==================== */
+  .cgb-cart-items {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .cgb-cart-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 10px;
+    border-radius: 5px;
+    position: relative;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .cgb-cart-item__image {
+    width: 75px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+
+  .cgb-cart-item__remove-btn {
+    background: #fff;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    color: #e74c3c;
+    cursor: pointer;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ==================== CART TOTALS ==================== */
+  .cgb-cart-totals {
+    margin-bottom: 10px;
+  }
+
+  .cgb-cart-totals__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #1C1C1A;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .cgb-cart-totals__amount {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #B8860B;
+  }
+
+  .cgb-cart-totals__compare {
+    font-size: 13px;
+    color: #aaa;
+    text-decoration: line-through;
+    font-weight: 400;
+  }
+
+  .cgb-cart-totals__sale {
+    font-size: 16px;
+    font-weight: 700;
+    color: #e74c3c;
+  }
+
+  .cgb-cart-savings-row {
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .cgb-cart-savings-row__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #1C1C1A;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 5px;
+  }
+
+  .cgb-cart-savings-row__amount {
+    font-size: 12px;
+    color: #e74c3c;
+    font-weight: 600;
+  }
+
+  /* ==================== NEXT TIER HINT ==================== */
+  .cgb-next-tier-hint {
+    font-size: 12px;
+    color: #e67e22;
+    font-weight: 600;
+    text-align: center;
+    background: #F5F0E8;
+    border: 1px dashed #e67e22;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-bottom: 6px;
+  }
+
+  /* ==================== SUBMIT BUTTON ==================== */
+  .cgb-submit-btn {
+    width: 100%;
+    padding: 15px 20px;
+    background: #D4A830;
+    color: #1C1C1A;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: background 0.2s;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+  }
+
+  .cgb-submit-btn:hover:not(:disabled) {
+    background: #B8860B;
+  }
+
+  .cgb-submit-btn:disabled {
+    background: #D4A830;
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* ==================== REDESIGNED BOX SIDEBAR ==================== */
+  .cgb-box-count-line { margin: 2px 0 12px; font-size: 13px; color: #555; }
+  .cgb-box-count-line strong { color: #1C1C1A; }
+
+  .cgb-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    background: #1C4A3A;
+    padding: 10px;
+    border: 1px solid #D4A830;
+    border-radius: 5px;
+    margin-bottom: 16px;
+  }
+  .cgb-slot {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .cgb-slot--filled { border: 1px solid #D4A830; background: #1C4A3A; }
+  .cgb-slot--filled img { width: 100%; height: 100%; object-fit: cover; }
+  .cgb-slot--empty {
+    border: 1px dashed rgba(255,255,255,0.28);
+    color: rgba(255,255,255,0.45);
+    font-size: 22px;
+    background: rgba(255,255,255,0.03);
+  }
+  .cgb-slot__remove {
+    position: absolute; top: 3px; right: 3px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #fff; color: #1C1C1A; border: none;
+    font-size: 12px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .cgb-giftwrap { margin-bottom: 14px; }
+  .cgb-giftwrap__heading {
+    margin: 0 0 8px; font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #888; font-weight: 600;
+  }
+  .cgb-giftwrap__tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .cgb-wrap-tile {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 10px 6px; background: #fff; cursor: pointer;
+    border: 1px solid #F5F0E8; border-radius: 5px; transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .cgb-wrap-tile--active { border-color: #D4A830; box-shadow: 0 0 0 1px #D4A830 inset; }
+  .cgb-wrap-dot { width: 22px; height: 22px; border-radius: 50%; }
+  .cgb-wrap-name { font-size: 12px; font-weight: 600; color: #1C1C1A; }
+  .cgb-wrap-price { font-size: 11px; color: #888; }
+
+  .cgb-breakdown { margin: 4px 0 6px; }
+  .cgb-breakdown__row {
+    display: flex; justify-content: space-between;
+    font-size: 13px; color: #555; margin: 4px 0;
+  }
+  .cgb-total-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 18px; font-weight: 700; color: #1C1C1A;
+    border-top: 1px solid #eee; padding-top: 10px; margin: 6px 0 12px;
+  }
+  .cgb-total-row span:last-child { color: #b8860b; }
+
+  .cgb-submit-sub { text-align: center; font-size: 12px; color: #999; margin: 6px 0 0; }
+  .cgb-curated {
+    display: block; text-align: center; margin-top: 16px;
+    padding: 14px; border: 1px solid #F5F0E8; border-radius: 5px; text-decoration: none;
+  }
+  .cgb-curated__q { display: block; font-size: 12px; color: #888; margin-bottom: 4px; }
+  .cgb-curated__link { display: inline-block; font-size: 13px; font-weight: 600; color: #1C1C1A; text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ==================== GIFT BOX ADDON ==================== */
+  .cgb-gift-box-addon {
+    margin-top: 4px;
+    margin-bottom: 6px;
+  }
+
+  .cgb-gift-box-addon__label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #1C1C1A;
+    padding: 4px 0;
+  }
+
+  .cgb-gift-box-addon__checkbox {
+    width: 17px;
+    height: 17px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .cgb-gift-box-addon__text {
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .cgb-gift-box-addon__price {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .cgb-gift-box-addon__compare {
+    font-size: 12px;
+    color: #aaa;
+    text-decoration: line-through;
+  }
+
+  .cgb-gift-box-addon__sale {
+    font-size: 13px;
+    font-weight: 700;
+    color: #e74c3c;
+  }
+
+  .cgb-gift-box-addon__regular {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1C1C1A;
+  }
+
+  /* ==================== ADDON PICKER ==================== */
+  .cgb-addon-picker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 4px 0;
+  }
+
+  .cgb-addon-picker__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+    background: #fafafa;
+  }
+
+  .cgb-addon-picker__item--selected {
+    border-color: #111;
+    background: #f5f5f5;
+  }
+
+  .cgb-addon-picker__image {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+
+  .cgb-addon-picker__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .cgb-addon-picker__title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #222;
+    line-height: 1.3;
+  }
+
+  .cgb-addon-picker__select-btn {
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  .cgb-addon-picker__select-btn--selected {
+    background: #2ecc71;
+  }
+
+  .cgb-addon-picker__select-btn:hover {
+    opacity: 0.85;
+  }
+
+  /* ==================== EXTRA ADD-ONS (editor-picked) ==================== */
+  .cgb-extra-addons {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+  }
+
+  .cgb-extra-addons__heading {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #888;
+  }
+
+  .cgb-extra-addons__list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .cgb-extra-addon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 5px;
+    padding: 12px 8px;
+    border: 1px solid #F5F0E8;
+    border-radius: 5px;
+    background: #fff;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .cgb-extra-addon--selected {
+    border-color: #D4A830;
+    box-shadow: 0 0 0 1px #D4A830 inset;
+    background: #fff;
+  }
+
+  .cgb-extra-addon__img {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .cgb-extra-addon__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .cgb-extra-addon__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #222;
+    line-height: 1.3;
+  }
+
+  .cgb-extra-addon__price {
+    font-size: 13px;
+    font-weight: 600;
+    color: #B8860B;
+  }
+
+  .cgb-addon-picker__price {
+    font-size: 13px;
+    font-weight: 600;
+    color: #B8860B;
+  }
+
+  .cgb-extra-addon__compare {
+    font-size: 12px;
+    color: #aaa;
+    text-decoration: line-through;
+    font-weight: 400;
+  }
+
+  .cgb-extra-addon__toggle {
+    background: #D4A830;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+    text-transform: uppercase;
+  }
+
+  .cgb-extra-addon__toggle--added {
+    background: #1C4A3A;
+  }
+
+  .cgb-extra-addon__toggle:hover {
+    opacity: 0.85;
+  }
+
+  /* ==================== MOBILE FAB ==================== */
+  .cgb-mobile-fab {
+    position: fixed;
+    bottom: 24px;
+    left: 20px;
+    z-index: 999;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .cgb-mobile-fab__btn {
+    background: #1C1C1A;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 58px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(28, 28, 26, 0.3);
+    position: relative;
+  }
+
+  .cgb-mobile-fab__btn svg {
+    stroke: #fff;
+    width: 22px;
+    height: 22px;
+  }
+
+  .cgb-mobile-fab__count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #e74c3c;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+  }
+
+  .cgb-mobile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(28, 28, 26, 0.45);
+    z-index: 1000;
+  }
+
+  /* ==================== RESPONSIVE ==================== */
+  @media (max-width: 1200px) {
+    .cgb-filter-group--price,
+    .cgb-filter-group--availability,
+    .cgb-sort-options {
+      display: none;
+    }
+
+    .cgb-wrapper {
+      flex-direction: column;
+    }
+
+    .cgb-filter-sidebar {
+      width: 100%;
+      position: relative;
+      top: 0;
+      margin-bottom: 20px;
+    }
+
+    .cgb-mini-cart {
+      position: fixed;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      bottom: 0;
+      left: 0;
+      top: unset;
+      background: #fff;
+      border: none;
+      border-radius: 5px 5px 0 0;
+      padding: 0 16px 24px;
+      z-index: 1001;
+      box-shadow: 0 -4px 30px rgba(28, 28, 26, 0.18);
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+      display: block !important;
+    }
+
+    .cgb-mini-cart.cgb-mini-cart--open {
+      transform: translateY(0);
+    }
+
+    .cgb-mini-cart::before {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 4px;
+      background: #ddd;
+      border-radius: 5px;
+      margin: 10px auto 0;
+    }
+
+    .cgb-mini-cart__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0 4px;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 2;
+      border-radius: 5px 5px 0 0;
+    }
+
+    .cgb-mini-cart__close {
+      background: #f0f0f0;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1C1C1A;
+      flex-shrink: 0;
+    }
+
+    .cgb-cart-items {
+      flex-wrap: nowrap;
+      overflow: auto;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .cgb-header-section__title {
+      font-size: 32px;
+    }
+
+    .cgb-header-section__subtitle {
+      font-size: 16px;
+    }
+
+    .cgb-wrapper {
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      display: block;
+    }
+
+    .cgb-search-sort-header {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .cgb-product-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .cgb-product-card__image {
+      height: auto;
+      max-height: 180px;
+    }
+
+    /* Narrow cards: stack price on top, ADD / qty control full-width below (no overflow) */
+    .cgb-buy-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .cgb-buy-row .cgb-add-to-box-btn,
+    .cgb-buy-row .cgb-quantity-control {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .cgb-search-wrapper {
+      width: 100% !important;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 991px) {
+    .cgb-wrapper {
+      display: block !important;
+    }
+  }
+
+  /* ==================== SHARP EDGES (no rounded corners anywhere) ==================== */
+  [class*="cgb-"],
+  [class*="cgb-"]::before,
+  [class*="cgb-"]::after {
+    border-radius: 0 !important;
+  }
+
+  /* Exception: product card images and badges keep soft rounded corners */
+  .cgb-product-card__image,
+  .cgb-product-badge {
+    border-radius: 5px !important;
+  }
+</style>
+
+<div class="page-width" id="cgb-gift-box-section">
+
+  {% comment %} Section Header {% endcomment %}
+  <div class="cgb-header-section">
+    {% if section.settings.main_title != blank %}
+      <h1 class="cgb-header-section__title">{{ section.settings.main_title }}</h1>
+    {% endif %}
+    {% if section.settings.main_subtitle != blank %}
+      <p class="cgb-header-section__subtitle">{{ section.settings.main_subtitle }}</p>
+    {% endif %}
+  </div>
+
+  <div class="cgb-wrapper">
+
+    {% comment %} Filter Sidebar {% endcomment %}
+    <div class="cgb-filter-sidebar">
+      <h3 class="cgb-filter-sidebar__heading">Filter:</h3>
+
+      <div class="cgb-filter-group">
+        <h4 class="cgb-filter-group__label">Category:</h4>
+        <div class="cgb-category-list">
+          {% comment %} Hidden 'all' checkbox — used by JS filter sync only, not visible {% endcomment %}
+          <input type="checkbox" class="cgb-category-checkbox" data-handle="all" checked style="display:none;">
+          {% for block in section.blocks %}
+            {% if block.type == 'collection' %}
+              {% assign sel_col = collections[block.settings.collection] %}
+              {% if sel_col and sel_col.products.size > 0 and sel_col.handle != 'all' %}
+                {% assign sidebar_label = block.settings.custom_name | strip %}
+              {% if sidebar_label == blank %}{% assign sidebar_label = sel_col.title %}{% endif %}
+              <label class="cgb-category-list__item">
+                  <input type="checkbox" class="cgb-category-checkbox" data-handle="{{ sel_col.handle }}">
+                  {{ sidebar_label }}
+                </label>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          {% comment %} "All" is handled by the collection tab bar above — no duplicate checkbox needed {% endcomment %}
+        </div>
+      </div>
+
+      <div class="cgb-filter-group cgb-filter-group--availability">
+        <h4 class="cgb-filter-group__label">Availability:</h4>
+        <div class="cgb-availability-list">
+          <label class="cgb-availability-list__item">
+            <input type="checkbox" id="cgb-in-stock" checked> In stock (<span id="cgb-in-stock-count">0</span>)
+          </label>
+          <label class="cgb-availability-list__item">
+            <input type="checkbox" id="cgb-out-of-stock"> Out of stock (<span id="cgb-out-stock-count">0</span>)
+          </label>
+        </div>
+      </div>
+
+      <div class="cgb-filter-group cgb-filter-group--price">
+        <h4 class="cgb-filter-group__label">Price:</h4>
+        <p class="cgb-price-info">The highest price is ৳<span id="cgb-max-price">4,750</span></p>
+        <div class="cgb-price-range">
+          <div class="cgb-price-inputs">
+            <input type="number" id="cgb-price-from" placeholder="From" min="0">
+            <span>৳</span>
+            <input type="number" id="cgb-price-to" placeholder="To" min="0">
+            <span>৳</span>
+          </div>
+          <div class="cgb-price-slider-container">
+            <input type="range" id="cgb-price-slider-min" min="0" max="5000" value="0" class="cgb-price-slider">
+            <input type="range" id="cgb-price-slider-max" min="0" max="5000" value="5000" class="cgb-price-slider">
+          </div>
+          <div class="cgb-price-display">৳<span id="cgb-price-range-display">0 - 4,750</span></div>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} Content Area {% endcomment %}
+    <div class="cgb-content-area">
+
+      {% comment %} Search & Sort Row {% endcomment %}
+      <div class="cgb-search-sort-header">
+        <div class="cgb-search-wrapper">
+          <input type="text" id="cgb-productSearch" class="cgb-search-wrapper__input" placeholder="Search products..." autocomplete="off">
+          <button type="button" class="cgb-search-wrapper__icon-btn" aria-label="Search">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="20" height="20">
+              <circle cx="11" cy="11" r="8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div id="cgb-search-suggestions" class="cgb-suggestions-dropdown" style="display:none;"></div>
+        </div>
+        <select class="cgb-sort-options" id="cgb-sortOptions">
+          <option value="manual">Default (Manual Order)</option>
+          <option value="best-selling">Best Selling</option>
+          <option value="featured">Featured First</option>
+          <option value="price-asc">Price low to high</option>
+          <option value="price-desc">Price high to low</option>
+          <option value="title-asc">Alphabetically A-Z</option>
+        </select>
+      </div>
+
+      {% comment %} Collection Tab Bar — horizontal scroll, shows only selected collections {% endcomment %}
+      <div class="cgb-collection-tabs" id="cgb-collection-tabs">
+        <button class="cgb-collection-tabs__tab cgb-collection-tabs__tab--active" data-handle="all">All</button>
         {% for block in section.blocks %}
           {% if block.type == 'collection' %}
-            {% assign selected_collection = collections[block.settings.collection] %}
-            {% if selected_collection and selected_collection.products.size > 0 %}
-              <label class="category-item">
-                <input type="checkbox" class="category-checkbox" data-handle="{{ selected_collection.handle }}"> 
-                {{ selected_collection.title }}
-              </label>
+            {% assign tab_col = collections[block.settings.collection] %}
+            {% comment %} Skip any collection whose handle is literally 'all' — the All button is already hardcoded above {% endcomment %}
+            {% if tab_col and tab_col.products.size > 0 and tab_col.handle != 'all' %}
+              {% assign tab_label = block.settings.custom_name | strip %}
+              {% if tab_label == blank %}{% assign tab_label = tab_col.title %}{% endif %}
+              <button class="cgb-collection-tabs__tab" data-handle="{{ tab_col.handle }}">
+                {{ tab_label }}
+              </button>
             {% endif %}
           {% endif %}
         {% endfor %}
-        <label class="category-item">
-          <input type="checkbox" class="category-checkbox" data-handle="all" checked> All Products
-        </label>
       </div>
-    </div>
 
-    <!-- Availability Filter -->
-    <div class="filter-group cmb-Availability">
-      <h4>Availability:</h4>
-      <div class="availability-list">
-        <label class="availability-item">
-          <input type="checkbox" id="in-stock" checked> In stock (<span id="in-stock-count">0</span>)
-        </label>
-        <label class="availability-item">
-          <input type="checkbox" id="out-of-stock"> Out of stock (<span id="out-stock-count">0</span>)
-        </label>
-      </div>
-    </div>
+      <div id="cgb-product-step">
 
-    <!-- Price Range Filter -->
-    <div class="filter-group cmb-Price">
-      <h4>Price:</h4>
-      <p class="price-info">The highest price is £<span id="max-price">4,750</span></p>
-      <div class="price-range">
-        <div class="price-inputs">
-          <input type="number" id="price-from" placeholder="From" min="0">
-          <span>£</span>
-          <input type="number" id="price-to" placeholder="To" min="0">
-          <span>£</span>
+        {% comment %} Showcase Grid (Featured / Best Selling) {% endcomment %}
+        <div id="cgb-showcase-section" class="cgb-showcase-section" style="display:none;">
+          <h3 class="cgb-showcase-section__title">Featured Products</h3>
+          <div id="cgb-showcaseGrid" class="cgb-product-grid"></div>
         </div>
-        <div class="price-slider-container">
-          <input type="range" id="price-slider-min" min="0" max="5000" value="0" class="price-slider">
-          <input type="range" id="price-slider-max" min="0" max="5000" value="5000" class="price-slider">
-        </div>
-        <div class="price-display">
-          £<span id="price-range-display">0 - 4,750</span>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Right Side: Content Area -->
-  <div class="content-area">
-    
-    <!-- Search + Sort Section -->
-    <div class="search-sort-header">
-      <div class="custom-search-wrapper">
-        <input type="text" id="productSearch" placeholder="Search products..." autocomplete="off">
-        <button type="submit" class="search-icon-button" aria-label="Search">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="20" height="20">
-            <circle cx="11" cy="11" r="8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <div id="search-suggestions" class="suggestions-dropdown" style="display: none;"></div>
-      </div>
+        {% comment %} Main Product Grid {% endcomment %}
+        <div id="cgb-productGrid" class="cgb-product-grid">
+          {% assign processed = '' %}
+          {% assign pidx = 0 %}
 
-      <select class="cmb-sortOptions" id="sortOptions">
-        <option value="title-asc">Default sorting</option>
-        <option value="price-asc">Price low to high</option>
-        <option value="price-desc">Price high to low</option>
-      </select>
-    </div>
-
-    <!-- Step Content Sections -->
-    <div class="step-content-wrapper">
-      
-      <!-- Product Grid Step -->
-      <div id="product-step" class="step-section">
-        <h2>Choose Products</h2>
-        <div id="productGrid" class="product-grid">
-          {% assign processed_products = '' %}
-          {% comment %} Loop through selected collections only {% endcomment %}
           {% for block in section.blocks %}
             {% if block.type == 'collection' %}
-              {% assign selected_collection = collections[block.settings.collection] %}
-              {% if selected_collection %}
-                {% for product in selected_collection.products %}
-                 {% if product.available %}
-                   {% unless processed_products contains product.id %}
-                     {% assign processed_products = processed_products | append: product.id | append: ',' %}
-                     
-                     {% assign first_available_variant = null %}
-                     {% for v in product.variants %}
-                       {% if v.available and first_available_variant == null %}
-                         {% assign first_available_variant = v %}
-                       {% endif %}
-                     {% endfor %}
+              {% assign col = collections[block.settings.collection] %}
+              {% if col %}
+                {% for product in col.products %}
+                  {% if product.available %}
+                    {% unless processed contains product.id %}
+                      {% assign processed = processed | append: product.id | append: ',' %}
+                      {% assign pidx = pidx | plus: 1 %}
+                      {% assign fv = null %}
+                      {% for v in product.variants %}
+                        {% if v.available and fv == null %}{% assign fv = v %}{% endif %}
+                      {% endfor %}
+                      {% assign vp = fv.price | divided_by: 100.0 | round %}
+                      {% assign vc = 0 %}
+                      {% if fv.compare_at_price > fv.price %}{% assign vc = fv.compare_at_price | divided_by: 100.0 | round %}{% endif %}
+                      {% assign is_feat = false %}
+                      {% assign is_bs = false %}
+                      {% assign pos = 9999 %}
+                      {% for tag in product.tags %}
+                        {% assign tl = tag | downcase %}
+                        {% if tl == 'featured' %}{% assign is_feat = true %}{% endif %}
+                        {% if tl == 'best-selling' or tl == 'best selling' %}{% assign is_bs = true %}{% endif %}
+                        {% if tl contains 'position-' %}
+                          {% assign pp = tl | split: '-' %}
+                          {% if pp.size == 2 %}{% assign pos = pp[1] | plus: 0 %}{% endif %}
+                        {% endif %}
+                      {% endfor %}
 
-                     <div class="product-card"
-                        data-id="{{ first_available_variant.id }}"
+                      <div class="cgb-product-card"
+                        data-id="{{ fv.id }}"
                         data-product-id="{{ product.id }}"
-                        data-title="{{ product.title | escape }} - {{ first_available_variant.title }}"
-                        data-price="{{ first_available_variant.price | money_without_currency }}"
-                        data-collection="{{ selected_collection.handle }}"
-                        data-options="{{ first_available_variant.options | join: ' / ' }}"
-                        data-available="{{ product.available }}">
-                 
-                       <!-- Updated image element with data attribute for variant image -->
-                       <img class="product-main-image" 
-                            src="{% if first_available_variant.image %}{{ first_available_variant.image | img_url: '300x' }}{% else %}{{ product.featured_image | img_url: '300x' }}{% endif %}" 
-                            alt="{{ product.title }}"
-                            data-default-image="{{ product.featured_image | img_url: '300x' }}">
-                       <p class="product-title">{{ product.title }}</p>
-                       <p class="product-price">{{ first_available_variant.price | money }}</p>
-                 
-                       {% if product.variants.size > 1 %}
-                         {% for option in product.options_with_values %}
-                           <div class="variant-values">
-                             {% assign option_values = '' %}
-                             {% for variant in product.variants %}
-                               {% if variant.available %}
-                                 {% assign value = variant.options[forloop.parentloop.index0] %}
-                                 {% unless option_values contains value %}
-                                   {% assign option_values = option_values | append: value | append: ',' %}
-                                   <button class="variant-option-btn {% if variant.id == first_available_variant.id %}active{% endif %}"
-                                     data-variant-id="{{ variant.id }}"
-                                     data-title="{{ product.title | escape }} - {{ variant.title }}"
-                                     data-price="{{ variant.price | money_without_currency }}"
-                                     data-variant-image="{% if variant.image %}{{ variant.image | img_url: '300x' }}{% else %}{{ product.featured_image | img_url: '300x' }}{% endif %}">
-                                     {{ value }}
-                                   </button>
-                                 {% endunless %}
-                               {% endif %}
-                             {% endfor %}
-                           </div>
-                         {% endfor %}
-                       {% endif %}
-                 
-                       <button class="add-to-box-btn"
-                         data-id="{{ first_available_variant.id }}"
-                         data-title="{{ product.title | escape }} - {{ first_available_variant.title }}"
-                         data-price="{{ first_available_variant.price | money_without_currency }}"
-                         data-image="{% if first_available_variant.image %}{{ first_available_variant.image | img_url: '200x' }}{% else %}{{ product.featured_image | img_url: '200x' }}{% endif %}">
-                         Add +
-                       </button>
-                 
-                       <div class="cus-quantity-control" style="display: none;">
-                         <button class="cus-qty-btn cus-decrease" data-id="{{ first_available_variant.id }}">-</button>
-                         <span class="cus-qty">1</span>
-                         <button class="cus-qty-btn cus-increase" data-id="{{ first_available_variant.id }}">Add +</button>
-                       </div>
-                     </div>
-                   {% endunless %}
-                 {% endif %}
+                        data-title="{{ product.title | escape }} - {{ fv.title }}"
+                        data-price="{{ vp }}"
+                        data-compare-price="{{ vc }}"
+                        data-collection="{{ col.handle }}"
+                        data-available="{{ product.available }}"
+                        data-featured="{{ is_feat }}"
+                        data-best-selling="{{ is_bs }}"
+                        data-position="{{ pos }}"
+                        data-collection-index="{{ pidx }}">
+
+                        {% comment %} Featured / Bestseller badge (top-left) {% endcomment %}
+                        {% if is_feat %}
+                          <div class="cgb-product-badge cgb-product-badge--featured">Featured</div>
+                        {% elsif is_bs %}
+                          <div class="cgb-product-badge cgb-product-badge--bestseller">Best Seller</div>
+                        {% endif %}
+
+                        {% comment %} Discount badge (top-right) — only rendered when there is an actual discount {% endcomment %}
+                        {% if vc > vp %}
+                          {% assign da = vc | minus: vp %}
+                          {% assign dp = da | times: 100 | divided_by: vc %}
+                          <div class="cgb-product-badge cgb-product-badge--discount">-{{ dp }}%</div>
+                        {% endif %}
+
+                        <img class="cgb-product-card__image"
+                          src="{% if fv.image %}{{ fv.image | img_url: '300x' }}{% else %}{{ product.featured_image | img_url: '300x' }}{% endif %}"
+                          alt="{{ product.title }}">
+                        {% if product.vendor != blank %}<p class="cgb-product-card__vendor">{{ product.vendor }}</p>{% endif %}
+                        <p class="cgb-product-card__title">{{ product.title }}</p>
+
+                        <div class="cgb-buy-row">
+                        <div class="cgb-product-card__price-wrapper">
+                          {% if vc > vp %}
+                            <p class="cgb-product-card__compare-price">৳{{ vc }}</p>
+                            <p class="cgb-product-card__price cgb-product-card__price--sale">৳{{ vp }}</p>
+                          {% else %}
+                            <p class="cgb-product-card__price">৳{{ vp }}</p>
+                          {% endif %}
+                        </div>
+
+                        {% if product.variants.size > 1 %}
+                          <div class="cgb-product-variants-data" style="display:none;"
+                            data-variants='[{% for variant in product.variants %}{% assign xp = variant.price | divided_by: 100.0 | round %}{% assign xc = 0 %}{% if variant.compare_at_price > variant.price %}{% assign xc = variant.compare_at_price | divided_by: 100.0 | round %}{% endif %}{"id":{{ variant.id }},"title":"{{ variant.title | escape }}","price":{{ xp }},"comparePrice":{{ xc }},"image":"{% if variant.image %}{{ variant.image | img_url: '300x' }}{% else %}{{ product.featured_image | img_url: '300x' }}{% endif %}","options":{{ variant.options | json }},"available":{{ variant.available }}}{% unless forloop.last %},{% endunless %}{% endfor %}]'
+                            data-options='{{ product.options_with_values | json }}'></div>
+                        {% endif %}
+
+                        <button class="cgb-add-to-box-btn"
+                          data-id="{{ fv.id }}"
+                          data-title="{{ product.title | escape }} - {{ fv.title }}"
+                          data-price="{{ vp }}"
+                          data-compare-price="{{ vc }}"
+                          data-image="{% if fv.image %}{{ fv.image | img_url: '200x' }}{% else %}{{ product.featured_image | img_url: '200x' }}{% endif %}"
+                          data-has-variants="{{ product.variants.size | minus: 1 }}"
+                          {% unless product.available %}disabled{% endunless %}>
+                          {% if product.available %}+ Add{% else %}Out of Stock{% endif %}
+                        </button>
+
+                        <div class="cgb-quantity-control" style="display:none;">
+                          <button class="cgb-quantity-control__btn cgb-decrease" data-id="{{ fv.id }}">-</button>
+                          <span class="cgb-quantity-control__qty">1</span>
+                          <button class="cgb-quantity-control__btn cgb-increase" data-id="{{ fv.id }}">+</button>
+                        </div>
+                        </div>
+                      </div>
+                    {% endunless %}
+                  {% endif %}
                 {% endfor %}
               {% endif %}
             {% endif %}
           {% endfor %}
-          
-          {% comment %} Always include gift-box collection (hardcoded exception) {% endcomment %}
-          {% assign gift_box_collection = collections['gift-box'] %}
-          {% if gift_box_collection %}
-            {% for product in gift_box_collection.products %}
-              {% if product.available %}
-                {% unless processed_products contains product.id %}
-                  {% assign processed_products = processed_products | append: product.id | append: ',' %}
-                  
-                  {% assign first_available_variant = null %}
-                  {% for v in product.variants %}
-                    {% if v.available and first_available_variant == null %}
-                      {% assign first_available_variant = v %}
-                    {% endif %}
-                  {% endfor %}
 
-                  <div class="product-card"
-                     data-id="{{ first_available_variant.id }}"
-                     data-product-id="{{ product.id }}"
-                     data-title="{{ product.title | escape }} - {{ first_available_variant.title }}"
-                     data-price="{{ first_available_variant.price | money_without_currency }}"
-                     data-collection="gift-box"
-                     data-options="{{ first_available_variant.options | join: ' / ' }}"
-                     data-available="{{ product.available }}"
-                     style="display: none;">
-                
-                    <img class="product-main-image" 
-                         src="{% if first_available_variant.image %}{{ first_available_variant.image | img_url: '300x' }}{% else %}{{ product.featured_image | img_url: '300x' }}{% endif %}" 
-                         alt="{{ product.title }}"
-                         data-default-image="{{ product.featured_image | img_url: '300x' }}">
-                    <p class="product-title">{{ product.title }}</p>
-                    <p class="product-price">{{ first_available_variant.price | money }}</p>
-                
-                    <button class="add-to-box-btn"
-                      data-id="{{ first_available_variant.id }}"
-                      data-title="{{ product.title | escape }} - {{ first_available_variant.title }}"
-                      data-price="{{ first_available_variant.price | money_without_currency }}"
-                      data-image="{% if first_available_variant.image %}{{ first_available_variant.image | img_url: '200x' }}{% else %}{{ product.featured_image | img_url: '200x' }}{% endif %}">
-                      Add +
+          {% comment %} Gift box products — hidden, used by addon picker only {% endcomment %}
+          {% assign gbc = collections['gift-box'] %}
+          {% if gbc %}
+            {% for product in gbc.products %}
+              {% if product.available %}
+                {% unless processed contains product.id %}
+                  {% assign processed = processed | append: product.id | append: ',' %}
+                  {% assign fv = null %}
+                  {% for v in product.variants %}{% if v.available and fv == null %}{% assign fv = v %}{% endif %}{% endfor %}
+                  {% assign vp = fv.price | divided_by: 100.0 | round %}
+                  {% assign vc = 0 %}
+                  {% if fv.compare_at_price > fv.price %}{% assign vc = fv.compare_at_price | divided_by: 100.0 | round %}{% endif %}
+                  <div class="cgb-product-card"
+                    data-id="{{ fv.id }}"
+                    data-product-id="{{ product.id }}"
+                    data-title="{{ product.title | escape }} - {{ fv.title }}"
+                    data-price="{{ vp }}"
+                    data-compare-price="{{ vc }}"
+                    data-collection="gift-box"
+                    data-available="{{ product.available }}"
+                    data-featured="false"
+                    data-best-selling="false"
+                    style="display:none;">
+                    <img class="cgb-product-card__image" src="{% if fv.image %}{{ fv.image | img_url: '300x' }}{% else %}{{ product.featured_image | img_url: '300x' }}{% endif %}" alt="{{ product.title }}">
+                    {% if product.vendor != blank %}<p class="cgb-product-card__vendor">{{ product.vendor }}</p>{% endif %}
+                    <p class="cgb-product-card__title">{{ product.title }}</p>
+                    <div class="cgb-buy-row">
+                    <div class="cgb-product-card__price-wrapper">
+                      {% if vc > vp %}
+                        <p class="cgb-product-card__compare-price">৳{{ vc }}</p>
+                        <p class="cgb-product-card__price cgb-product-card__price--sale">৳{{ vp }}</p>
+                      {% else %}
+                        <p class="cgb-product-card__price">৳{{ vp }}</p>
+                      {% endif %}
+                    </div>
+                    <button class="cgb-add-to-box-btn"
+                      data-id="{{ fv.id }}"
+                      data-title="{{ product.title | escape }} - {{ fv.title }}"
+                      data-price="{{ vp }}"
+                      data-compare-price="{{ vc }}"
+                      data-image="{% if fv.image %}{{ fv.image | img_url: '200x' }}{% else %}{{ product.featured_image | img_url: '200x' }}{% endif %}">
+                      + Add
                     </button>
-                
-                    <div class="cus-quantity-control" style="display: none;">
-                      <button class="cus-qty-btn cus-decrease" data-id="{{ first_available_variant.id }}">-</button>
-                      <span class="cus-qty">1</span>
-                      <button class="cus-qty-btn cus-increase" data-id="{{ first_available_variant.id }}">Add +</button>
                     </div>
                   </div>
                 {% endunless %}
@@ -236,1856 +1723,890 @@
           {% endif %}
         </div>
       </div>
+    </div>
 
-      <!-- Gift Box Step -->
-      <div id="gift-box-step" class="step-section" style="display: none;">
-        <h2>CHOOSE YOUR GIFT BOX</h2>
-        <div id="giftBoxGrid" class="product-grid">
-          {% assign gift_box_collection = collections['gift-box'] %}
-          {% for product in gift_box_collection.products %}
-            <div class="product-card"
-               data-id="{{ product.variants.first.id }}"
-               data-title="{{ product.title | escape }}"
-               data-price="{{ product.price | money_without_currency }}"
-               data-collection="gift-box">
-      
-              <img src="{{ product.featured_image | img_url: '300x' }}" alt="{{ product.title }}">
-              <p class="product-title">{{ product.title }}</p>
-              <p class="product-price">{{ product.price | money }}</p>
-              <button class="add-to-box-btn"
-                data-id="{{ product.variants.first.id }}"
-                data-title="{{ product.title | escape }}"
-                data-price="{{ product.price | money_without_currency }}"
-                data-image="{{ product.featured_image | img_url: '200x' }}">
-                Add +
-              </button>
-              <div class="cus-quantity-control" style="display: none;">
-              <button class="cus-qty-btn cus-decrease" data-id="${product.id}">-</button>
-              <span class="cus-qty">1</span>
-              <button class="cus-qty-btn cus-increase" data-id="${product.id}">Add +</button>
-              </div>
-            </div>
-          {% endfor %}
+    {% comment %} Mini Cart {% endcomment %}
+    <div class="cgb-mini-cart" id="cgb-mini-cart">
+      <div class="cgb-mini-cart__header">
+        <h3 class="cgb-mini-cart__title">Your Box</h3>
+        <button id="cgb-drawer-close" class="cgb-mini-cart__close" aria-label="Close">&#10005;</button>
+      </div>
+      <p class="cgb-box-count-line"><strong id="cgb-box-count">0</strong> of {{ section.settings.max_box_items | default: 6 }} items added</p>
+      <div id="cgb-box-items" class="cgb-slot-grid"></div>
+
+      <div id="cgb-gift-box-addon" class="cgb-gift-box-addon" style="display:none;">
+        <label class="cgb-gift-box-addon__label">
+          <input type="checkbox" id="cgb-addon-checkbox" class="cgb-gift-box-addon__checkbox">
+          <span class="cgb-gift-box-addon__text">Add Gift Box</span>
+        </label>
+        <div id="cgb-addon-picker" style="display:none;margin-top:10px;">
+          <div id="cgb-addon-picker-list" class="cgb-addon-picker-list"></div>
         </div>
       </div>
 
-      <!-- Confirm Box Step -->
-      <div id="confirm-box-step" class="step-section" style="display: none;">
-        <h2>CONFIRM YOUR BOX</h2>
-        <div id="confirmation-details"></div>
+      {%- comment -%} Extra add-ons (editor-picked products, shown directly, independently toggleable) {%- endcomment -%}
+      {%- if section.settings.addon_product_1 != blank or section.settings.addon_product_2 != blank -%}
+      <div id="cgb-extra-addons" class="cgb-extra-addons" style="display:none;">
+        <p class="cgb-extra-addons__heading">Add a finishing touch</p>
+        <div class="cgb-extra-addons__list">
+          {%- assign addon_keys = 'addon_product_1,addon_product_2' | split: ',' -%}
+          {%- for key in addon_keys -%}
+            {%- assign ap = section.settings[key] -%}
+            {%- if ap != blank -%}
+              {%- assign fv = null -%}
+              {%- for v in ap.variants -%}{%- if v.available and fv == null -%}{%- assign fv = v -%}{%- endif -%}{%- endfor -%}
+              {%- if fv == null -%}{%- assign fv = ap.variants.first -%}{%- endif -%}
+              {%- assign vp = fv.price | divided_by: 100.0 | round -%}
+              {%- assign vc = 0 -%}
+              {%- if fv.compare_at_price > fv.price -%}{%- assign vc = fv.compare_at_price | divided_by: 100.0 | round -%}{%- endif -%}
+              {%- if fv.image -%}{%- assign ap_img = fv.image | image_url: width: 200 -%}{%- else -%}{%- assign ap_img = ap.featured_image | image_url: width: 200 -%}{%- endif -%}
+              <div class="cgb-extra-addon">
+                <img class="cgb-extra-addon__img" src="{{ ap_img }}" alt="{{ ap.title | escape }}">
+                <div class="cgb-extra-addon__info">
+                  <span class="cgb-extra-addon__title">{{ ap.title }}</span>
+                  <span class="cgb-extra-addon__price">
+                    {%- if vc > vp -%}<span class="cgb-extra-addon__compare">৳{{ vc }}</span> {% endif %}৳{{ vp }}
+                  </span>
+                </div>
+                <button type="button" class="cgb-extra-addon__toggle"
+                  data-id="{{ fv.id }}"
+                  data-title="{{ ap.title | escape }}"
+                  data-price="{{ vp }}"
+                  data-compare-price="{{ vc }}"
+                  data-image="{{ ap_img }}"
+                  data-product-id="{{ ap.id }}">Add</button>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+      {%- endif -%}
+
+      <div class="cgb-breakdown">
+        <p class="cgb-breakdown__row"><span>Items (<span id="cgb-items-count">0</span>)</span><span id="cgb-items-subtotal">৳0</span></p>
+      </div>
+      <p class="cgb-total-row"><span>Total</span><span id="cgb-box-total">৳0</span></p>
+
+      <button id="cgb-submit-button" class="cgb-submit-btn" disabled>Personalise &amp; Add to Cart</button>
+      <p class="cgb-submit-sub">Next: wrap, occasion &amp; gift message</p>
+      <p id="cgb-next-alert" style="color:red;font-size:13px;margin-top:6px;display:none;">Please select at least one product.</p>
+      <a class="cgb-curated" href="{{ section.settings.curated_boxes_url | default: '#' }}">
+        <span class="cgb-curated__q">Prefer a ready-made box?</span>
+        <span class="cgb-curated__link">Browse our curated boxes &rarr;</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+{% comment %} Mobile FAB {% endcomment %}
+<div id="cgb-mobile-cart-fab" class="cgb-mobile-fab" style="display:none;">
+  <button id="cgb-fab-btn" class="cgb-mobile-fab__btn" aria-label="View your box">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <path d="M16 10a4 4 0 01-8 0"/>
+    </svg>
+    <span id="cgb-fab-count" class="cgb-mobile-fab__count">0</span>
+  </button>
+</div>
+<div id="cgb-mobile-overlay" class="cgb-mobile-overlay" style="display:none;"></div>
+
+{% comment %} Variant Modal {% endcomment %}
+<div id="cgb-variant-modal" class="cgb-variant-modal" style="display:none;">
+  <div class="cgb-variant-modal__overlay"></div>
+  <div class="cgb-variant-modal__content">
+    <button class="cgb-variant-modal__close">&times;</button>
+    <div class="cgb-variant-modal__body">
+      <div class="cgb-variant-modal__image">
+        <img id="cgb-modal-product-image" src="" alt="">
+      </div>
+      <div class="cgb-variant-modal__details">
+        <h3 id="cgb-modal-product-title"></h3>
+        <div class="cgb-variant-modal__price-wrapper">
+          <p class="cgb-variant-modal__compare-price" id="cgb-modal-compare-price" style="display:none;"></p>
+          <p class="cgb-variant-modal__price" id="cgb-modal-product-price"></p>
+        </div>
+        <div id="cgb-modal-variant-options"></div>
+        <button id="cgb-modal-add-to-box" class="cgb-variant-modal__add-btn">Add to Box</button>
       </div>
     </div>
   </div>
-
-  <!-- Mini Cart (Right Sidebar) -->
-  <div class="your-box" id="mini-cart">
-    <h3>YOUR BOX (<span id="box-count">£0</span> ITEMS)</h3>
-    <hr>
-    <div id="box-items"></div>
-    <p>Total: <span id="box-total" style="font-weight: bold;">0</span></p>
-    <button id="next-button" class="next-btn" disabled>Next</button>
-    <p id="next-alert" style="color: red; font-size: 14px; margin-top: 6px; display: none;">
-    Please select at least one product to continue.
-    </p>
-    <div id="box-items-button">
-      <button id="back-button" class="back-btn">Back</button>
-      <button id="confirm-button" class="confirm-btn" disabled>Next</button>
-    </div>
-    <div class="alert-row">
-    <p id="confirm-inline-alert" style="color: red; font-size: 14px; display: none;">
-        Please select a gift box before continuing.
-    </p>
-    </div>
-    <div id="box-items-button">
-    <button id="back-button-2" class="back-btn">Back</button>
-    <button id="submit-button" class="confirm-btn">Submit Box</button>
-    </div>
-  </div>
-</div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <script>
 $(document).ready(function () {
-    // ==================== INITIAL SETUP ====================
-    $('#next-button, #confirm-button, #back-button, #submit-button, #back-button-2').hide();
-    showStep(0);
 
-    let selectedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
+  // ==================== STATE ====================
+  localStorage.removeItem('cgbSelectedProducts');
+  let cgbSelectedProducts = [];
+  let cgbActiveTab = 'all'; // tracks the active collection tab
 
-    // ==================== FILTER INITIALIZATION ====================
-    function initializeFilters() {
-        updateAvailabilityCount();
-        updateMaxPrice();
-        setupPriceSliders();
-    }
-
-    function updateAvailabilityCount() {
-        const inStockCount = $('.product-card[data-available="true"]:visible').length;
-        const outStockCount = $('.product-card[data-available="false"]:visible').length;
-        $('#in-stock-count').text(inStockCount);
-        $('#out-stock-count').text(outStockCount);
-    }
-
-    function updateMaxPrice() {
-        let maxPrice = 0;
-        $('.product-card').each(function() {
-            const priceText = $(this).data('price');
-            const price = parsePrice(priceText);
-            if (price > maxPrice) {
-                maxPrice = price;
-            }
-        });
-        $('#max-price').text(maxPrice.toFixed(2));
-        $('#price-slider-max').attr('max', maxPrice).val(maxPrice);
-        $('#price-to').attr('max', maxPrice).val(maxPrice);
-        $('#price-range-display').text(`0 - ${maxPrice.toFixed(2)}`);
-    }
-
-    function setupPriceSliders() {
-        const minSlider = document.getElementById('price-slider-min');
-        const maxSlider = document.getElementById('price-slider-max');
-        const minInput = document.getElementById('price-from');
-        const maxInput = document.getElementById('price-to');
-
-        function updatePriceRange() {
-            const min = parseInt(minSlider.value);
-            const max = parseInt(maxSlider.value);
-            
-            if (min >= max) {
-                minSlider.value = max - 1;
-            }
-            
-            minInput.value = minSlider.value;
-            maxInput.value = maxSlider.value;
-            $('#price-range-display').text(`${parseInt(minSlider.value)} - ${parseInt(maxSlider.value)}`);
-            applyAllFilters();
-        }
-
-        minSlider.addEventListener('input', updatePriceRange);
-        maxSlider.addEventListener('input', updatePriceRange);
-        
-        minInput.addEventListener('input', function() {
-            minSlider.value = this.value;
-            updatePriceRange();
-        });
-        
-        maxInput.addEventListener('input', function() {
-            maxSlider.value = this.value;
-            updatePriceRange();
-        });
-    }
-
-    // ==================== FILTER EVENT HANDLERS ====================
-    $('.category-checkbox').on('change', function() {
-        if ($(this).data('handle') === 'all') {
-            if ($(this).is(':checked')) {
-                $('.category-checkbox').not(this).prop('checked', false);
-            }
-        } else {
-            if ($(this).is(':checked')) {
-                $('.category-checkbox[data-handle="all"]').prop('checked', false);
-            }
-        }
-        applyAllFilters();
-    });
-
-    $('#in-stock, #out-of-stock').on('change', applyAllFilters);
-
-    // ==================== APPLY FILTERS FUNCTION ====================
-    function applyAllFilters() {
-        const selectedCategories = [];
-        $('.category-checkbox:checked').each(function() {
-            selectedCategories.push($(this).data('handle'));
-        });
-
-        const showInStock = $('#in-stock').is(':checked');
-        const showOutStock = $('#out-of-stock').is(':checked');
-        
-        const minPrice = parseInt($('#price-slider-min').val()) || 0;
-        const maxPrice = parseInt($('#price-slider-max').val()) || 99999;
-
-        $('.product-card').each(function() {
-            const $card = $(this);
-            const collection = $card.data('collection');
-            const priceText = $card.data('price');
-            const price = parsePrice(priceText);
-            const available = $card.data('available');
-            
-            // Skip gift-box collection in step 0
-            if (collection === 'gift-box' && $('.step.active').data('step') === 0) {
-                $card.hide();
-                return;
-            }
-
-            let showCard = true;
-
-            // Category filter
-            if (!selectedCategories.includes('all') && !selectedCategories.includes(collection)) {
-                showCard = false;
-            }
-
-            // Availability filter
-            if (!showInStock && available) showCard = false;
-            if (!showOutStock && !available) showCard = false;
-
-            // Price filter
-            if (price < minPrice || price > maxPrice) {
-                showCard = false;
-            }
-
-            $card.toggle(showCard);
-        });
-
-        applySearchAndSort();
-        updateAvailabilityCount();
-    }
-
-    // ==================== UTILITY FUNCTIONS ====================
-    // Consistent price parsing function
-    function parsePrice(price) {
-        if (typeof price === 'string') {
-            // Remove currency symbols and parse
-            price = price.replace(/[£$,]/g, '');
-        }
-        const parsed = parseFloat(price);
-        return isNaN(parsed) ? 0 : parsed;
-    }
-
-    // Format price for display
-    function formatPrice(price) {
-        const numPrice = parsePrice(price);
-        return `£${numPrice.toFixed(2)}`;
-    }
-
-    // ==================== HELPER FUNCTIONS ====================
-    function isProductInCart(variantId) {
-        return selectedProducts.some(p => p.id === String(variantId));
-    }
-
-    function getProductCountInCart(variantId) {
-        return selectedProducts.filter(p => p.id === String(variantId)).length;
-    }
-
-    // ==================== UPDATE VARIANT UI STATE ====================
-    function updateVariantUIState($card, variantId) {
-        const productCount = getProductCountInCart(String(variantId));
-        const $qtyControl = $card.find('.cus-quantity-control');
-        const $addBtn = $card.find('.add-to-box-btn');
-        
-        if (productCount > 0) {
-            // Variant is in cart, show quantity controls
-            $qtyControl.html(`
-                <button class="cus-qty-btn cus-decrease" data-id="${variantId}">-</button>
-                <span class="cus-qty">${productCount}</span>
-                <button class="cus-qty-btn cus-increase" data-id="${variantId}">+</button>
-            `);
-            $qtyControl.css('display', 'flex');
-            $addBtn.hide();
-        } else {
-            // Variant is not in cart, show add button
-            $qtyControl.hide();
-            $addBtn.show();
-        }
-    }
-
-    // ==================== INITIALIZE QUANTITY CONTROLS ON PAGE LOAD ====================
-    function initializeQuantityControls() {
-        $('.product-card').each(function() {
-            const $card = $(this);
-            const currentVariantId = $card.data('id');
-            updateVariantUIState($card, currentVariantId);
-        });
-    }
-
-    // ==================== RENDER MINI CART ====================
-    function renderMiniCart() {
-        let cartContainer = $('#box-items');
-        let totalPrice = 0;
-        cartContainer.empty();
-
-        selectedProducts.forEach((product, index) => {
-            const productPrice = parsePrice(product.price);
-            totalPrice += productPrice;
-
-            cartContainer.append(`
-                <div class="box-item" data-index="${index}">
-                    <img src="${product.image}" alt="${product.title}" />
-                    <button class="remove-btn" data-index="${index}">×</button>
-                </div>
-            `);
-        });
-
-        const totalItemCount = selectedProducts.length;
-        updateBoxCount(totalItemCount, totalPrice);
-        $('#box-total').text(formatPrice(totalPrice));
-    }
-
-    function updateBoxCount(count, total) {
-        const itemLabel = count === 1 ? 'ITEM' : 'ITEMS';
-        if (count === 0) {
-            $('#mini-cart h3').html(`YOUR BOX (0 ITEM)`);
-        } else {
-            $('#mini-cart h3').html(`YOUR BOX (<span id="box-count">${count}</span> ${itemLabel})`);
-        }
-    }
-
-    // ==================== ADD TO BOX ====================
-    $(document).on('click', '.add-to-box-btn', function () {
-        const $card = $(this).closest('.product-card');
-        const productId = $card.data('product-id');
-        
-        let product = {
-            id: String($(this).data('id')),
-            title: $(this).data('title'),
-            image: $(this).data('image'),
-            price: parsePrice($(this).data('price')),
-            collection: $card.data('collection'),
-            productId: productId // Add product ID for tracking
+  // Pre-selected products handed over from the Gift Box Hero section.
+  // (cgbParsePrice is a hoisted function declaration, safe to call here.)
+  try {
+    const cgbPre = JSON.parse(localStorage.getItem('cgbPreselectedProducts') || '[]');
+    if (Array.isArray(cgbPre) && cgbPre.length) {
+      cgbSelectedProducts = cgbPre.map(function (p) {
+        return {
+          id:           String(p.id),
+          title:        p.title,
+          image:        p.image,
+          price:        cgbParsePrice(p.price),
+          comparePrice: cgbParsePrice(p.comparePrice || 0),
+          collection:   p.collection || 'preselected',
+          productId:    p.productId
         };
+      });
+    }
+  } catch (e) { /* ignore malformed pre-select payload */ }
+  localStorage.removeItem('cgbPreselectedProducts');
 
-        selectedProducts.push(product);
-        updateLocalStorageAndUI();
-        
-        // Update UI state for this variant
-        updateVariantUIState($card, product.id);
+  // ==================== MOBILE DRAWER ====================
+  function cgbIsMobile() { return $(window).width() < 1200; }
+
+  function cgbUpdateMobileCartVisibility() {
+    if (!cgbIsMobile()) {
+      $('#cgb-mobile-cart-fab').hide();
+      $('#cgb-mobile-overlay').hide();
+      $('#cgb-mini-cart').removeClass('cgb-mini-cart--open');
+      return;
+    }
+    if (cgbSelectedProducts.length > 0) {
+      $('#cgb-mobile-cart-fab').show();
+    } else {
+      $('#cgb-mobile-cart-fab').hide();
+      cgbCloseCartDrawer();
+    }
+    $('#cgb-fab-count').text(cgbSelectedProducts.length);
+  }
+
+  function cgbOpenCartDrawer() {
+    $('#cgb-mini-cart').addClass('cgb-mini-cart--open');
+    $('#cgb-mobile-overlay').fadeIn(200);
+    $('body').css('overflow', 'hidden');
+  }
+
+  function cgbCloseCartDrawer() {
+    $('#cgb-mini-cart').removeClass('cgb-mini-cart--open');
+    $('#cgb-mobile-overlay').fadeOut(200);
+    $('body').css('overflow', '');
+  }
+
+  // FAB drag / tap
+  (function () {
+    const fab = document.getElementById('cgb-mobile-cart-fab');
+    const btn = document.getElementById('cgb-fab-btn');
+    if (!fab || !btn) return;
+    const MOVE_LIMIT = 15;
+    let dragging = false, startX, startY, startLeft, startTop;
+    btn.addEventListener('click', function () { if (!dragging) cgbOpenCartDrawer(); });
+    fab.addEventListener('pointerdown', function (e) {
+      const r = fab.getBoundingClientRect();
+      startX = e.clientX; startY = e.clientY; startLeft = r.left; startTop = r.top;
+      dragging = false; fab.setPointerCapture(e.pointerId);
+    });
+    fab.addEventListener('pointermove', function (e) {
+      const dx = e.clientX - startX, dy = e.clientY - startY;
+      if (Math.sqrt(dx * dx + dy * dy) > MOVE_LIMIT) dragging = true;
+      if (dragging) {
+        const w = fab.offsetWidth || 58, h = fab.offsetHeight || 58;
+        fab.style.left   = Math.max(8, Math.min(startLeft + dx, window.innerWidth  - w - 8)) + 'px';
+        fab.style.top    = Math.max(8, Math.min(startTop  + dy, window.innerHeight - h - 8)) + 'px';
+        fab.style.right  = 'auto';
+        fab.style.bottom = 'auto';
+      }
+    });
+    fab.addEventListener('pointerup',     function () { setTimeout(function () { dragging = false; }, 50); });
+    fab.addEventListener('pointercancel', function () { dragging = false; });
+  })();
+
+  $(document).on('click', '#cgb-mobile-overlay', cgbCloseCartDrawer);
+  $(document).on('click', '#cgb-drawer-close',   cgbCloseCartDrawer);
+  $(window).on('resize', cgbUpdateMobileCartVisibility);
+
+  // ==================== COLLECTION TABS ====================
+  $(document).on('click', '.cgb-collection-tabs__tab', function () {
+    const handle = $(this).data('handle');
+    cgbActiveTab = handle;
+
+    // Update active state
+    $('.cgb-collection-tabs__tab').removeClass('cgb-collection-tabs__tab--active');
+    $(this).addClass('cgb-collection-tabs__tab--active');
+
+    // Sync the hidden sidebar checkboxes so cgbApplyAllFilters works correctly
+    if (handle === 'all') {
+      $('.cgb-category-checkbox[data-handle="all"]').prop('checked', true);
+      $('.cgb-category-checkbox').not('[data-handle="all"]').prop('checked', false);
+    } else {
+      $('.cgb-category-checkbox[data-handle="all"]').prop('checked', false);
+      $('.cgb-category-checkbox').not('[data-handle="all"]').prop('checked', false);
+      $('.cgb-category-checkbox[data-handle="' + handle + '"]').prop('checked', true);
+    }
+
+    cgbApplyAllFilters();
+  });
+
+  // Drag-to-scroll for desktop on the collection tab bar
+  (function () {
+    const el = document.getElementById('cgb-collection-tabs');
+    if (!el) return;
+    let isDown = false, startX, scrollLeft;
+    el.addEventListener('mousedown', function (e) {
+      isDown = true;
+      startX = e.pageX - el.offsetLeft;
+      scrollLeft = el.scrollLeft;
+    });
+    el.addEventListener('mouseleave', function () { isDown = false; });
+    el.addEventListener('mouseup',    function () { isDown = false; });
+    el.addEventListener('mousemove',  function (e) {
+      if (!isDown) return;
+      e.preventDefault();
+      const x    = e.pageX - el.offsetLeft;
+      const walk = (x - startX) * 1.2;
+      el.scrollLeft = scrollLeft - walk;
+    });
+  })();
+
+  // ==================== FILTERS ====================
+  function cgbInitializeFilters() {
+    cgbUpdateAvailabilityCount();
+    cgbUpdateMaxPrice();
+    cgbSetupPriceSliders();
+  }
+
+  function cgbUpdateAvailabilityCount() {
+    $('#cgb-in-stock-count').text($('.cgb-product-card[data-available="true"]:visible').length);
+    $('#cgb-out-stock-count').text($('.cgb-product-card[data-available="false"]:visible').length);
+  }
+
+  function cgbUpdateMaxPrice() {
+    let max = 0;
+    $('.cgb-product-card').each(function () { const p = parseInt($(this).data('price')); if (p > max) max = p; });
+    $('#cgb-max-price').text(max.toLocaleString());
+    $('#cgb-price-slider-max').attr('max', max).val(max);
+    $('#cgb-price-to').attr('max', max).val(max);
+    $('#cgb-price-range-display').text('0 - ' + max.toLocaleString());
+  }
+
+  function cgbSetupPriceSliders() {
+    const minS = document.getElementById('cgb-price-slider-min');
+    const maxS = document.getElementById('cgb-price-slider-max');
+    const minI = document.getElementById('cgb-price-from');
+    const maxI = document.getElementById('cgb-price-to');
+    function update() {
+      if (parseInt(minS.value) >= parseInt(maxS.value)) minS.value = parseInt(maxS.value) - 1;
+      minI.value = minS.value; maxI.value = maxS.value;
+      $('#cgb-price-range-display').text(parseInt(minS.value).toLocaleString() + ' - ' + parseInt(maxS.value).toLocaleString());
+      cgbApplyAllFilters();
+    }
+    minS.addEventListener('input', update);
+    maxS.addEventListener('input', update);
+    minI.addEventListener('input', function () { minS.value = this.value; update(); });
+    maxI.addEventListener('input', function () { maxS.value = this.value; update(); });
+  }
+
+  // Sidebar checkboxes also update the tab bar to keep them in sync
+  $('.cgb-category-checkbox').on('change', function () {
+    if ($(this).data('handle') === 'all') {
+      if ($(this).is(':checked')) {
+        $('.cgb-category-checkbox').not(this).prop('checked', false);
+        cgbSetActiveTab('all');
+      }
+    } else {
+      if ($(this).is(':checked')) {
+        $('.cgb-category-checkbox[data-handle="all"]').prop('checked', false);
+        cgbSetActiveTab($(this).data('handle'));
+      }
+    }
+    cgbApplyAllFilters();
+  });
+
+  function cgbSetActiveTab(handle) {
+    cgbActiveTab = handle;
+    $('.cgb-collection-tabs__tab').removeClass('cgb-collection-tabs__tab--active');
+    $('.cgb-collection-tabs__tab[data-handle="' + handle + '"]').addClass('cgb-collection-tabs__tab--active');
+  }
+
+  $('#cgb-in-stock, #cgb-out-of-stock').on('change', cgbApplyAllFilters);
+
+  function cgbApplyAllFilters() {
+    const cats = [];
+    $('.cgb-category-checkbox:checked').each(function () { cats.push($(this).data('handle')); });
+    const showIn  = $('#cgb-in-stock').is(':checked');
+    const showOut = $('#cgb-out-of-stock').is(':checked');
+    const minP = parseInt($('#cgb-price-slider-min').val()) || 0;
+    const maxP = parseInt($('#cgb-price-slider-max').val()) || 99999;
+
+    $('.cgb-product-card').each(function () {
+      const $c    = $(this);
+      const col   = $c.data('collection');
+      const price = parseInt($c.data('price'));
+      const avail = $c.data('available');
+      if (col === 'gift-box') { $c.hide(); return; }
+      let show = true;
+      if (!cats.includes('all') && !cats.includes(col)) show = false;
+      if (!showIn  && avail)  show = false;
+      if (!showOut && !avail) show = false;
+      if (price < minP || price > maxP) show = false;
+      $c.toggle(show);
+    });
+    cgbApplySearchAndSort();
+    cgbUpdateAvailabilityCount();
+  }
+
+  // ==================== UTILS ====================
+  function cgbParsePrice(p) {
+    if (typeof p === 'string') p = p.replace(/[৳$,]/g, '');
+    const n = parseFloat(p); return isNaN(n) ? 0 : Math.round(n);
+  }
+  function cgbFormatPrice(p) { return '৳' + cgbParsePrice(p); }
+  function cgbGetCountInCart(id) { return cgbSelectedProducts.filter(p => p.id === String(id)).length; }
+
+  // ==================== VARIANT UI ====================
+  function cgbUpdateVariantUI($card, variantId) {
+    const count = cgbGetCountInCart(variantId);
+    const $qty  = $card.find('.cgb-quantity-control');
+    const $btn  = $card.find('.cgb-add-to-box-btn');
+    if (count > 0) {
+      $qty.html(
+        '<button class="cgb-quantity-control__btn cgb-decrease" data-id="' + variantId + '">-</button>' +
+        '<span class="cgb-quantity-control__qty">' + count + '</span>' +
+        '<button class="cgb-quantity-control__btn cgb-increase" data-id="' + variantId + '">+</button>'
+      );
+      $qty.css('display', 'flex');
+      $btn.hide();
+    } else {
+      $qty.hide();
+      $btn.show();
+    }
+  }
+
+  function cgbInitQtyControls() {
+    $('.cgb-product-card').each(function () { cgbUpdateVariantUI($(this), $(this).data('id')); });
+  }
+
+  // ==================== DISCOUNT TIERS ====================
+  const TIERS = [{ minQty: 2, pct: 10 }, { minQty: 3, pct: 15 }, { minQty: 4, pct: 20 }];
+
+  function cgbGetTier(mugCount) {
+    let t = null; TIERS.forEach(tier => { if (mugCount >= tier.minQty) t = tier; }); return t;
+  }
+  function cgbGetNextTier(mugCount) {
+    for (let i = 0; i < TIERS.length; i++) { if (mugCount < TIERS[i].minQty) return TIERS[i]; } return null;
+  }
+
+  // ==================== RENDER MINI CART ====================
+  var CGB_MAX_SLOTS = {{ section.settings.max_box_items | default: 6 }};
+  var cgbSelectedWrap = { name: 'Ivory', price: 0 };
+
+  function cgbRenderMiniCart() {
+    var $grid = $('#cgb-box-items').empty();
+
+    var itemsSubtotal = 0;
+    var cnt = cgbSelectedProducts.length;
+
+    cgbSelectedProducts.forEach(function (p, i) {
+      itemsSubtotal += cgbParsePrice(p.price);
+      $grid.append(
+        '<div class="cgb-slot cgb-slot--filled" data-index="' + i + '">' +
+        '<img src="' + p.image + '" alt="' + p.title + '">' +
+        '<button class="cgb-slot__remove cgb-cart-item__remove-btn" data-index="' + i + '">×</button>' +
+        '</div>'
+      );
+    });
+    var emptyCount = Math.max(CGB_MAX_SLOTS - cnt, 0);
+    for (var e = 0; e < emptyCount; e++) {
+      $grid.append('<div class="cgb-slot cgb-slot--empty">+</div>');
+    }
+
+    var wrapCost = cgbSelectedWrap.price || 0;
+    var grandTotal = itemsSubtotal + wrapCost;
+
+    $('#cgb-box-count').text(cnt);
+    $('#cgb-items-count').text(cnt);
+    $('#cgb-items-subtotal').text('৳' + itemsSubtotal);
+    $('#cgb-wrap-total').text('৳' + wrapCost);
+    $('#cgb-box-total').text('৳' + grandTotal);
+
+    cgbUpdateMobileCartVisibility();
+  }
+
+  // Gift-wrap tier selection
+  $(document).on('click', '.cgb-wrap-tile', function () {
+    $('.cgb-wrap-tile').removeClass('cgb-wrap-tile--active');
+    $(this).addClass('cgb-wrap-tile--active');
+    cgbSelectedWrap = { name: $(this).data('wrap'), price: parseInt($(this).data('wrap-price'), 10) || 0 };
+    cgbRenderMiniCart();
+  });
+
+  // ==================== UPDATE ALL UI ====================
+  function cgbUpdateUI() {
+    cgbRenderMiniCart();
+    // "Real" products are everything except the gift-box add-on and the extra add-ons.
+    const mugCount = cgbSelectedProducts.filter(p => p.collection !== 'gift-box' && p.collection !== 'addon').length;
+    const has = mugCount > 0;
+    $('#cgb-submit-button').prop('disabled', !has);
+    if (has) {
+      $('#cgb-gift-box-addon').show();
+      cgbUpdateAddonPrice(mugCount);
+      $('#cgb-extra-addons').show();
+    } else {
+      $('#cgb-gift-box-addon').hide();
+      $('#cgb-addon-checkbox').prop('checked', false);
+      $('#cgb-addon-picker').hide();
+      $('#cgb-extra-addons').hide();
+      cgbSelectedProducts = cgbSelectedProducts.filter(p => p.collection !== 'gift-box' && p.collection !== 'addon');
+    }
+    cgbRefreshExtraAddons();
+  }
+
+  // ==================== EXTRA ADD-ONS (editor-picked, independent toggles) ====================
+  function cgbRefreshExtraAddons() {
+    $('.cgb-extra-addon__toggle').each(function () {
+      const $btn = $(this), id = String($btn.data('id'));
+      const sel  = cgbSelectedProducts.some(p => String(p.id) === id && p.collection === 'addon');
+      $btn.toggleClass('cgb-extra-addon__toggle--added', sel).html(sel ? '&#10003; Added' : 'Add');
+      $btn.closest('.cgb-extra-addon').toggleClass('cgb-extra-addon--selected', sel);
+    });
+  }
+
+  $(document).on('click', '.cgb-extra-addon__toggle', function () {
+    const $btn = $(this), id = String($btn.data('id'));
+    const idx  = cgbSelectedProducts.findIndex(p => String(p.id) === id && p.collection === 'addon');
+    if (idx > -1) {
+      cgbSelectedProducts.splice(idx, 1);
+    } else {
+      cgbSelectedProducts.push({
+        id,
+        title:        String($btn.data('title')),
+        image:        String($btn.data('image')),
+        price:        cgbParsePrice($btn.data('price')),
+        comparePrice: cgbParsePrice($btn.data('compare-price') || 0),
+        collection:   'addon',
+        productId:    String($btn.data('product-id'))
+      });
+    }
+    cgbUpdateUI();
+  });
+
+  // ==================== GIFT BOX ADDON ====================
+  function cgbUpdateAddonPrice(mugCount) {
+    const prices = [];
+    $('#cgb-productGrid .cgb-product-card[data-collection="gift-box"]').each(function () {
+      const p = cgbParsePrice($(this).data('price')), c = cgbParsePrice($(this).data('compare-price') || 0);
+      if (p > 0) prices.push({ price: p, compare: c });
+    });
+    if (!prices.length) { $('#cgb-addon-price').html(''); return; }
+    prices.sort((a, b) => a.price - b.price);
+    const chosen = prices[mugCount <= 4 ? 0 : Math.min(1, prices.length - 1)];
+    $('#cgb-addon-price').html(chosen.compare > chosen.price
+      ? '<span class="cgb-gift-box-addon__compare">\u09F3' + chosen.compare + '</span><span class="cgb-gift-box-addon__sale">\u09F3' + chosen.price + '</span>'
+      : '<span class="cgb-gift-box-addon__regular">\u09F3' + chosen.price + '</span>'
+    );
+  }
+
+  $('#cgb-addon-checkbox').on('change', function () {
+    if ($(this).is(':checked')) {
+      cgbBuildAddonPicker();
+      $('#cgb-addon-picker').slideDown(200);
+    } else {
+      $('#cgb-addon-picker').slideUp(200);
+      cgbSelectedProducts = cgbSelectedProducts.filter(p => p.collection !== 'gift-box');
+      cgbUpdateUI();
+    }
+  });
+
+  function cgbBuildAddonPicker() {
+    const $list = $('#cgb-addon-picker-list').empty();
+    const seen = {}, boxes = [];
+    $('#cgb-productGrid .cgb-product-card[data-collection="gift-box"]').each(function () {
+      const $c = $(this), id = String($c.data('id'));
+      if (seen[id]) return;
+      seen[id] = true;
+      boxes.push({
+        id,
+        title:        $c.find('.cgb-product-card__title').text().trim(),
+        price:        cgbParsePrice($c.data('price')),
+        comparePrice: cgbParsePrice($c.data('compare-price') || 0),
+        image:        $c.find('img').attr('src') || ''
+      });
+    });
+    if (!boxes.length) { $list.append('<p style="font-size:13px;color:#999;padding:8px 0;">No gift boxes available.</p>'); return; }
+    boxes.forEach(function (b) {
+      const sel = cgbSelectedProducts.some(p => String(p.id) === b.id && p.collection === 'gift-box');
+      const ph  = b.comparePrice > b.price
+        ? '<span class="cgb-gift-box-addon__compare">\u09F3' + b.comparePrice + '</span> <span class="cgb-gift-box-addon__sale">\u09F3' + b.price + '</span>'
+        : '<span>\u09F3' + b.price + '</span>';
+      $list.append(
+        '<div class="cgb-addon-picker__item' + (sel ? ' cgb-addon-picker__item--selected' : '') + '">' +
+        '<img class="cgb-addon-picker__image" src="' + b.image + '" alt="' + b.title + '">' +
+        '<div class="cgb-addon-picker__info">' +
+        '<span class="cgb-addon-picker__title">' + b.title + '</span>' +
+        '<span class="cgb-addon-picker__price">' + ph + '</span>' +
+        '</div>' +
+        '<button class="cgb-addon-picker__select-btn' + (sel ? ' cgb-addon-picker__select-btn--selected' : '') + '"' +
+        ' data-id="' + b.id + '"' +
+        ' data-title="' + b.title.replace(/"/g, '&quot;') + '"' +
+        ' data-price="' + b.price + '"' +
+        ' data-compare-price="' + b.comparePrice + '"' +
+        ' data-image="' + b.image + '"' +
+        ' data-collection="gift-box">' +
+        (sel ? '&#10003; Added' : 'Add') +
+        '</button>' +
+        '</div>'
+      );
+    });
+  }
+
+  $(document).on('click', '.cgb-addon-picker__select-btn', function () {
+    const $btn = $(this), id = String($btn.data('id')), was = $btn.hasClass('cgb-addon-picker__select-btn--selected');
+    cgbSelectedProducts = cgbSelectedProducts.filter(p => p.collection !== 'gift-box');
+    if (!was) cgbSelectedProducts.push({ id, title: String($btn.data('title')), image: String($btn.data('image')), price: cgbParsePrice($btn.data('price')), comparePrice: cgbParsePrice($btn.data('compare-price') || 0), collection: 'gift-box', productId: id });
+    cgbUpdateUI();
+    cgbBuildAddonPicker();
+  });
+
+  // ==================== ADD TO BOX ====================
+  $(document).on('click', '.cgb-add-to-box-btn', function () {
+    const $card = $(this).closest('.cgb-product-card');
+    const avail = $card.data('available') === 'true' || $card.data('available') === true;
+    if (!avail) return;
+    if (parseInt($(this).data('has-variants')) > 0) { cgbShowVariantModal($card); return; }
+    const id = String($(this).data('id'));
+    cgbSelectedProducts.push({
+      id,
+      title:        $(this).data('title'),
+      image:        $(this).data('image'),
+      price:        cgbParsePrice($(this).data('price')),
+      comparePrice: cgbParsePrice($(this).data('compare-price') || 0),
+      collection:   $card.data('collection'),
+      productId:    $card.data('product-id')
+    });
+    cgbUpdateUI();
+    cgbUpdateVariantUI($card, id);
+  });
+
+  // ==================== VARIANT MODAL ====================
+  function cgbShowVariantModal($card) {
+    const vd = $card.find('.cgb-product-variants-data');
+    if (!vd.length) return;
+    const variants = JSON.parse(vd.attr('data-variants'));
+    const options  = JSON.parse(vd.attr('data-options'));
+    const title    = $card.find('.cgb-product-card__title').text();
+    let selVar = variants.find(v => v.available !== false) || variants[0];
+
+    $('#cgb-modal-product-title').text(title);
+    cgbUpdateModalPrice(selVar);
+    $('#cgb-modal-product-image').attr('src', selVar.image);
+
+    const $opts = $('#cgb-modal-variant-options').empty();
+    options.forEach(function (opt, oi) {
+      const $grp  = $('<div class="cgb-variant-modal__option-group"></div>');
+      $grp.append('<label class="cgb-variant-modal__option-label">' + opt.name + ':</label>');
+      const $btns = $('<div class="cgb-variant-modal__option-buttons"></div>');
+      opt.values.forEach(function (val) {
+        const v = variants.find(v => v.options[oi] === val), avail = v && v.available !== false;
+        const $b = $('<button class="cgb-variant-modal__option-btn" data-option-index="' + oi + '" data-value="' + val + '"' + (!avail ? ' disabled' : '') + '>' + val + (!avail ? ' (Out of Stock)' : '') + '</button>');
+        if (avail && oi === 0 && val === selVar.options[0]) $b.addClass('active');
+        $btns.append($b);
+      });
+      $grp.append($btns);
+      $opts.append($grp);
     });
 
-    // ==================== QUANTITY CONTROLS ====================
-    function updateQuantityDisplay(id) {
-        const count = selectedProducts.filter(p => p.id === id).length;
-        $(`.cus-qty-btn[data-id="${id}"]`).siblings('.cus-qty').text(count);
+    $('#cgb-variant-modal').data({ variants, 'product-collection': $card.data('collection'), 'product-id': $card.data('product-id'), 'product-title': title, 'selected-variant': selVar });
+    cgbUpdateModalAddBtn(selVar);
+    $('#cgb-variant-modal').fadeIn(300);
+    $('body').css('overflow', 'hidden');
+  }
+
+  function cgbUpdateModalPrice(v) {
+    const p = cgbParsePrice(v.price), c = v.comparePrice ? cgbParsePrice(v.comparePrice) : 0;
+    if (c > p) {
+      $('#cgb-modal-compare-price').text(cgbFormatPrice(c)).show();
+      $('#cgb-modal-product-price').text(cgbFormatPrice(p)).addClass('cgb-variant-modal__price--sale');
+    } else {
+      $('#cgb-modal-compare-price').hide();
+      $('#cgb-modal-product-price').text(cgbFormatPrice(p)).removeClass('cgb-variant-modal__price--sale');
     }
+  }
 
-    $(document).on('click', '.cus-qty-btn.cus-decrease', function () {
-        const id = $(this).data('id').toString();
+  function cgbUpdateModalAddBtn(v) {
+    const $b = $('#cgb-modal-add-to-box');
+    if (!v || v.available === false) $b.prop('disabled', true).text('Out of Stock');
+    else $b.prop('disabled', false).text('Add to Box');
+  }
 
-        const index = selectedProducts.findIndex(p => p.id === id);
-        if (index !== -1) {
-            selectedProducts.splice(index, 1);
-            updateLocalStorageAndUI();
+  $('.cgb-variant-modal__close, .cgb-variant-modal__overlay').on('click', function () {
+    $('#cgb-variant-modal').fadeOut(300);
+    $('body').css('overflow', '');
+  });
 
-            const remaining = selectedProducts.filter(p => p.id === id).length;
-            
-            // Update UI for all cards that have this variant
-            $('.product-card').each(function() {
-                const $card = $(this);
-                const cardVariantId = $card.data('id');
-                if (String(cardVariantId) === String(id)) {
-                    updateVariantUIState($card, id);
-                }
-            });
+  $(document).on('click', '.cgb-variant-modal__option-btn:not(:disabled)', function () {
+    $(this).siblings().removeClass('active');
+    $(this).addClass('active');
+    const selOpts = [];
+    $('.cgb-variant-modal__option-btn.active').each(function () { selOpts[$(this).data('option-index')] = $(this).data('value'); });
+    const variants = $('#cgb-variant-modal').data('variants');
+    const match = variants.find(v => v.options.every((o, i) => o === selOpts[i]));
+    if (match) {
+      cgbUpdateModalPrice(match);
+      $('#cgb-modal-product-image').attr('src', match.image);
+      $('#cgb-variant-modal').data('selected-variant', match);
+      cgbUpdateModalAddBtn(match);
+    }
+  });
 
-            if (remaining > 0) {
-                updateQuantityDisplay(id);
-            }
-        }
+  $('#cgb-modal-add-to-box').on('click', function () {
+    const v     = $('#cgb-variant-modal').data('selected-variant') || $('#cgb-variant-modal').data('variants')[0];
+    if (!v.available) return;
+    const pid   = $('#cgb-variant-modal').data('product-id');
+    const title = $('#cgb-variant-modal').data('product-title');
+    const col   = $('#cgb-variant-modal').data('product-collection');
+    cgbSelectedProducts.push({ id: String(v.id), title: title + ' - ' + v.title, image: v.image.replace('300x', '200x'), price: cgbParsePrice(v.price), comparePrice: v.comparePrice ? cgbParsePrice(v.comparePrice) : 0, collection: col, productId: pid });
+    cgbUpdateUI();
+    $('.cgb-product-card[data-product-id="' + pid + '"]').each(function () { if (String($(this).data('id')) === String(v.id)) cgbUpdateVariantUI($(this), v.id); });
+    $('#cgb-variant-modal').fadeOut(300);
+    $('body').css('overflow', '');
+  });
+
+  // ==================== QUANTITY CONTROLS ====================
+  $(document).on('click', '.cgb-quantity-control__btn.cgb-decrease', function () {
+    const id  = $(this).data('id').toString();
+    const idx = cgbSelectedProducts.findIndex(p => p.id === id);
+    if (idx !== -1) {
+      cgbSelectedProducts.splice(idx, 1);
+      cgbUpdateUI();
+      $('.cgb-product-card').each(function () { if (String($(this).data('id')) === id) cgbUpdateVariantUI($(this), id); });
+    }
+  });
+
+  $(document).on('click', '.cgb-quantity-control__btn.cgb-increase', function () {
+    const id       = $(this).data('id').toString();
+    const existing = cgbSelectedProducts.find(p => p.id === id);
+    if (existing) {
+      cgbSelectedProducts.push({ ...existing });
+    } else {
+      const $c = $(this).closest('.cgb-product-card');
+      cgbSelectedProducts.push({ id, title: $c.find('.cgb-add-to-box-btn').data('title'), image: $c.find('.cgb-add-to-box-btn').data('image'), price: cgbParsePrice($c.find('.cgb-add-to-box-btn').data('price')), comparePrice: cgbParsePrice($c.find('.cgb-add-to-box-btn').data('compare-price') || 0), collection: $c.data('collection'), productId: $c.data('product-id') });
+    }
+    cgbUpdateUI();
+    const cnt = cgbSelectedProducts.filter(p => p.id === id).length;
+    $('.cgb-quantity-control__btn[data-id="' + id + '"]').siblings('.cgb-quantity-control__qty').text(cnt);
+  });
+
+  // ==================== REMOVE ITEM ====================
+  $(document).on('click', '.cgb-cart-item__remove-btn', function () {
+    const index     = parseInt($(this).data('index'));
+    const removedId = cgbSelectedProducts[index] ? cgbSelectedProducts[index].id : null;
+    cgbSelectedProducts.splice(index, 1);
+    if (!cgbSelectedProducts.some(p => p.collection !== 'gift-box' && p.collection !== 'addon')) {
+      cgbSelectedProducts = [];
+      $('#cgb-addon-checkbox').prop('checked', false);
+      $('#cgb-addon-picker').hide();
+    }
+    cgbUpdateUI();
+    if (removedId) {
+      $('.cgb-product-card').each(function () { if (String($(this).data('id')) === String(removedId)) cgbUpdateVariantUI($(this), removedId); });
+    }
+  });
+
+  // ==================== SUBMIT ====================
+  $('#cgb-submit-button').on('click', function () {
+    if (!cgbSelectedProducts.some(p => p.collection !== 'gift-box' && p.collection !== 'addon')) { $('#cgb-next-alert').show(); return; }
+    $('#cgb-next-alert').hide();
+    const formData = cgbSelectedProducts.map(p => ({ id: p.id, quantity: 1 }));
+    $.getJSON('/cart.js', function (cart) {
+      const nums = [];
+      cart.items.forEach(item => { const bn = item.properties && item.properties.box_name; if (bn && bn.startsWith('Box-item')) { const n = parseInt(bn.replace('Box-item ', '')); if (!isNaN(n)) nums.push(n); } });
+      const boxName = 'Box-item ' + (nums.length > 0 ? Math.max(...nums) + 1 : 1);
+      $.ajax({
+        type: 'POST', url: '/cart/add.js',
+        data: JSON.stringify({ items: formData.map(item => ({ ...item, properties: { box_name: boxName } })) }),
+        contentType: 'application/json', dataType: 'json',
+        success: function () { localStorage.removeItem('cgbSelectedProducts'); window.location.href = '/cart'; },
+        error: function (err) { console.error('Cart error:', err.responseText || err); alert('Something went wrong. Please try again.'); }
+      });
+    }).fail(function (err) { console.error('Cart.js error:', err); alert('Something went wrong. Please try again.'); });
+  });
+
+  // ==================== SEARCH & SORT ====================
+  $('#cgb-productSearch').on('input', cgbApplySearchAndSort);
+  $('#cgb-sortOptions').on('change', cgbApplySearchAndSort);
+
+  function cgbApplySearchAndSort() {
+    const q    = $('#cgb-productSearch').val().toLowerCase();
+    const sort = $('#cgb-sortOptions').val();
+    if (sort === 'best-selling' || sort === 'featured') { cgbHandleShowcase(sort); }
+    else { $('#cgb-showcase-section').hide(); $('#cgb-showcaseGrid').empty(); }
+
+    let $cards = $('#cgb-productGrid .cgb-product-card:visible').sort(function (a, b) {
+      const pa = cgbParsePrice($(a).data('price')), pb = cgbParsePrice($(b).data('price'));
+      const ta = $(a).data('title').toLowerCase(),  tb = $(b).data('title').toLowerCase();
+      const fa = $(a).data('featured')     === 'true' || $(a).data('featured')     === true;
+      const fb = $(b).data('featured')     === 'true' || $(b).data('featured')     === true;
+      const ba = $(a).data('best-selling') === 'true' || $(a).data('best-selling') === true;
+      const bb = $(b).data('best-selling') === 'true' || $(b).data('best-selling') === true;
+      const posA = parseInt($(a).data('position'))         || 9999;
+      const posB = parseInt($(b).data('position'))         || 9999;
+      const idxA = parseInt($(a).data('collection-index')) || 9999;
+      const idxB = parseInt($(b).data('collection-index')) || 9999;
+      if (sort === 'manual')       return posA !== posB ? posA - posB : idxA - idxB;
+      if (sort === 'price-asc')    return pa - pb;
+      if (sort === 'price-desc')   return pb - pa;
+      if (sort === 'title-asc')    return ta.localeCompare(tb);
+      if (sort === 'featured')     return (fa && !fb) ? -1 : (!fa && fb) ? 1 : idxA - idxB;
+      if (sort === 'best-selling') return (ba && !bb) ? -1 : (!ba && bb) ? 1 : idxA - idxB;
+      return idxA - idxB;
     });
+    $cards.each(function () { $(this).toggle($(this).data('title').toLowerCase().includes(q)); });
+    $('#cgb-productGrid').append($cards);
+  }
 
-    $(document).on('click', '.cus-qty-btn.cus-increase', function () {
-        const id = $(this).data('id').toString();
-        
-        const product = selectedProducts.find(p => p.id === id);
-
-        if (product) {
-            selectedProducts.push({ ...product });
-        } else {
-            const $card = $(this).closest('.product-card');
-            const productId = $card.data('product-id');
-
-            let newProduct = {
-                id: id,
-                title: $card.find('.add-to-box-btn').data('title'),
-                image: $card.find('.add-to-box-btn').data('image'),
-                price: parsePrice($card.find('.add-to-box-btn').data('price')),
-                collection: $card.data('collection'),
-                productId: productId
-            };
-
-            selectedProducts.push(newProduct);
-        }
-
-        updateLocalStorageAndUI();
-        updateQuantityDisplay(id);
+  function cgbHandleShowcase(type) {
+    const $grid = $('#cgb-showcaseGrid').empty(), items = [];
+    $('#cgb-productGrid .cgb-product-card').each(function () {
+      const $c = $(this); if ($c.data('collection') === 'gift-box') return;
+      const match = type === 'featured'
+        ? ($c.data('featured')     === 'true' || $c.data('featured')     === true)
+        : ($c.data('best-selling') === 'true' || $c.data('best-selling') === true);
+      if (match) items.push($c.clone(true));
     });
+    if (items.length) {
+      $('.cgb-showcase-section__title').text(type === 'featured' ? 'Featured Products' : 'Best Selling Products');
+      items.forEach($c => $grid.append($c));
+      $('#cgb-showcase-section').show();
+    } else {
+      $('#cgb-showcase-section').hide();
+    }
+  }
 
-    // ==================== VARIANT SELECTION - UPDATED WITH IMAGE CHANGE ====================
-    $(document).on('click', '.variant-option-btn', function () {
-        const $btn = $(this);
-        const $container = $btn.closest('.variant-values');
-        const $card = $btn.closest('.product-card');
-        
-        // Remove active class from all buttons in this variant group
-        $container.find('.variant-option-btn').removeClass('active');
-        $btn.addClass('active');
-        
-        // Get the selected variant data
-        const newVariantId = $btn.data('variant-id');
-        const newTitle = $btn.data('title');
-        const newPrice = parsePrice($btn.data('price'));
-        const newVariantImage = $btn.data('variant-image');
-        
-        // Update the product image
-        const $productImage = $card.find('.product-main-image');
-        if (newVariantImage) {
-            $productImage.attr('src', newVariantImage);
-        } else {
-            // Fallback to default product image
-            const defaultImage = $productImage.data('default-image');
-            if (defaultImage) {
-                $productImage.attr('src', defaultImage);
-            }
-        }
-        
-        // Update the card's data attributes
-        $card.attr('data-id', newVariantId);
-        $card.attr('data-title', newTitle);
-        $card.attr('data-price', newPrice);
-        
-        // Update the add-to-box button data (including image for cart)
-        const cartImageSize = newVariantImage ? newVariantImage.replace('300x', '200x') : $productImage.data('default-image').replace('300x', '200x');
-        $card.find('.add-to-box-btn').attr({
-            'data-id': newVariantId,
-            'data-title': newTitle,
-            'data-price': newPrice,
-            'data-image': cartImageSize
+  // ==================== SEARCH SUGGESTIONS ====================
+  const searchEl = document.getElementById('cgb-productSearch');
+  const sugBox   = document.getElementById('cgb-search-suggestions');
+  if (searchEl && sugBox) {
+    const pData = Array.from(document.querySelectorAll('#cgb-productGrid .cgb-product-card'))
+      .map(c => ({ title: c.querySelector('.cgb-product-card__title')?.textContent?.trim(), id: c.getAttribute('data-id') }))
+      .filter(d => d.title && d.id);
+    searchEl.addEventListener('input', function () {
+      const q = this.value.toLowerCase().trim();
+      sugBox.innerHTML = '';
+      if (q.length < 2) { sugBox.style.display = 'none'; return; }
+      const matches = pData.filter(p => p.title.toLowerCase().includes(q)).slice(0, 6);
+      if (!matches.length) { sugBox.style.display = 'none'; return; }
+      matches.forEach(m => {
+        const div = document.createElement('div');
+        div.textContent = m.title;
+        div.addEventListener('click', () => {
+          searchEl.value = m.title;
+          sugBox.style.display = 'none';
+          document.querySelectorAll('#cgb-productGrid .cgb-product-card').forEach(c => {
+            c.style.display = c.querySelector('.cgb-product-card__title')?.textContent?.toLowerCase().includes(m.title.toLowerCase()) ? '' : 'none';
+          });
         });
-        
-        // Update quantity control buttons
-        $card.find('.cus-qty-btn').attr('data-id', newVariantId);
-        
-        // Update the displayed price
-        $card.find('.product-price').text(formatPrice(newPrice));
-        
-        // Update UI state for the selected variant
-        updateVariantUIState($card, newVariantId);
+        sugBox.appendChild(div);
+      });
+      sugBox.style.display = 'block';
     });
+    document.addEventListener('click', e => { if (!e.target.closest('.cgb-search-wrapper')) sugBox.style.display = 'none'; });
+  }
 
-    // ==================== REMOVE ITEM FROM BOX ====================
-    $(document).on('click', '.remove-btn', function () {
-        let index = $(this).data('index');
+  // ==================== INIT ====================
+  cgbUpdateUI();
+  cgbInitializeFilters();
+  cgbUpdateMobileCartVisibility();
+  setTimeout(function () {
+    $('#cgb-sortOptions').val('manual');
+    cgbApplyAllFilters();
+    cgbInitQtyControls();
+  }, 100);
 
-        const removedProduct = selectedProducts[index];
-        const removedId = removedProduct.id;
-
-        selectedProducts.splice(index, 1);
-        updateLocalStorageAndUI();
-
-        // Update UI for all cards that might have this variant
-        $('.product-card').each(function() {
-            const $card = $(this);
-            const cardVariantId = $card.data('id');
-            if (String(cardVariantId) === String(removedId)) {
-                updateVariantUIState($card, removedId);
-            }
-        });
-
-        const remaining = selectedProducts.filter(p => p.id === removedId).length;
-        if (remaining > 0) {
-            updateQuantityDisplay(removedId);
-        }
-
-        const hasOnlyGiftBox = selectedProducts.length === 1 && selectedProducts[0].collection === 'gift-box';
-        const hasNoProduct = selectedProducts.length === 0;
-
-        if (hasOnlyGiftBox || hasNoProduct) {
-            if (hasOnlyGiftBox) {
-                selectedProducts = [];
-                localStorage.removeItem('selectedProducts');
-                renderMiniCart();
-                renderConfirmation();
-            }
-            showStep(0);
-            return;
-        }
-
-        const currentStep = $('.step-indicator .step.active').index();
-        const hasGiftBox = selectedProducts.some(p => p.collection === 'gift-box');
-        if (currentStep === 2 && !hasGiftBox) {
-            showStep(1);
-        }
-    });
-
-    // ==================== UPDATE LOCAL STORAGE AND UI ====================
-    function updateLocalStorageAndUI() {
-        localStorage.setItem('selectedProducts', JSON.stringify(selectedProducts));
-        renderMiniCart();
-        renderConfirmation();
-        updateNextButtonState();
-        updateConfirmButtonState();
-    }
-
-    // ==================== NEXT BUTTON ====================
-    if ($('#next-inline-alert').length === 0) {
-        $('#next-button').before(`
-            <p id="next-inline-alert" style="color: red; font-size: 14px; margin-bottom: 6px; display: none;">
-                Please add at least one product.
-            </p>
-        `);
-    }
-    
-    $('#next-button').click(function () {
-        const hasProduct = selectedProducts.some(p => p.collection !== 'gift-box');
-        
-        if (!hasProduct) {
-            $('#next-inline-alert').fadeIn();
-
-            $('.step-indicator .step').removeClass('active completed');
-            $('.step-indicator .step').eq(0).addClass('active');
-
-            $('#product-step').show();
-            $('#gift-box-step, #confirm-box-step').hide();
-
-            $('.filter-sidebar').show();
-            $('.search-sort-header').show();
-            applyAllFilters();
-            return;
-        }
-
-        $('#next-inline-alert').fadeOut();
-        showStep(1);
-    });
-
-    // ==================== CONFIRM BUTTON ====================
-    if ($('#confirm-inline-alert').length === 0) {
-        $('#confirm-button').before(`
-            <p id="confirm-inline-alert" style="color: red; font-size: 14px; margin-bottom: 8px; display: none;">
-                Please select a gift box.
-            </p>
-        `);
-    }
-
-    $('#confirm-button').click(function () {
-        let giftBoxCount = selectedProducts.filter(p => p.collection === 'gift-box').length;
-
-        if (giftBoxCount === 0) {
-            $('#confirm-inline-alert')
-                .text('Please select a gift box.')
-                .stop(true, true).fadeIn();
-
-            setTimeout(() => { $('#confirm-inline-alert').fadeOut(); }, 3000);
-            return;
-        }
-
-        $('#confirm-inline-alert').hide();
-        showStep(2);
-        renderConfirmation();
-    });
-
-    function updateNextButtonState() {
-        const hasProduct = selectedProducts.some(p => p.collection !== 'gift-box');
-        $('#next-button').prop('disabled', !hasProduct);
-    }
-    
-    function updateConfirmButtonState() {
-        const giftBoxCount = selectedProducts.filter(p => p.collection === 'gift-box').length;
-        const isValidGiftBoxSelection = giftBoxCount >= 1;
-        $('#confirm-button').prop('disabled', !isValidGiftBoxSelection);
-    }
-
-    // ==================== BACK BUTTONS ====================
-    $('#back-button').click(() => {
-        showStep(0);
-    });
-    
-    $('#back-button-2').click(() => showStep(1));
-
-    // ==================== SUBMIT BUTTON ====================
-    $('#submit-button').click(function () {
-        if (selectedProducts.length === 0) {
-            alert('Your box is empty!');
-            return;
-        }
-
-        let formData = selectedProducts.map(product => ({
-            id: product.id,
-            quantity: 1
-        }));
-
-        $.getJSON('/cart.js', function (cart) {
-            let existingBoxNumbers = [];
-
-            cart.items.forEach(item => {
-                const boxName = item.properties && item.properties.box_name;
-                if (boxName && boxName.startsWith('Box-item')) {
-                    const number = parseInt(boxName.replace('Box-item ', ''));
-                    if (!isNaN(number)) existingBoxNumbers.push(number);
-                }
-            });
-
-            const nextBoxNumber = existingBoxNumbers.length > 0
-                ? Math.max(...existingBoxNumbers) + 1
-                : 1;
-
-            const boxName = `Box-item ${nextBoxNumber}`;
-            const updatedFormData = formData.map(item => ({
-                ...item,
-                properties: {
-                    box_name: boxName
-                }
-            }));
-
-            console.log("📦 Sending to cart:", JSON.stringify({ items: updatedFormData }, null, 2));
-
-            $.ajax({
-                type: 'POST',
-                url: '/cart/add.js',
-                data: JSON.stringify({ items: updatedFormData }),
-                contentType: 'application/json',
-                dataType: 'json',
-                success: function () {
-                    localStorage.removeItem('selectedProducts');
-                    window.location.href = '/cart';
-                },
-                error: function (err) {
-                    console.error('Error adding to cart:', err.responseText || err);
-                    alert('Something went wrong. Please try again.');
-                }
-            });
-        }).fail(function(err) {
-            console.error('Error getting cart:', err);
-            alert('Something went wrong. Please try again.');
-        });
-    });
-
-    // ==================== CONFIRMATION RENDER ====================
-    function renderConfirmation() {
-        const container = $('#confirmation-details');
-        container.empty();
-
-        const grouped = {};
-        selectedProducts.forEach(product => {
-            if (!grouped[product.id]) {
-                grouped[product.id] = { ...product, quantity: 1 };
-            } else {
-                grouped[product.id].quantity += 1;
-            }
-        });
-
-        Object.values(grouped).forEach(product => {
-            const unitPrice = parsePrice(product.price);
-            const totalPrice = (unitPrice * product.quantity).toFixed(2);
-            
-            container.append(`
-                <div class="box-item" data-id="${product.id}">
-                    <div class="cus-product-image-wrapper">
-                        <img src="${product.image}" alt="${product.title}" />
-                        <div class="quantity-control">
-                            <span class="qty">${product.quantity}</span>
-                        </div>
-                    </div>
-                    <span>${product.title}</span>
-                    <span>£${totalPrice}</span>
-                </div>
-            `);
-        });
-    }
-
-    // ==================== PROGRESS BAR ====================
-    function updateProgressBar(stepIndex) {
-        let percent = stepIndex === 0 ? 33 : stepIndex === 1 ? 66 : 100;
-        if ($('#progress-fill').length) {
-            $('#progress-fill').css('width', percent + '%');
-        }
-    }
-
-    // ==================== STEP CONTROL ====================
-    function showStep(stepIndex) {
-        $('.step-section').hide();
-
-        $('html, body').animate({ scrollTop: 0 }, 400);
-
-        $('.step-indicator .step')
-            .removeClass('active completed')
-            .each(function (index) {
-                if (index < stepIndex) $(this).addClass('completed');
-                if (index === stepIndex) $(this).addClass('active');
-            });
-
-        $('#next-button, #confirm-button, #back-button, #submit-button, #back-button-2').hide();
-
-        if (stepIndex === 0) {
-            $('#product-step').show();
-            $('#next-button').show();
-            $('.filter-sidebar').show();
-            $('.search-sort-header').show();
-            applyAllFilters();
-        }
-
-        if (stepIndex === 1) {
-            $('#gift-box-step').show();
-            $('.filter-sidebar').hide();
-            $('.search-sort-header').hide();
-            $('.product-card').each(function () {
-                const collection = $(this).data('collection');
-                $(this).toggle(collection === 'gift-box');
-            });
-            $('#back-button, #confirm-button').show();
-        }
-
-        if (stepIndex === 2) {
-            $('#back-button-2').show();
-            $('#confirm-box-step').show();
-            $('#submit-button').show();
-            $('.filter-sidebar').hide();
-            $('.search-sort-header').hide();
-        }
-
-        updateProgressBar(stepIndex);
-    }
-
-    // ==================== STEP INDICATOR CLICK ====================
-    $(document).on('click', '.step-indicator .step', function () {
-        const clickedStep = parseInt($(this).data('step'));
-        const currentStep = $('.step-indicator .step.active').index();
-        if (clickedStep < currentStep) showStep(clickedStep);
-    });
-
-    // ==================== SEARCH & SORT ====================
-    $('#productSearch').on('input', applySearchAndSort);
-    $('#sortOptions').on('change', applySearchAndSort);
-
-    function applySearchAndSort() {
-        let searchQuery = $('#productSearch').val().toLowerCase();
-        let sortOption = $('#sortOptions').val();
-
-        let $products = $('.product-card:visible').sort(function (a, b) {
-            let priceA = parsePrice($(a).data('price'));
-            let priceB = parsePrice($(b).data('price'));
-            let titleA = $(a).data('title').toLowerCase();
-            let titleB = $(b).data('title').toLowerCase();
-
-            if (sortOption === 'price-asc') return priceA - priceB;
-            if (sortOption === 'price-desc') return priceB - priceA;
-            if (sortOption === 'title-asc') return titleA.localeCompare(titleB);
-            return 0;
-        });
-
-        $products.each(function () {
-            let title = $(this).data('title').toLowerCase();
-            $(this).toggle(title.includes(searchQuery));
-        });
-
-        $('#productGrid').append($products);
-    }
-
-    // ==================== SEARCH SUGGESTIONS ====================
-    const productSearch = document.getElementById('productSearch');
-    const suggestionsBox = document.getElementById('search-suggestions');
-
-    if (productSearch && suggestionsBox) {
-        const productCards = document.querySelectorAll('#productGrid .product-card');
-        const productData = Array.from(productCards).map(card => ({
-            title: card.querySelector('.product-title')?.textContent?.trim(),
-            id: card.getAttribute('data-id')
-        })).filter(item => item.title && item.id);
-
-        productSearch.addEventListener('input', function () {
-            const query = this.value.toLowerCase().trim();
-            suggestionsBox.innerHTML = '';
-
-            if (query.length < 2) {
-                suggestionsBox.style.display = 'none';
-                return;
-            }
-
-            const matches = productData.filter(p => p.title.toLowerCase().includes(query)).slice(0, 6);
-
-            if (matches.length === 0) {
-                suggestionsBox.style.display = 'none';
-                return;
-            }
-
-            matches.forEach(match => {
-                const div = document.createElement('div');
-                div.textContent = match.title;
-                div.dataset.id = match.id;
-                div.addEventListener('click', () => {
-                    productSearch.value = match.title;
-                    suggestionsBox.style.display = 'none';
-                    filterProductCards(match.title);
-                });
-                suggestionsBox.appendChild(div);
-            });
-
-            suggestionsBox.style.display = 'block';
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.custom-search-wrapper')) {
-                suggestionsBox.style.display = 'none';
-            }
-        });
-    }
-
-    function filterProductCards(query) {
-        const cards = document.querySelectorAll('#productGrid .product-card');
-        cards.forEach(card => {
-            const title = card.querySelector('.product-title')?.textContent?.toLowerCase();
-            card.style.display = title && title.includes(query.toLowerCase()) ? 'block' : 'none';
-        });
-    }
-
-    // ==================== INITIALIZE ON LOAD ====================
-    renderMiniCart();
-    updateNextButtonState();
-    updateConfirmButtonState();
-    initializeFilters();
-    
-    setTimeout(() => {
-        $('#sortOptions').val('title-asc');
-        applyAllFilters();
-        initializeQuantityControls();
-    }, 100);
 });
 </script>
-<style>
-   @media screen and (max-width: 768px){
-  .custom-search-wrapper {
-  width: 100% !important;
-}
-   }
-.custom-search-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-#productSearch {
-  padding: 10px 40px 10px 12px; /* Add space on right for icon */
-  width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
-/* Search icon button inside input */
-.search-icon-button {
-  position: absolute;
-  top: 50%;
-  right: 12px;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  height: 20px;
-  width: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.search-icon-button svg {
-  width: 18px;
-  height: 18px;
-  stroke: #666;
-  transition: stroke 0.2s ease;
-}
-
-.search-icon-button:hover svg {
-  stroke: #000;
-}
-
-.suggestions-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-top: none;
-  z-index: 10;
-  max-height: 200px;
-  overflow-y: auto;
-  border-radius: 0 0 6px 6px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-}
-
-.suggestions-dropdown div {
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.suggestions-dropdown div:hover {
-  background-color: #f8f9fa;
-}
-
-.main-page-title.page-title.h0.scroll-trigger.animate--fade-in {
-  margin: 0;
-  font-family: 'Garet', sans-serif !important;
-  font-weight: bold;
-  text-align: center;
-}
-
-/* Filter Sidebar Styles */
-.filter-sidebar {
-  width: 250px;
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  padding: 20px;
-  position: sticky;
-  top: 70px;
-  height: fit-content;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.filter-sidebar h3 {
-  margin: 0 0 20px 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-  border-bottom: 1px solid #e9ecef;
-  padding-bottom: 10px;
-}
-
-.filter-group {
-  margin-bottom: 25px;
-}
-
-.filter-group h4 {
-  margin: 0 0 12px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #495057;
-}
-
-/* Category Filter */
-.category-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 300px;
-  overflow-y: scroll;
-}
-
-.category-item {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-size: 14px;
-  color: #495057;
-  padding: 2px 0;
-}
-
-.category-item input[type="checkbox"] {
-  margin-right: 8px;
-  transform: scale(1.1);
-}
-
-.category-item:hover {
-  color: #000;
-}
-
-/* Availability Filter */
-.availability-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.availability-item {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-size: 14px;
-  color: #495057;
-  padding: 2px 0;
-}
-
-.availability-item input[type="checkbox"] {
-  margin-right: 8px;
-  transform: scale(1.1);
-}
-
-.availability-item:hover {
-  color: #000;
-}
-
-/* Price Filter */
-.price-info {
-  font-size: 13px;
-  color: #6c757d;
-  margin-bottom: 15px;
-}
-
-.price-inputs {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 15px;
-}
-
-.price-inputs input {
-  width: 80px;
-  padding: 8px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.price-inputs span {
-  font-size: 14px;
-  color: #495057;
-}
-
-.price-slider-container {
-  position: relative;
-  height: 20px;
-  margin-bottom: 10px;
-}
-
-.price-slider {
-  position: absolute;
-  width: 100%;
-  height: 5px;
-  border-radius: 5px;
-  background: #ddd;
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.price-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #000;
-  cursor: pointer;
-}
-
-.price-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #000;
-  cursor: pointer;
-  border: none;
-}
-
-.price-display {
-  text-align: center;
-  font-size: 14px;
-  font-weight: 600;
-  color: #495057;
-}
-
-.variant-values {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-.variant-option-btn {
-  padding: 6px 14px;
-  border: 1px solid #ccc;
-  border-radius: 9999px;
-  background: white;
-  color: #333;
-  cursor: pointer;
-  font-size: 14px;
-  transition: 0.2s ease;
-}
-
-.variant-option-btn.active,
-.variant-option-btn:hover {
-  background: #000;
-  color: white;
-  border: 1px solid #000;
-}
-
-  
-  .cus-product-image-wrapper {
-    position: relative;
-}
-  .quantity-control {
-    position: absolute;
-    top: -2px;
-    right: -9px;
-    line-height: 0;
-}
-  span.qty {
-    padding: 2px 6px;
-    background-color: #bdbdbd;
-    border-radius: 50%;
-}
-  
-.cus-quantity-control {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    gap: 16px;
-    border: 1px solid #000;
-    border-radius: 5px;
-    padding: 4px 0px;
-    width: 100%;
-    font-size: 14px;
-    margin-top: 8px;
-    color: #000;
-}
-
-.cus-quantity-control button {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-  color: #000;
-}
-
-.cus-qty {
-  min-width: 20px;
-  text-align: center;
-}
-
-
-.your-customize-box .page-width--narrow {
-        text-align: center;
-    }
-
-  #back-button, #confirm-button, #submit-button, #back-button-2{
-    display: none;
-  }
-/* General Box Section */
-.custom-gift-box-section {
-  padding: 20px;
-  position: relative;
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 20px;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-/* Content Area */
-.content-area {
-  flex: 1;
-  margin-left: 0;
-}
-
-.search-sort-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  gap: 15px;
-}
-
-.search-sort-header input,
-.search-sort-header select {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: #fff;
-  width: 47%;
-}
-
-/* Position mini-cart at the top-right and always visible */
-.your-box {
-  position: sticky;
-  top: 70px;
-  width: 350px;
-  background: #fff;
-  border: 1px solid #ddd;
-  padding: 15px;
-  border-radius: 8px;
-  z-index: 3;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-  transition: top 0.3s ease;
-  height: fit-content;
-}
-
-.your-box h3 {
-  margin: 0 0 10px 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #000;
-}
-
-.your-box hr {
-  margin: 10px 0;
-}
-
-/* Step Indicator */
-.step-indicator {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  position: relative;
-  width: 50vw;
-  margin: 0 auto;
-  padding-bottom: 50px;
-}
-
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  position: relative;
-  flex: 1;
-  font-family: sans-serif;
-  color: #9ca3af; /* Gray-400 */
-  cursor: pointer;
-}
-
-/* Connector lines */
-.step:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  top: 16px;
-  left: 50%;
-  width: 100%;
-  height: 2px;
-  transform: translateX(0%);
-  border-top: 2px dotted #d1d5db;
-  z-index: 0;
-}
-
-.step-indicator .step-number {
-    border-radius: 50%;
-    padding: 5px 15px;
-    border: 1px solid #aaa;
-    z-index: 1;
-    background: #fff;
-}
-
-.step-number {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: #e5e7eb; /* Default gray */
-  color: #374151;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  z-index: 1;
-  font-size: 14px;
-}
-
-.step.completed .step-number,
-.step.active .step-number {
-  background-color: #000; /* Teal */
-  color: white;
-  border-radius: 50%;
-  padding: 5px 15px;
-  border: #000;
-}
-
-.step span:last-child {
-  margin-top: 6px;
-  font-size: 14px;
-}
-
-.step.completed span:last-child,
-.step.active span:last-child {
-  font-weight: 600;
-  color: #000;
-}
-
-.step.completed .step-number,
-.step.active .step-number {
-  background-color: #000;
-  color: white;
-}
-
-.step.completed span:last-child,
-.step.active span:last-child {
-  font-weight: 600;
-  color: #000;
-}
-
-.step.completed:not(:last-child)::after {
-  border-top: 2px solid #000;
-}
-.step::after {
-  transition: border-top-color 0.4s ease;
-}
-
-
-/* Collection Slider */
-.collection-slider {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  width: 100%;
-}
-
-.slider-btn {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-/* Search and Sort Section */
-.search-sort {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 20px;
-  width: 100%;
-}
-
-.search-sort input,
-.search-sort select {
-  flex: 1;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: #fff;
-}
-.step-content-wrapper {
-    width: 100%;
-}
-/* Product Grid */
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px;
-}
-
-/* Product Card with Same Size */
-.product-card {
-  background: #fff;
-  border: 1px solid #ddd;
-  padding: 15px;
-  text-align: center;
-  border-radius: 8px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Distribute content evenly */
-  transition: box-shadow 0.2s ease;
-}
-
-.product-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.product-card img {
-  width: 100%;
-  height: 180px; /* Fixed image height */
-  object-fit: cover;
-  border-radius: 6px;
-  margin-bottom: 10px; /* Space between image and text */
-}
-
-/* Optional: Set the product title or text to ensure no overflow */
-.product-card p {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
-  max-height: calc(1.2em * 2); /* Adjust based on your font-size/line-height */
-  line-height: 1.2em; /* Set consistent line height */
-}
-
-
-.product-title {
-  font-weight: 600;
-  margin: 8px 0;
-  color: #000;
-}
-
-.product-price {
-  font-size: 16px;
-  font-weight: 600;
-  color: #000;
-  margin-bottom: 10px;
-}
-
-/* Add to Box Button */
-.add-to-box-btn {
-  position: relative;
-  background: transparent;
-  color: #000;
-  font-size: 18px;
-  font-weight: 600;
-  border: 1px solid #e1e1e1;
-  border-radius: 6px;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  z-index: 0;
-  padding: 12px 0;
-}
-
-/* Remove previous fill effect */
-.add-to-box-btn::after {
-  display: none;
-}
-
-/* Add shine effect */
-.add-to-box-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 150%;
-  height: 100%;
-  background: linear-gradient( 90deg, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.4) 70%, rgba(255, 255, 255, 0) 80% );
-  transform: translateX(-100%);
-  z-index: 1;
-  pointer-events: none;
-}
-
-.add-to-box-btn:hover::before {
-  animation: smooth-shine 2s ease-in-out infinite;
-}
-
-.add-to-box-btn:hover {
-  color: #fff;
-  background: #000;
-  border-color: #000;
-}
-
-/* Ensure text stays above shine */
-.add-to-box-btn > * {
-  position: relative;
-  z-index: 2;
-}
-
-/* Shine animation */
-@keyframes smooth-shine {
-  0% {
-    transform: translateX(-100%);
-  }
-  50% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-
-/* Box Item */
-.box-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-    padding: 10px;
-    border-radius: 6px;
-    position: relative;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.box-item img {
-  width: 75px;
-  height: 75px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.box-item span {
-  flex: 1;
-  font-size: 14px;
-  color: #000;
-}
-
-.box-item span:last-child {
-  font-weight: 600;
-  text-align: right;
-  white-space: nowrap;
-}
-
-/* Remove Button */
-.remove-btn {
-    background: #fff;
-    border: none;
-    font-size: 16px;
-    color: #e74c3c;
-    cursor: pointer;
-    position: absolute;
-    border-radius: 50%;
-    top: 0px;
-    right: 0px;
-    border: 1px solid #ddd;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-/* Disabled Styles for All Buttons */
-.next-btn:disabled,
-.confirm-btn:disabled,
-.back-btn:disabled,
-#submit-button:disabled,
-#next-button:disabled,
-#confirm-button:disabled,
-.next-btn.disabled,
-.confirm-btn.disabled,
-.back-btn.disabled,
-#submit-button.disabled,
-#next-button.disabled,
-#confirm-button.disabled {
-  opacity: 0.5;
-  background-color: #ccc !important;
-  color: #888 !important;
-  cursor: not-allowed !important;
-  pointer-events: none;
-  border-color: #aaa !important;
-}
-
-/* Default Button Styles */
-.next-btn,
-.confirm-btn,
-.back-btn,
-#submit-button {
-  width: 100%;
-  background-color: #000;
-  color: #fff;
-  padding: 12px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  border: 1px solid #000;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-/* Hover Styles */
-.next-btn:hover,
-.confirm-btn:hover,
-.back-btn:hover,
-#submit-button:hover {
-  background-color: #333;
-  color: #fff;
-  border: 1px solid #000;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Collection Item Default Styles */
-  
-.collection-item {
-  background-color: #f9f9f9;
-  color: #333;
-  border: 1px solid #ddd;
-  padding: 10px;
-  border-radius: 6px;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  margin-right: 10px;
-  white-space: nowrap;
-}
-
-/* Style for Selected Collection */
-.collection-item.selected {
-  background-color: #000;
-  color: #fff;
-  border: 1px solid #000;
-}
-
-/* Hover Effect for Collection Items */
-.collection-item:hover {
-  background-color:  #000;
-  cursor: pointer;
-  color: #fff;
-}
-/* Hover Effect for Selected Collection */
-.collection-item.selected:hover {
-  background-color: #000;
-  color: #fff;
-}
-  .collection-item.active {
-     background-color: #000;
-    color: #fff;
-    font-weight: 700;
-}
-
-/* Confirmation Details Section */
-#confirmation-details {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 20px;
-}
-div#box-items {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-.collection-list {
-        width: 100%;
-        overflow-x: auto;
-        display: flex;
-        gap: 6px;
-        padding-bottom: 15px;
-        scrollbar-color: #e6e6e6 #a0a0a07a;
-    }
-  div#box-items-button {
-    display: flex;
-    gap: 10px;
-    flex-direction: row;
-    margin-top: 10px;
-}
- .your-box p {
-    display: flex;
-    justify-content: space-between;
-   color: #000;
-}
-
-  #gift-box-step h2 {
-  margin-top: 0 !important;
-  transform: translateY(0px) !important;
-  color: #000;
-  font-family: 'Garet', sans-serif !important;
-  font-weight: bold;
-}
-
- .step-section {
-  transform: translateY(0px) !important;
- }
-    .step-content-wrapper h2 {
-    margin-top: 0 !important;
-    transform: translateY(0px) !important;
-    color: #000;
-    font-family: 'Garet', sans-serif !important;
-    font-weight: bold;
-    margin-bottom: 20px;
-    }
- #filter-search-wrapper h2{
-    margin: 0 0 20px 0 !important;
-   font-family: 'Garet', sans-serif !important;
-   font-weight: bold;
-   color: #000;
- }
-   .custom-left-wraper {
-     width: 70%;
-   }
-
-.alert-row {
-  margin-top: 10px;
-}
-
-.qty-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.cmb-Price, .cmb-Availability, .cmb-sortOptions{
-    display: block;
-}
-
-    /* Mobile responsiveness */
-  @media (min-width: 769px) and  (max-width: 991px){
-    .custom-gift-box-section {
-     display: block !important;
-    }
-  }
-  @media   (min-width: 1360px){
-    .back-btn{
-      display: none !important;
-    }
-  }
-
-/* Mobile Responsive Styles */
-@media (max-width: 1200px) {
-  .cmb-Price, .cmb-Availability, .cmb-sortOptions{
-    display: none;
-  }
-  .custom-gift-box-section {
-    flex-direction: column;
-  }
-  
-  .filter-sidebar {
-    width: 100%;
-    position: relative;
-    top: 0;
-    margin-bottom: 20px;
-  }
-  
-  .content-area {
-    margin-left: 0;
-  }
-}
-
-@media   (max-width: 1359px){
-    div#box-items {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 10px;
-    overflow: auto;
-}
-  #mini-cart {
-    position: fixed;
-    width: 100%;
-    bottom: 0;
-    left: 0;
-    top: unset;
-    height: fit-content;
-    background: rgb(255 255 255);
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-    z-index: 1;
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-}
-  .step-indicator {
-  width: 100vw;
-}
-      .custom-left-wraper {
-      width: 100%;
-}
-  .your-box {
-    position: fixed;
-    width: 100%;
-    bottom: 0;
-    left: 0;
-    top: unset;
-    height: fit-content;
-    background: rgb(255, 255, 255);
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-    z-index: 1;
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  }
-  /* Mobile Responsive Styles */
-
-  @media (max-width: 768px) {
-
-    .step-indicator {
-        text-align: center;
-        gap: 10px;
-        align-items: unset !important;
-       width: 95vw;
-    }
-    
-    .collection-list {
-    width: 100%;
-    overflow-x: scroll;
-    display: flex;
-    gap: 6px;
-}
-    .custom-left-wraper {
-      max-width: -webkit-fill-available;
-      width: 100%;
-}
-  .custom-gift-box-section {
-    flex-direction: column;
-    align-items: center;
-    padding: 10px;
-    display: block;
-  }
-
-  .search-sort {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .search-sort-header {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  }
-
-  .product-card {
-    max-width: 100%;
-  }
-
-  .product-card img {
-    height: auto;
-    max-height: 180px;
-  }
-
-  .step-indicator {
-    text-align: center;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .collection-slider {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .collection-item {
-    margin-right: 0;
-    margin-bottom: 10px;
-    width: 100%;
-    text-align: center;
-  }
-
-  #confirmation-details .box-item {
-    align-items: flex-start;
-  }
-
-  .box-item {
-    flex-direction: row;
-  }
-
-  .box-item img {
-    width: 40px;
-    height: 40px;
-  }
-
-  .box-item span {
-    flex: unset;
-    width: 100%;
-    text-align: left;
-  }
-
-  .remove-btn {
-    top: 0px;
-    right: 0px;
-  }
-
-  .custom-search-wrapper {
-    width: 100% !important;
-  }
-}
-  [data-handle="gift-box"]{
-    display: none;
-  }
-   @media (max-width: 450px) {
-     .main-page-title.page-title.h0.scroll-trigger.animate--fade-in {
-    font-size: 32px;
-}
-   }
-
-</style>
 
 {% schema %}
 {
-  "name": "Custom Gift Box",
+  "name": "Custom Gift Box v2",
   "tag": "section",
   "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
+      "type": "text",
+      "id": "main_title",
+      "label": "Main Title",
+      "default": "Build Your Custom Gift Box"
+    },
+    {
+      "type": "textarea",
+      "id": "main_subtitle",
+      "label": "Subtitle",
+      "default": "Create the perfect personalized gift by selecting your favorite products"
+    },
+    {
+      "type": "header",
+      "content": "Your Box panel"
+    },
+    {
+      "type": "range",
+      "id": "max_box_items",
+      "label": "Max items (slots)",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "url",
+      "id": "curated_boxes_url",
+      "label": "Curated boxes link (URL)"
+    },
+    {
+      "type": "header",
+      "content": "Box Add-ons"
+    },
+    {
+      "type": "paragraph",
+      "content": "These two products appear as optional add-ons in the \"Your Box\" panel once a product is added. Each can be toggled on or off independently. This is separate from the \"Add Gift Box\" option."
+    },
+    {
+      "type": "product",
+      "id": "addon_product_1",
+      "label": "Add-on product 1"
+    },
+    {
+      "type": "product",
+      "id": "addon_product_2",
+      "label": "Add-on product 2"
+    }
+  ],
   "blocks": [
     {
-      "type": "collection",
-      "name": "Collection",
-      "settings": [
+  "type": "collection",
+  "name": "Collection",
+  "settings": [
         {
           "type": "collection",
           "id": "collection",
           "label": "Select Collection"
+        },
+        {
+          "type": "text",
+          "id": "custom_name",
+          "label": "Custom Tab / Filter Name",
+          "placeholder": "Leave blank to use collection title"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Custom Gift Box",
+      "name": "Custom Gift Box  v2",
       "blocks": [
         {
           "type": "collection"

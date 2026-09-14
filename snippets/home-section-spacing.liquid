@@ -1,0 +1,174 @@
+{%- comment -%}
+  Uniform spacing between Home page sections.
+
+  Every section on the index template contributes the same top & bottom padding,
+  so the gap between any two adjacent sections is consistent:
+    desktop : 60px + 60px = 120px
+    mobile  : 30px + 30px = 60px
+
+  Two padding systems are in play on this theme:
+    • Native (Horizon) sections render an inner ".section.spacing-style" box.
+    • Custom sections hard-code padding on their own root element.
+  Both are normalised below. !important is required to beat the per-section
+  inline / scoped styles. Edit the four values here to change the rhythm.
+{%- endcomment -%}
+{%- if request.page_type == 'index' -%}
+  {%- liquid
+    assign pad_desktop = 60
+    assign pad_mobile = 30
+    comment
+      The quote/Hadith ticker (marquee) is a thin single-line band, so it gets a
+      much smaller top & bottom padding than the uniform section rhythm above.
+    endcomment
+    assign pad_marquee_desktop = 20
+    assign pad_marquee_mobile = 14
+  -%}
+  <style>
+    /* ---- Desktop: {{ pad_desktop }}px top & bottom (→ {{ pad_desktop | times: 2 }}px gaps) ---- */
+    /* Native sections (exclude the hero so its header offset on top is kept) */
+    #MainContent > .shopify-section .spacing-style.section:not(.hero__container) {
+      padding-block: {{ pad_desktop }}px !important;
+    }
+    /* Hero: only the bottom, top offset under the header stays intact */
+    #MainContent > .shopify-section .hero__container.spacing-style {
+      padding-bottom: {{ pad_desktop }}px !important;
+    }
+    /* Custom sections — padding lives on each section's own root element */
+    #MainContent > .shopify-section > .gcs-wrapper,
+    #MainContent > .shopify-section > .cfa-section,
+    #MainContent > .shopify-section > .clg-section,
+    #MainContent > .shopify-section > .gbh,
+    #MainContent > .shopify-section > .fe,
+    #MainContent > .shopify-section > .scc-section,
+    #MainContent > .shopify-section > .brd-section,
+    #MainContent > .shopify-section > .wnt-section,
+    #MainContent > .shopify-section > .cr-section {
+      padding-top: {{ pad_desktop }}px !important;
+      padding-bottom: {{ pad_desktop }}px !important;
+    }
+
+    /* Quote/Hadith ticker (marquee) — thin band, overrides the uniform rhythm.
+       Extra class (.gap-style) raises specificity above the native rule above. */
+    #MainContent > .shopify-section > marquee-component.section.spacing-style.gap-style {
+      padding-block: {{ pad_marquee_desktop }}px !important;
+    }
+
+    /* ---- Mobile: {{ pad_mobile }}px top & bottom (→ {{ pad_mobile | times: 2 }}px gaps) ---- */
+    @media screen and (max-width: 749px) {
+      #MainContent > .shopify-section .spacing-style.section:not(.hero__container) {
+        padding-block: {{ pad_mobile }}px !important;
+      }
+      #MainContent > .shopify-section .hero__container.spacing-style {
+        padding-bottom: {{ pad_mobile }}px !important;
+      }
+      #MainContent > .shopify-section > .gcs-wrapper,
+      #MainContent > .shopify-section > .cfa-section,
+      #MainContent > .shopify-section > .clg-section,
+      #MainContent > .shopify-section > .gbh,
+      #MainContent > .shopify-section > .fe,
+      #MainContent > .shopify-section > .scc-section,
+      #MainContent > .shopify-section > .brd-section,
+      #MainContent > .shopify-section > .wnt-section,
+      #MainContent > .shopify-section > .cr-section {
+        padding-top: {{ pad_mobile }}px !important;
+        padding-bottom: {{ pad_mobile }}px !important;
+      }
+      #MainContent > .shopify-section > marquee-component.section.spacing-style.gap-style {
+        padding-block: {{ pad_marquee_mobile }}px !important;
+      }
+    }
+  </style>
+
+  {%- comment -%}
+    Uniform LEFT alignment for every section's title / eyebrow / subtitle, and
+    full-width content (drop the inner max-width caps + auto centering).
+    !important is needed to beat per-section inline styles and hardcoded centering.
+  {%- endcomment -%}
+  <style>
+    /* ---- Titles, eyebrows & subtitles → left ---- */
+    /* Community Favourites */
+    #MainContent .cfa-head,
+    #MainContent .cfa-eyebrow,
+    #MainContent .cfa-title { text-align: left !important; }
+    #MainContent .cfa-tabs { justify-content: flex-start !important; }
+    /* Collection filter-tab labels → green */
+    #MainContent .cfa-tab,
+    #MainContent .cfa-tab-name { color: #1C4A3A !important; }
+
+    /* Sunnah Collection Cards */
+    #MainContent .scc-head,
+    #MainContent .scc-eyebrow,
+    #MainContent .scc-title,
+    #MainContent .scc-subtext { text-align: left !important; }
+    #MainContent .scc-subtext { margin-inline: 0 !important; }
+
+    /* Gift Category Slider (occasion-carousel) */
+    #MainContent .gcs-title { text-align: left !important; }
+    #MainContent .gcs-header { justify-content: space-between !important; }
+
+    /* Brands Discovered / Founders Edit / Customer Reviews (guarantee left) */
+    #MainContent .brd-header,
+    #MainContent .brd-eyebrow,
+    #MainContent .brd-heading,
+    #MainContent .fe__eyebrow,
+    #MainContent .fe__heading,
+    #MainContent .cr-header,
+    #MainContent .cr-title,
+    #MainContent .cr-subtitle { text-align: left !important; }
+
+    /* ---- Full-width content (remove inner max-width caps + auto centering) ---- */
+    #MainContent .cfa-wrap,
+    #MainContent .scc-wrap,
+    #MainContent .brd-wrap,
+    #MainContent .fe__inner,
+    #MainContent .gcs-inner,
+    #MainContent .gbh__inner {
+      max-width: 100% !important;
+      margin-inline: 0 !important;
+    }
+
+    /* New Arrivals product-list header: small uppercase muted eyebrow
+       ("Just landed") above the title, matching the site's other eyebrows;
+       plus a green "View all" link (website green = #1C4A3A). */
+    #MainContent .section-resource-list__header .text-block p {
+      margin: 0 0 4px !important;
+      font-family: var(--font-body--family) !important;
+      font-size: 0.6875rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.14em !important;
+      text-transform: uppercase !important;
+      line-height: 1.2 !important;
+      color: #1C4A3A !important;
+    }
+    #MainContent .section-resource-list__header a.link {
+      color: #1C4A3A !important;
+    }
+
+    /* ---- Unified sub-heading (eyebrow) type: DM Sans 12px / 600 / green ---- */
+    /* NOTE: .fe__eyebrow (Founder's Edit) is intentionally excluded — that
+       section sits on a dark background and manages its own light eyebrow
+       colour, so the green !important colour below would make it invisible. */
+    #MainContent .cfa-eyebrow,
+    #MainContent .scc-eyebrow,
+    #MainContent .brd-eyebrow,
+    #MainContent .wnt-label,
+    #MainContent .section-resource-list__header .text-block p {
+      font-family: var(--font-body--family) !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      line-height: 1.6 !important;
+      letter-spacing: 0.1em !important;
+      text-transform: uppercase !important;
+      color: #1C4A3A !important;
+    }
+    /* Gift-box hero eyebrow: same type, but keep its accent colour (dark-green bg) */
+    #MainContent .gbh__eyebrow {
+      font-family: var(--font-body--family) !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      line-height: 1.6 !important;
+      letter-spacing: 0.1em !important;
+      text-transform: uppercase !important;
+    }
+  </style>
+{%- endif -%}

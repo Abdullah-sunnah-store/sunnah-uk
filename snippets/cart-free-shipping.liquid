@@ -1,0 +1,95 @@
+{% doc %}
+  Cart Free Shipping Bar
+  Renders a dynamic "Spend X more to get free shipping" bar at the top of the cart.
+  Settings: free_shipping_bar_enabled, free_shipping_threshold,
+            free_shipping_bar_label, free_shipping_reached_label
+{% enddoc %}
+
+{%- if settings.free_shipping_bar_enabled -%}
+  {%- liquid
+    assign threshold   = settings.free_shipping_threshold
+    assign cart_total  = cart.total_price
+    assign remaining   = threshold | minus: cart_total
+    assign progress    = cart_total | times: 100.0 | divided_by: threshold
+    if progress > 100
+      assign progress = 100
+    endif
+  -%}
+
+  <div
+    class="cart-free-shipping{% if remaining <= 0 %} cart-free-shipping--reached{% endif %}"
+    data-threshold="{{ threshold }}"
+    data-label="{{ settings.free_shipping_bar_label | escape }}"
+    data-reached-label="{{ settings.free_shipping_reached_label | escape }}"
+    role="progressbar"
+    aria-valuenow="{{ progress | round }}"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    style="--progress: {{ progress }}%;"
+  >
+    {%- assign remaining_money = remaining | money -%}
+    {%- assign amount_span = '<span class="cart-free-shipping__amount">' | append: remaining_money | append: '</span>' -%}
+    {%- assign bar_message = settings.free_shipping_bar_label | replace: '{{amount}}', amount_span -%}
+
+    <span class="cart-free-shipping__text">
+      {%- if remaining <= 0 -%}
+        {{ settings.free_shipping_reached_label }}
+      {%- else -%}
+        {{ bar_message }}
+      {%- endif -%}
+    </span>
+  </div>
+{%- endif -%}
+
+{% style %}
+  .cart-free-shipping {
+    position: relative;
+    padding: 2px;
+    text-align: center;
+    overflow: hidden;
+    border-bottom: 1px solid #b8d4c2;
+    background-color: #dff0e6;
+    margin-bottom: 10px;
+  }
+
+  .cart-free-shipping::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--progress, 0%);
+    background-color: #a8cdb8;
+    transition: width 0.5s ease;
+    z-index: 0;
+  }
+
+  .cart-free-shipping--reached::before {
+    background-color: #7dbd97;
+  }
+
+  .cart-free-shipping__text {
+    position: relative;
+    z-index: 1;
+    font-size: 13px;
+    font-weight: 400;
+    color: #1C4A3A;
+    line-height: 1.4;
+  }
+
+  .cart-free-shipping--reached .cart-free-shipping__text {
+    color: #1C4A3A;
+    font-weight: 600;
+  }
+
+  .cart-free-shipping__amount {
+    font-weight: 700;
+    color: #1C4A3A;
+    font-size: 14px;
+    display: inline-block;
+    animation: freeShippingPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes freeShippingPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.7; transform: scale(1.08); }
+  }
+{% endstyle %}

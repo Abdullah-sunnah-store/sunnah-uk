@@ -1,0 +1,1841 @@
+{% comment %}
+  TSS — Product
+  A single-column, full-bleed product page mirroring the reference build at
+  thesunnahstoremarketplace.vercel.app/products/…
+
+  Order on the page:
+    full-bleed media rail + gold progress bar
+    vendor · serif title · gold price · founder's note
+    option groups (rows for sizes, swatches for finishes)
+    "This is a gift" panel — wrap, occasion, message, hide price
+    full-width Add to Bag + inline trust line
+    accordions
+    sticky buy bar once the main CTA scrolls away
+    tap-to-open lightbox
+
+  Blocks carry the trust line and the accordions.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+  assign p = product
+  assign cv = p.selected_or_first_available_variant
+
+  # Founder's note — per-product metafield wins, section text is the fallback.
+  assign note = blank
+  if s.note_metafield != blank
+    assign note_parts = s.note_metafield | split: '.'
+    if note_parts.size == 2
+      assign note = p.metafields[note_parts[0]][note_parts[1]]
+    endif
+  endif
+  if note == blank
+    assign note = s.note
+  endif
+
+  # "A3 | 30 × 42 cm" — one per line, appended under the matching option value.
+  assign note_lines = s.value_notes | newline_to_br | split: '<br />'
+-%}
+
+<style>
+  #tss-product-{{ uid }} {
+    background: var(--tss-ivory);
+    padding-block-end: {{ s.padding_bottom | default: 0 }}px;
+  }
+
+  /* ---------- media ---------- */
+  #tss-product-{{ uid }} .tss-pd__rail {
+    gap: 0;
+    padding: 0;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__rail > * {
+    width: 100%;
+    max-width: none;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__slide {
+    display: block;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    background: var(--tss-ivory-2);
+    aspect-ratio: 4 / 5;
+    cursor: zoom-in;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__slide img,
+  #tss-product-{{ uid }} .tss-pd__slide svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #tss-product-{{ uid }} .tss-progress {
+    margin: 0;
+    max-width: none;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__thumbs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    padding: 12px var(--tss-gutter) 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__thumbs::-webkit-scrollbar {
+    display: none;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__thumb {
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+    width: 58px;
+    padding: 0;
+    border: 0;
+    background: var(--tss-ivory-2);
+    aspect-ratio: 4 / 5;
+    cursor: pointer;
+    opacity: 0.55;
+    outline: 1px solid transparent;
+    outline-offset: -1px;
+    transition: opacity 0.2s ease-out, outline-color 0.2s ease-out;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__thumb[aria-current='true'] {
+    opacity: 1;
+    outline-color: var(--tss-gold);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__thumb:hover {
+    opacity: 1;
+  }
+
+  /* ---------- body ---------- */
+  #tss-product-{{ uid }} .tss-pd__body {
+    padding: 32px var(--tss-gutter) 0;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__vendor {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgb(28 28 26 / 0.5);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__title {
+    margin-top: 10px;
+    font-family: var(--tss-serif);
+    font-size: {{ s.title_size | default: 30 }}px;
+    font-weight: 400;
+    line-height: 1.15;
+    text-wrap: balance;
+    color: var(--tss-ink);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__price {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 14px;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--tss-gold);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__was {
+    font-size: 14px;
+    font-weight: 400;
+    text-decoration: line-through;
+    color: rgb(28 28 26 / 0.4);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__note {
+    margin-top: 24px;
+    border-left: 2px solid var(--tss-gold);
+    padding-left: 18px;
+    font-family: var(--tss-serif);
+    font-size: 17px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.62;
+    text-wrap: pretty;
+    color: rgb(28 28 26 / 0.78);
+  }
+
+  /* ---------- options ---------- */
+  #tss-product-{{ uid }} .tss-pd__group {
+    margin-top: 32px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__legend {
+    display: block;
+    padding: 0;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgb(28 28 26 / 0.5);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border: 1px solid rgb(8 41 30 / 0.18);
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__row:hover {
+    border-color: rgb(8 41 30 / 0.4);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__row:has(input:checked),
+  #tss-product-{{ uid }} .tss-pd__row[data-selected='true'] {
+    border-color: var(--tss-green);
+    background: var(--tss-ivory-2);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__row:has(input:focus-visible) {
+    outline: 2px solid var(--tss-gold);
+    outline-offset: 2px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__row[data-sold='true'] {
+    opacity: 0.42;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__row-name {
+    display: block;
+    font-family: var(--tss-serif);
+    font-size: 19px;
+    line-height: 1.2;
+    color: var(--tss-ink);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__row-note {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: rgb(28 28 26 / 0.55);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__row-price {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--tss-gold);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__swatches {
+    display: grid;
+    grid-template-columns: repeat({{ s.swatch_columns | default: 3 }}, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__swatch {
+    display: block;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__chip {
+    display: block;
+    height: 56px;
+    border: 1px solid rgb(8 41 30 / 0.14);
+    background-color: var(--tss-ivory-2);
+    background-position: center;
+    background-size: cover;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__swatch:hover .tss-pd__chip {
+    border-color: rgb(8 41 30 / 0.35);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__swatch:has(input:checked) .tss-pd__chip,
+  #tss-product-{{ uid }} .tss-pd__swatch[data-selected='true'] .tss-pd__chip {
+    border-color: var(--tss-green);
+    box-shadow: inset 0 0 0 2px var(--tss-ivory);
+    outline: 1px solid var(--tss-green);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__swatch:has(input:focus-visible) .tss-pd__chip {
+    outline: 2px solid var(--tss-gold);
+    outline-offset: 2px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__swatch[data-sold='true'] {
+    opacity: 0.42;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__chip-label {
+    display: block;
+    margin-top: 10px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(28 28 26 / 0.6);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__pill {
+    border: 1px solid rgb(8 41 30 / 0.18);
+    padding: 10px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__pill:has(input:checked),
+  #tss-product-{{ uid }} .tss-pd__pill[data-selected='true'] {
+    border-color: var(--tss-green);
+    background: var(--tss-green);
+    color: var(--tss-ivory);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__pill[data-sold='true'] {
+    opacity: 0.42;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__opt-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ---------- gift panel ---------- */
+  #tss-product-{{ uid }} .tss-pd__gift {
+    margin-top: 32px;
+    border-block: 1px solid rgb(8 41 30 / 0.12);
+    padding-block: 20px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--tss-green);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-title .tss-icon {
+    color: var(--tss-green);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-sub {
+    font-size: 12px;
+    color: rgb(28 28 26 / 0.6);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-panel {
+    margin-top: 20px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-panel[hidden] {
+    display: none;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-group {
+    border: 0;
+    margin: 0 0 18px;
+    padding: 0;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-group:last-child {
+    margin-bottom: 0;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-legend {
+    display: block;
+    padding: 0;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--tss-gold);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-panel .tss-pd__pills {
+    margin-top: 10px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__hide-price {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: rgb(28 28 26 / 0.75);
+    cursor: pointer;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__hide-price input {
+    width: 15px;
+    height: 15px;
+    accent-color: var(--tss-green);
+    cursor: pointer;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__switch {
+    display: block;
+    position: relative;
+    flex: 0 0 auto;
+    width: 44px;
+    height: 24px;
+    border: 0;
+    border-radius: 999px;
+    padding: 0;
+    background: rgb(8 41 30 / 0.18);
+    transition: background-color 0.3s ease;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__switch::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 3px;
+    inset-inline-start: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--tss-ivory);
+    transition: transform 0.3s var(--tss-ease);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-head[aria-checked='true'] .tss-pd__switch {
+    background: var(--tss-green);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-head[aria-checked='true'] .tss-pd__switch::after {
+    transform: translateX(20px);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__gift-head:focus-visible {
+    outline: 2px solid var(--tss-gold);
+    outline-offset: 4px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__message {
+    margin-top: 10px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__message textarea {
+    width: 100%;
+    min-height: 88px;
+    border: 1px solid rgb(8 41 30 / 0.18);
+    border-radius: 0;
+    padding: 12px 14px;
+    background: transparent;
+    font-family: var(--tss-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--tss-ink);
+    resize: vertical;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__message textarea:focus-visible {
+    outline: 1px solid var(--tss-gold);
+  }
+
+  /* ---------- buy ---------- */
+  #tss-product-{{ uid }} .tss-pd__submit {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 2px;
+    margin-top: 24px;
+    padding: 19px 24px;
+    background: var(--tss-ink);
+    font-family: var(--tss-sans);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-transform: none;
+    color: var(--tss-ivory);
+    cursor: pointer;
+    transition: background-color 0.4s ease, opacity 0.3s ease;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__submit:hover:not(:disabled) {
+    background: var(--tss-green);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__submit:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__error {
+    margin-top: 12px;
+    font-size: 13px;
+    text-align: center;
+    color: #9c2b2b;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__trust {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px 10px;
+    margin-top: 18px;
+    padding-bottom: 40px;
+    font-size: 12px;
+    color: rgb(28 28 26 / 0.6);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__trust li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__trust .tss-icon {
+    color: var(--tss-green-mid);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__trust-sep {
+    color: rgb(28 28 26 / 0.3);
+  }
+
+  /* ---------- accordions ---------- */
+  #tss-product-{{ uid }} .tss-pd__accordions {
+    padding-inline: var(--tss-gutter);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__acc {
+    border-bottom: 1px solid rgb(8 41 30 / 0.12);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__acc summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 20px;
+    font-family: var(--tss-serif);
+    font-size: 18px;
+    color: var(--tss-ink);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__acc summary::-webkit-details-marker {
+    display: none;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__acc-sign {
+    position: relative;
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__acc-sign::before,
+  #tss-product-{{ uid }} .tss-pd__acc-sign::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    width: 14px;
+    height: 1px;
+    background: rgb(28 28 26 / 0.55);
+    transition: transform 0.3s var(--tss-ease);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__acc-sign::after {
+    transform: rotate(90deg);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__acc[open] .tss-pd__acc-sign::after {
+    transform: rotate(0deg);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__acc-body {
+    padding-bottom: 24px;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgb(28 28 26 / 0.72);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__acc-body > * + * {
+    margin-top: 12px;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__acc-body a {
+    color: var(--tss-green-mid);
+  }
+
+  /* ---------- sticky buy bar ---------- */
+  #tss-product-{{ uid }} .tss-pd__sticky {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 45;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-top: 1px solid rgb(8 41 30 / 0.12);
+    padding: 12px var(--tss-gutter) calc(12px + env(safe-area-inset-bottom));
+    background: var(--tss-ivory);
+    opacity: 0;
+    transform: translateY(100%);
+    pointer-events: none;
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__sticky[data-shown='true'] {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__sticky-title {
+    font-family: var(--tss-serif);
+    font-size: 15px;
+    line-height: 1.25;
+    color: var(--tss-ink);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__sticky-price {
+    margin-top: 2px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--tss-gold);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__sticky .tss-pd__submit {
+    width: auto;
+    flex: 0 0 auto;
+    margin-top: 0;
+    padding: 14px 26px;
+    font-size: 14px;
+  }
+
+  /* ---------- lightbox ---------- */
+  #tss-product-{{ uid }} .tss-pd__lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--tss-ivory);
+  }
+
+  #tss-product-{{ uid }} .tss-pd__lightbox[data-open='true'] {
+    display: flex;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__lightbox img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  #tss-product-{{ uid }} .tss-pd__close {
+    position: absolute;
+    inset-block-start: 16px;
+    inset-inline-end: 16px;
+    border: 0;
+    padding: 8px;
+    background: transparent;
+    color: var(--tss-ink);
+    cursor: pointer;
+  }
+
+  /* ---------- desktop ----------
+     The reference runs edge-to-edge at every width. Uncapped that puts a
+     1500px-wide radio row and a 60ch measure on a large monitor, so hold the
+     buy column to the same reading width the rest of the TSS system uses and
+     cap the media to a screenful. */
+  @media (min-width: 64rem) {
+    #tss-product-{{ uid }} .tss-pd__slide {
+      aspect-ratio: auto;
+      height: min(78vh, 860px);
+      background: var(--tss-ivory);
+    }
+
+    /* Below 64rem the slide is 4:5 — the ratio the photographs are shot at —
+       so cover fills it exactly. The desktop band is a screenful tall and the
+       full viewport wide, a far wider frame, and cover answers that by
+       centre-cropping: on a 1900px monitor the top and bottom of the product
+       itself fell outside the picture. Fit the whole photograph inside the
+       band instead and let the ivory ground carry the rest. */
+    #tss-product-{{ uid }} .tss-pd__slide img,
+    #tss-product-{{ uid }} .tss-pd__slide svg {
+      object-fit: contain;
+    }
+
+    #tss-product-{{ uid }} .tss-pd__body,
+    #tss-product-{{ uid }} .tss-pd__accordions {
+      max-width: var(--tss-max);
+      margin-inline: auto;
+    }
+
+    #tss-product-{{ uid }} .tss-pd__thumbs {
+      justify-content: center;
+      max-width: var(--tss-max);
+      margin-inline: auto;
+      gap: 12px;
+      padding-top: 16px;
+    }
+
+    #tss-product-{{ uid }} .tss-pd__thumb {
+      width: 72px;
+    }
+
+    #tss-product-{{ uid }} .tss-pd__body {
+      padding-top: 48px;
+    }
+
+    #tss-product-{{ uid }} .tss-pd__title {
+      font-size: {{ s.title_size | default: 30 | plus: 8 }}px;
+    }
+
+    #tss-product-{{ uid }} .tss-pd__sticky {
+      padding-inline: calc((100vw - var(--tss-max)) / 2 + var(--tss-gutter));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #tss-product-{{ uid }} .tss-pd__sticky,
+    #tss-product-{{ uid }} .tss-pd__switch::after {
+      transition: none;
+    }
+  }
+</style>
+
+<section
+  id="tss-product-{{ uid }}"
+  class="tss-section"
+  data-tss-product
+  data-uid="{{ uid }}"
+>
+  {%- comment -%} ---------- media ---------- {%- endcomment -%}
+  <div class="tss-pd__media">
+    <div
+      class="tss-rail tss-pd__rail"
+      id="tss-pd-rail-{{ uid }}"
+      data-progress="tss-pd-prog-{{ uid }}"
+      data-rail
+      role="group"
+      aria-label="Product media"
+      tabindex="0"
+    >
+      {%- if p.media.size > 0 -%}
+        {%- for media in p.media -%}
+          {%- assign preview = media.preview_image -%}
+          {%- assign media_alt = preview.alt | default: p.title -%}
+          <button
+            type="button"
+            class="tss-pd__slide"
+            data-slide
+            data-index="{{ forloop.index0 }}"
+            data-full="{{ preview | image_url: width: 1800 }}"
+            data-w="{{ preview.width }}"
+            data-h="{{ preview.height }}"
+            aria-label="Open image {{ forloop.index }} of {{ p.media.size }}"
+          >
+            {%- if forloop.first -%}
+              {{
+                preview
+                | image_url: width: 1400
+                | image_tag:
+                  widths: '480,760,1000,1400',
+                  sizes: '100vw',
+                  alt: media_alt,
+                  fetchpriority: 'high'
+              }}
+            {%- else -%}
+              {{
+                preview
+                | image_url: width: 1400
+                | image_tag:
+                  widths: '480,760,1000,1400',
+                  sizes: '100vw',
+                  alt: media_alt,
+                  loading: 'lazy'
+              }}
+            {%- endif -%}
+          </button>
+        {%- endfor -%}
+      {%- else -%}
+        <div class="tss-pd__slide">{{ 'product-1' | placeholder_svg_tag }}</div>
+      {%- endif -%}
+    </div>
+
+    {%- if p.media.size > 1 -%}
+      <div class="tss-progress" id="tss-pd-prog-{{ uid }}" aria-hidden="true"><span></span></div>
+
+      <div class="tss-pd__thumbs" role="group" aria-label="Product images">
+        {%- for media in p.media -%}
+          <button
+            type="button"
+            class="tss-pd__thumb"
+            data-thumb
+            data-index="{{ forloop.index0 }}"
+            aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-label="Show image {{ forloop.index }} of {{ p.media.size }}"
+          >
+            {{
+              media.preview_image
+              | image_url: width: 220
+              | image_tag: widths: '116,174,220', sizes: '72px', alt: '', loading: 'lazy'
+            }}
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} ---------- details ---------- {%- endcomment -%}
+  <div class="tss-pd__body">
+    {%- if p.vendor != blank and s.show_vendor -%}
+      <p class="tss-pd__vendor">{{ p.vendor | escape }}</p>
+    {%- endif -%}
+
+    <h1 class="tss-pd__title">{{ p.title | escape }}</h1>
+
+    <p class="tss-pd__price">
+      <span data-price>{{ cv.price | money }}</span>
+      <span class="tss-pd__was" data-was {% unless cv.compare_at_price > cv.price %}hidden{% endunless %}>
+        {{- cv.compare_at_price | money -}}
+      </span>
+    </p>
+
+    {%- if note != blank -%}
+      <div class="tss-rise">
+        <blockquote class="tss-pd__note">{{ note | newline_to_br }}</blockquote>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} ---------- form ---------- {%- endcomment -%}
+    <form
+      method="post"
+      action="{{ routes.cart_add_url }}"
+      accept-charset="UTF-8"
+      enctype="multipart/form-data"
+      data-form
+      novalidate
+    >
+      <input type="hidden" name="form_type" value="product">
+      <input type="hidden" name="utf8" value="✓">
+      <input type="hidden" name="id" value="{{ cv.id }}" data-variant-id>
+      <input type="hidden" name="quantity" value="1">
+
+      {%- unless p.has_only_default_variant -%}
+      {%- for option in p.options_with_values -%}
+        {%- liquid
+          assign oi = forloop.index0
+          assign oname = option.name
+
+          # Swatch group when Shopify supplies swatch data, or when the option
+          # is named in the section's colour list.
+          assign is_swatch = false
+          assign lname = oname | downcase
+          assign swatch_names = s.swatch_options | default: '' | downcase | split: ','
+          for candidate in swatch_names
+            assign candidate_name = candidate | strip
+            if candidate_name == lname
+              assign is_swatch = true
+            endif
+          endfor
+          for value in option.values
+            if value.swatch.color != blank or value.swatch.image != blank
+              assign is_swatch = true
+            endif
+          endfor
+        -%}
+
+        <fieldset class="tss-pd__group" data-option-index="{{ oi }}">
+          <legend class="tss-pd__legend">{{ oname | escape }}</legend>
+
+          {%- if is_swatch -%}
+            <div class="tss-pd__swatches">
+              {%- for value in option.values -%}
+                {%- liquid
+                  assign vname = value.name | default: value
+                  assign checked = false
+                  if cv.options[oi] == vname
+                    assign checked = true
+                  endif
+
+                  assign chip = ''
+                  if value.swatch.image != blank
+                    assign chip_url = value.swatch.image | image_url: width: 160
+                    capture chip
+                      echo 'background-image:url(' | append: chip_url | append: ');'
+                    endcapture
+                  elsif value.swatch.color != blank
+                    capture chip
+                      echo 'background-color:' | append: value.swatch.color | append: ';'
+                    endcapture
+                  else
+                    assign key = vname | downcase | strip
+                    case key
+                      when 'walnut'
+                        assign chip = 'background-color:#6b4a32;'
+                      when 'oak', 'natural oak'
+                        assign chip = 'background-color:#c9a97a;'
+                      when 'matte black', 'black'
+                        assign chip = 'background-color:#1c1c1a;'
+                      when 'antique gold', 'gold'
+                        assign chip = 'background-color:#c9a227;'
+                      when 'ivory', 'cream', 'off white', 'off-white'
+                        assign chip = 'background-color:#f5f0e8;'
+                      when 'emerald', 'green', 'deep green'
+                        assign chip = 'background-color:#08291e;'
+                      when 'silver'
+                        assign chip = 'background-color:#c3c6c8;'
+                      when 'brass'
+                        assign chip = 'background-color:#b5883b;'
+                      when 'rose gold'
+                        assign chip = 'background-color:#c08a72;'
+                      when 'white'
+                        assign chip = 'background-color:#ffffff;'
+                      else
+                        assign chip = 'background-color:#ede8df;'
+                    endcase
+                  endif
+                -%}
+                <label class="tss-pd__swatch" data-value-wrap data-value="{{ vname | escape }}">
+                  <input
+                    class="tss-pd__opt-input"
+                    type="radio"
+                    name="tss-option-{{ uid }}-{{ oi }}"
+                    value="{{ vname | escape }}"
+                    data-option-input
+                    data-index="{{ oi }}"
+                    {% if checked %}checked{% endif %}
+                  >
+                  <span class="tss-pd__chip" style="{{ chip }}"></span>
+                  <span class="tss-pd__chip-label">{{ vname | escape }}</span>
+                </label>
+              {%- endfor -%}
+            </div>
+
+          {%- elsif option.values.size <= 6 -%}
+            <div class="tss-pd__rows">
+              {%- for value in option.values -%}
+                {%- liquid
+                  assign vname = value.name | default: value
+                  assign checked = false
+                  if cv.options[oi] == vname
+                    assign checked = true
+                  endif
+
+                  # Optional sub-label, "A3 | 30 × 42 cm".
+                  assign vnote = ''
+                  for line in note_lines
+                    assign pair = line | strip | split: '|'
+                    if pair.size == 2
+                      assign left = pair[0] | strip
+                      if left == vname
+                        assign vnote = pair[1] | strip
+                      endif
+                    endif
+                  endfor
+
+                  # First matching variant, preferring one in stock.
+                  assign row_variant = blank
+                  for v in p.variants
+                    if v.options[oi] == vname
+                      if row_variant == blank
+                        assign row_variant = v
+                      elsif v.available and row_variant.available == false
+                        assign row_variant = v
+                      endif
+                    endif
+                  endfor
+                -%}
+                <label
+                  class="tss-pd__row"
+                  data-value-wrap
+                  data-value="{{ vname | escape }}"
+                  data-sold="{% if row_variant.available %}false{% else %}true{% endif %}"
+                >
+                  <input
+                    class="tss-pd__opt-input"
+                    type="radio"
+                    name="tss-option-{{ uid }}-{{ oi }}"
+                    value="{{ vname | escape }}"
+                    data-option-input
+                    data-index="{{ oi }}"
+                    {% if checked %}checked{% endif %}
+                  >
+                  <span>
+                    <span class="tss-pd__row-name">{{ vname | escape }}</span>
+                    {%- if vnote != blank -%}
+                      <span class="tss-pd__row-note">{{ vnote | escape }}</span>
+                    {%- endif -%}
+                  </span>
+                  {%- if p.price_varies -%}
+                    <span class="tss-pd__row-price" data-row-price>{{ row_variant.price | money }}</span>
+                  {%- endif -%}
+                </label>
+              {%- endfor -%}
+            </div>
+
+          {%- else -%}
+            <div class="tss-pd__pills">
+              {%- for value in option.values -%}
+                {%- liquid
+                  assign vname = value.name | default: value
+                  assign checked = false
+                  if cv.options[oi] == vname
+                    assign checked = true
+                  endif
+                -%}
+                <label class="tss-pd__pill" data-value-wrap data-value="{{ vname | escape }}">
+                  <input
+                    class="tss-pd__opt-input"
+                    type="radio"
+                    name="tss-option-{{ uid }}-{{ oi }}"
+                    value="{{ vname | escape }}"
+                    data-option-input
+                    data-index="{{ oi }}"
+                    {% if checked %}checked{% endif %}
+                  >
+                  <span>{{ vname | escape }}</span>
+                </label>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </fieldset>
+      {%- endfor -%}
+      {%- endunless -%}
+
+      {%- if s.show_gift_toggle -%}
+        {%- liquid
+          assign wrap_options = s.gift_wrap_options | newline_to_br | split: '<br />'
+          assign occasion_options = s.occasion_options | newline_to_br | split: '<br />'
+        -%}
+
+        <div class="tss-pd__gift">
+          <button
+            type="button"
+            class="tss-pd__gift-head"
+            role="switch"
+            aria-checked="false"
+            aria-controls="tss-pd-gift-panel-{{ uid }}"
+            data-gift-toggle
+          >
+            <span class="tss-pd__switch" aria-hidden="true"></span>
+            <span class="tss-pd__gift-text">
+              <span class="tss-pd__gift-title">
+                {% render 'tss-icon', icon: 'gift', size: 16, stroke: 1.4 %}
+                {{- s.gift_label | default: 'This is a gift' | escape -}}
+              </span>
+              {%- if s.gift_subtitle != blank -%}
+                <span class="tss-pd__gift-sub">{{ s.gift_subtitle | escape }}</span>
+              {%- endif -%}
+            </span>
+          </button>
+
+          <input
+            type="hidden"
+            name="properties[{{ s.gift_property | default: 'Gift' | escape }}]"
+            value="{{ s.gift_value | default: 'Yes' | escape }}"
+            data-gift-field
+            disabled
+          >
+
+          <div class="tss-pd__gift-panel" id="tss-pd-gift-panel-{{ uid }}" data-gift-panel hidden>
+            {%- if s.gift_wrap_options != blank -%}
+              <fieldset class="tss-pd__gift-group">
+                <legend class="tss-pd__gift-legend">{{ s.gift_wrap_label | default: 'Gift wrap' | escape }}</legend>
+                <div class="tss-pd__pills">
+                  {%- for opt in wrap_options -%}
+                    {%- assign val = opt | strip -%}
+                    {%- if val == blank -%}{%- continue -%}{%- endif -%}
+                    <label class="tss-pd__pill">
+                      <input
+                        type="radio"
+                        class="tss-pd__opt-input"
+                        name="properties[{{ s.gift_wrap_property | default: 'Gift Wrap' | escape }}]"
+                        value="{{ val | escape }}"
+                        data-gift-field
+                        {% if forloop.first %}checked{% endif %}
+                        disabled
+                      >
+                      <span>{{ val | escape }}</span>
+                    </label>
+                  {%- endfor -%}
+                </div>
+              </fieldset>
+            {%- endif -%}
+
+            {%- if s.occasion_options != blank -%}
+              <fieldset class="tss-pd__gift-group">
+                <legend class="tss-pd__gift-legend">{{ s.occasion_label | default: 'Occasion' | escape }}</legend>
+                <div class="tss-pd__pills">
+                  {%- for opt in occasion_options -%}
+                    {%- assign val = opt | strip -%}
+                    {%- if val == blank -%}{%- continue -%}{%- endif -%}
+                    <label class="tss-pd__pill">
+                      <input
+                        type="radio"
+                        class="tss-pd__opt-input"
+                        name="properties[{{ s.occasion_property | default: 'Occasion' | escape }}]"
+                        value="{{ val | escape }}"
+                        data-gift-field
+                        {% if forloop.first %}checked{% endif %}
+                        disabled
+                      >
+                      <span>{{ val | escape }}</span>
+                    </label>
+                  {%- endfor -%}
+                </div>
+              </fieldset>
+            {%- endif -%}
+
+            {%- if s.show_gift_message -%}
+              <div class="tss-pd__gift-group">
+                <label class="tss-pd__gift-legend" for="tss-pd-gift-msg-{{ uid }}">
+                  {{- s.gift_message_label | default: 'Gift message (optional)' | escape -}}
+                </label>
+                <div class="tss-pd__message">
+                  <textarea
+                    id="tss-pd-gift-msg-{{ uid }}"
+                    name="properties[{{ s.gift_message_property | default: 'Gift Message' | escape }}]"
+                    maxlength="{{ s.gift_message_max | default: 200 }}"
+                    placeholder="{{ s.gift_message_placeholder | escape }}"
+                    data-gift-field
+                    disabled
+                  ></textarea>
+                </div>
+              </div>
+            {%- endif -%}
+
+            {%- if s.show_hide_price -%}
+              <label class="tss-pd__hide-price">
+                <input
+                  type="checkbox"
+                  name="properties[{{ s.hide_price_property | default: 'Hide Price From Recipient' | escape }}]"
+                  value="{{ s.hide_price_value | default: 'Yes' | escape }}"
+                  data-gift-field
+                  disabled
+                >
+                <span>{{ s.hide_price_label | default: 'Hide price from recipient' | escape }}</span>
+              </label>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      <button
+        type="submit"
+        class="tss-pd__submit"
+        data-submit
+        data-label="{{ s.button_label | default: 'Add to Bag' | escape }}"
+        data-sold-label="{{ s.sold_out_label | default: 'Sold out' | escape }}"
+        data-added-label="{{ s.added_label | default: 'Added to your bag' | escape }}"
+        {% unless cv.available %}disabled{% endunless %}
+      >
+        {%- if cv.available -%}
+          {{ s.button_label | default: 'Add to Bag' | escape }}
+        {%- else -%}
+          {{ s.sold_out_label | default: 'Sold out' | escape }}
+        {%- endif -%}
+      </button>
+
+      <p class="tss-pd__error" data-error hidden></p>
+    </form>
+
+    {%- assign trust_blocks = section.blocks | where: 'type', 'trust' -%}
+    {%- if trust_blocks.size > 0 -%}
+      <ul class="tss-pd__trust">
+        {%- for block in trust_blocks -%}
+          <li {{ block.shopify_attributes }}>
+            {% render 'tss-icon', icon: block.settings.icon, size: 15, stroke: 1.25 %}
+            <span>{{ block.settings.label | escape }}</span>
+          </li>
+          {%- unless forloop.last -%}
+            <li class="tss-pd__trust-sep" aria-hidden="true">·</li>
+          {%- endunless -%}
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} ---------- accordions ---------- {%- endcomment -%}
+  {%- assign acc_blocks = section.blocks | where: 'type', 'accordion' -%}
+  {%- if acc_blocks.size > 0 -%}
+    <div class="tss-pd__accordions">
+      {%- for block in acc_blocks -%}
+        {%- liquid
+          assign b = block.settings
+          assign body = b.content
+
+          if b.source == 'description'
+            assign body = p.description
+          elsif b.source == 'metafield' and b.metafield != blank
+            assign mf_parts = b.metafield | split: '.'
+            if mf_parts.size == 2
+              assign mf = p.metafields[mf_parts[0]][mf_parts[1]]
+              if mf != blank
+                assign body = mf
+              endif
+            endif
+          endif
+        -%}
+        {%- if body != blank -%}
+          <details class="tss-pd__acc" {% if b.open %}open{% endif %} {{ block.shopify_attributes }}>
+            <summary>
+              {{ b.title | escape }}
+              <span class="tss-pd__acc-sign" aria-hidden="true"></span>
+            </summary>
+            <div class="tss-pd__acc-body rte">{{ body }}</div>
+          </details>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ---------- sticky buy bar ---------- {%- endcomment -%}
+  {%- if s.show_sticky_bar -%}
+    <div class="tss-pd__sticky" data-sticky data-shown="false">
+      <div>
+        <p class="tss-pd__sticky-title">{{ p.title | escape }}</p>
+        <p class="tss-pd__sticky-price" data-price>{{ cv.price | money }}</p>
+      </div>
+      <button
+        type="button"
+        class="tss-pd__submit"
+        data-sticky-add
+        {% unless cv.available %}disabled{% endunless %}
+      >
+        {%- if cv.available -%}
+          {{ s.button_label | default: 'Add to Bag' | escape }}
+        {%- else -%}
+          {{ s.sold_out_label | default: 'Sold out' | escape }}
+        {%- endif -%}
+      </button>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ---------- lightbox ---------- {%- endcomment -%}
+  <div class="tss-pd__lightbox" data-lightbox data-open="false" role="dialog" aria-modal="true" aria-label="{{ p.title | escape }}" hidden>
+    <button type="button" class="tss-pd__close" data-lightbox-close aria-label="Close">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <img
+      alt=""
+      src="{{ p.featured_image | image_url: width: 1800 }}"
+      width="{{ p.featured_image.width | default: 1600 }}"
+      height="{{ p.featured_image.height | default: 2000 }}"
+      loading="lazy"
+      data-lightbox-img
+    >
+  </div>
+
+  <script type="application/json" data-variants>
+    [
+      {%- for v in p.variants -%}
+        {
+          "id": {{ v.id }},
+          "available": {{ v.available }},
+          "options": {{ v.options | json }},
+          "price": {{ v.price }},
+          "price_text": {{ v.price | money | json }},
+          "compare": {{ v.compare_at_price | default: 0 }},
+          "compare_text": {{ v.compare_at_price | money | json }},
+          "media": {{ v.featured_media.position | default: 0 }}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  </script>
+</section>
+
+<script>
+  (function () {
+    var root = document.getElementById('tss-product-{{ uid }}');
+    if (!root || root.__tssBound) return;
+    root.__tssBound = true;
+
+    var ADD_URL = {{ routes.cart_add_url | append: '.js' | json }};
+    var CART_URL = {{ routes.cart_url | json }};
+    var CART_UPDATE_URL = {{ routes.cart_update_url | append: '.js' | json }};
+    var GIFT_ATTR = {{ s.gift_attribute | default: 'gift_order' | json }};
+    var AFTER_ADD = {{ s.after_add | default: 'cart' | json }};
+    var PRICE_VARIES = {{ p.price_varies | default: false }};
+
+    var form = root.querySelector('[data-form]');
+    var submit = root.querySelector('[data-submit]');
+    var stickyAdd = root.querySelector('[data-sticky-add]');
+    var sticky = root.querySelector('[data-sticky]');
+    var idInput = root.querySelector('[data-variant-id]');
+    var errorEl = root.querySelector('[data-error]');
+    var wasEl = root.querySelector('[data-was]');
+    var rail = root.querySelector('[data-rail]');
+    var variants = [];
+    var booted = false;
+
+    try {
+      variants = JSON.parse(root.querySelector('[data-variants]').textContent) || [];
+    } catch (e) {
+      variants = [];
+    }
+
+    function selection() {
+      var inputs = root.querySelectorAll('[data-option-input]:checked');
+      var out = [];
+      for (var i = 0; i < inputs.length; i++) {
+        out[parseInt(inputs[i].getAttribute('data-index'), 10)] = inputs[i].value;
+      }
+      return out;
+    }
+
+    function match(options) {
+      for (var i = 0; i < variants.length; i++) {
+        var ok = true;
+        for (var j = 0; j < options.length; j++) {
+          if (options[j] !== undefined && variants[i].options[j] !== options[j]) {
+            ok = false;
+            break;
+          }
+        }
+        if (ok) return variants[i];
+      }
+      return null;
+    }
+
+    /* Best variant for one option value, holding the other picks steady;
+       prefer one in stock so a sold-out first colour does not read as the
+       price of the whole size. */
+    function bestFor(index, value) {
+      var picks = selection();
+      var probe = picks.slice();
+      probe[index] = value;
+
+      var exact = null;
+      var loose = null;
+      for (var i = 0; i < variants.length; i++) {
+        var v = variants[i];
+        if (v.options[index] !== value) continue;
+        if (!loose || (!loose.available && v.available)) loose = v;
+        var ok = true;
+        for (var j = 0; j < probe.length; j++) {
+          if (j !== index && probe[j] !== undefined && v.options[j] !== probe[j]) {
+            ok = false;
+            break;
+          }
+        }
+        if (ok && (!exact || (!exact.available && v.available))) exact = v;
+      }
+      return exact || loose;
+    }
+
+    function setText(sel, text) {
+      var nodes = root.querySelectorAll(sel);
+      for (var i = 0; i < nodes.length; i++) nodes[i].textContent = text;
+    }
+
+    function apply() {
+      var current = match(selection());
+
+      if (current) {
+        idInput.value = current.id;
+        setText('[data-price]', current.price_text);
+
+        if (wasEl) {
+          if (current.compare > current.price) {
+            wasEl.textContent = current.compare_text;
+            wasEl.hidden = false;
+          } else {
+            wasEl.hidden = true;
+          }
+        }
+
+        [submit, stickyAdd].forEach(function (btn) {
+          if (!btn) return;
+          btn.disabled = !current.available;
+          btn.textContent = current.available
+            ? submit.getAttribute('data-label')
+            : submit.getAttribute('data-sold-label');
+        });
+
+        if (booted && current.media > 0 && rail) scrollToMedia(current.media - 1);
+
+        if (window.history && window.history.replaceState) {
+          var url = new URL(window.location.href);
+          url.searchParams.set('variant', current.id);
+          window.history.replaceState({}, '', url.toString());
+        }
+      } else if (submit) {
+        submit.disabled = true;
+        submit.textContent = submit.getAttribute('data-sold-label');
+        if (stickyAdd) stickyAdd.disabled = true;
+      }
+
+      // Grey out combinations that do not exist, refresh per-row prices.
+      var wraps = root.querySelectorAll('[data-value-wrap]');
+      for (var i = 0; i < wraps.length; i++) {
+        var wrap = wraps[i];
+        var input = wrap.querySelector('[data-option-input]');
+        if (!input) continue;
+        var index = parseInt(input.getAttribute('data-index'), 10);
+        var candidate = bestFor(index, input.value);
+        wrap.setAttribute('data-sold', candidate && candidate.available ? 'false' : 'true');
+        wrap.setAttribute('data-selected', input.checked ? 'true' : 'false');
+
+        var priceEl = wrap.querySelector('[data-row-price]');
+        if (priceEl && candidate && PRICE_VARIES) priceEl.textContent = candidate.price_text;
+      }
+    }
+
+    function scrollToMedia(index) {
+      var slides = rail.querySelectorAll('[data-slide]');
+      if (!slides[index]) return;
+      rail.scrollTo({ left: slides[index].offsetLeft - rail.offsetLeft, behavior: 'smooth' });
+    }
+
+    /* ---------- thumbnails ---------- */
+    var thumbs = root.querySelectorAll('[data-thumb]');
+
+    if (rail && thumbs.length) {
+      var activeThumb = -1;
+
+      function markThumb(index) {
+        if (index === activeThumb || !thumbs[index]) return;
+        activeThumb = index;
+        for (var i = 0; i < thumbs.length; i++) {
+          thumbs[i].setAttribute('aria-current', i === index ? 'true' : 'false');
+        }
+        var strip = thumbs[index].parentNode;
+        var left = thumbs[index].offsetLeft - (strip.clientWidth - thumbs[index].offsetWidth) / 2;
+        strip.scrollTo({ left: Math.max(left, 0), behavior: 'smooth' });
+      }
+
+      function syncThumb() {
+        var slides = rail.querySelectorAll('[data-slide]');
+        if (!slides.length) return;
+        var width = slides[0].offsetWidth || rail.clientWidth || 1;
+        markThumb(Math.min(Math.round(rail.scrollLeft / width), slides.length - 1));
+      }
+
+      for (var t = 0; t < thumbs.length; t++) {
+        thumbs[t].addEventListener('click', function (e) {
+          var index = parseInt(e.currentTarget.getAttribute('data-index'), 10);
+          markThumb(index);
+          scrollToMedia(index);
+        });
+      }
+
+      rail.addEventListener('scroll', syncThumb, { passive: true });
+      window.addEventListener('resize', syncThumb);
+      syncThumb();
+    }
+
+    root.addEventListener('change', function (e) {
+      if (e.target.matches('[data-option-input]')) apply();
+    });
+
+    /* ---------- gift panel ---------- */
+    var giftToggle = root.querySelector('[data-gift-toggle]');
+    var giftPanel = root.querySelector('[data-gift-panel]');
+    var giftFields = root.querySelectorAll('[data-gift-field]');
+    var giftOn = false;
+
+    function setGift(on) {
+      giftOn = on;
+      giftToggle.setAttribute('aria-checked', on ? 'true' : 'false');
+      if (giftPanel) giftPanel.hidden = !on;
+      /* Disabled fields are skipped when the form is serialised, so the
+         properties only travel with the line item while the switch is on. */
+      for (var i = 0; i < giftFields.length; i++) giftFields[i].disabled = !on;
+    }
+
+    if (giftToggle) {
+      giftToggle.addEventListener('click', function () {
+        setGift(giftToggle.getAttribute('aria-checked') !== 'true');
+      });
+      setGift(false);
+    }
+
+    /* Flag the cart so a Payment Customization can drop Cash on Delivery on
+       gift orders. Only ever sets the flag — an earlier gift add stands. */
+    function flagGiftCart() {
+      if (!giftOn || !GIFT_ATTR) return Promise.resolve();
+      var attrs = {};
+      attrs[GIFT_ATTR] = 'true';
+      return fetch(CART_UPDATE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ attributes: attrs })
+      }).catch(function () {});
+    }
+
+    /* ---------- add to cart ---------- */
+    function setError(text) {
+      if (!errorEl) return;
+      errorEl.textContent = text || '';
+      errorEl.hidden = !text;
+    }
+
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (submit.disabled) return;
+
+        setError('');
+        var label = submit.textContent;
+        submit.disabled = true;
+
+        /* Built by hand rather than from the form: the option radios live
+           inside it for layout and have no business being posted to cart/add. */
+        var body = new FormData();
+        body.append('id', idInput.value);
+        body.append('quantity', '1');
+
+        var props = form.querySelectorAll('[name^="properties["]');
+        for (var i = 0; i < props.length; i++) {
+          var prop = props[i];
+          if (prop.disabled || prop.value === '') continue;
+          if ((prop.type === 'radio' || prop.type === 'checkbox') && !prop.checked) continue;
+          body.append(prop.name, prop.value);
+        }
+
+        fetch(ADD_URL, {
+          method: 'POST',
+          headers: { Accept: 'application/javascript' },
+          body: body
+        })
+          .then(function (response) {
+            return response.json().then(function (body) {
+              if (!response.ok) throw body;
+              return body;
+            });
+          })
+          .then(flagGiftCart)
+          .then(function () {
+            if (AFTER_ADD === 'cart') {
+              window.location.href = CART_URL;
+              return;
+            }
+            submit.textContent = submit.getAttribute('data-added-label');
+            setTimeout(function () {
+              submit.textContent = label;
+              submit.disabled = false;
+            }, 2000);
+          })
+          .catch(function (err) {
+            setError((err && (err.description || err.message)) || 'Sorry, that could not be added.');
+            submit.disabled = false;
+            submit.textContent = label;
+          });
+      });
+    }
+
+    if (stickyAdd && form) {
+      stickyAdd.addEventListener('click', function () {
+        if (form.requestSubmit) form.requestSubmit();
+        else form.dispatchEvent(new Event('submit', { cancelable: true }));
+      });
+    }
+
+    /* ---------- sticky bar ---------- */
+    if (sticky && submit && 'IntersectionObserver' in window) {
+      new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            var past = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+            sticky.setAttribute('data-shown', past ? 'true' : 'false');
+          });
+        },
+        { threshold: 0 }
+      ).observe(submit);
+    }
+
+    /* ---------- lightbox ---------- */
+    var lightbox = root.querySelector('[data-lightbox]');
+    var lightboxImg = root.querySelector('[data-lightbox-img]');
+
+    function closeLightbox() {
+      if (!lightbox) return;
+      lightbox.setAttribute('data-open', 'false');
+      lightbox.hidden = true;
+      document.documentElement.style.overflow = '';
+    }
+
+    root.addEventListener('click', function (e) {
+      var slide = e.target.closest('[data-slide]');
+      if (slide && lightbox && lightboxImg) {
+        lightboxImg.src = slide.getAttribute('data-full');
+        lightboxImg.alt = (slide.querySelector('img') || {}).alt || '';
+        if (slide.getAttribute('data-w')) {
+          lightboxImg.width = slide.getAttribute('data-w');
+          lightboxImg.height = slide.getAttribute('data-h');
+        }
+        lightbox.hidden = false;
+        lightbox.setAttribute('data-open', 'true');
+        document.documentElement.style.overflow = 'hidden';
+        return;
+      }
+      if (e.target.closest('[data-lightbox-close]') || e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+
+    apply();
+    booted = true;
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "TSS · Product",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Heading" },
+    { "type": "checkbox", "id": "show_vendor", "label": "Show the maker above the title", "default": true },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size",
+      "min": 20,
+      "max": 52,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    { "type": "header", "content": "Founder's note" },
+    {
+      "type": "textarea",
+      "id": "note",
+      "label": "Note",
+      "info": "Shown in italic serif beside a gold rule. Used when the product metafield below is empty."
+    },
+    {
+      "type": "text",
+      "id": "note_metafield",
+      "label": "Note metafield",
+      "info": "namespace.key — a per-product note that overrides the text above.",
+      "default": "tss.note"
+    },
+    { "type": "header", "content": "Options" },
+    {
+      "type": "text",
+      "id": "swatch_options",
+      "label": "Options shown as swatches",
+      "info": "Comma separated. Options carrying Shopify swatches are detected automatically.",
+      "default": "Colour, Color, Finish, Shade"
+    },
+    {
+      "type": "range",
+      "id": "swatch_columns",
+      "label": "Swatches per row",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "textarea",
+      "id": "value_notes",
+      "label": "Option value notes",
+      "info": "One per line, e.g. A3 | 30 × 42 cm. Shown under the matching value."
+    },
+    { "type": "header", "content": "Gift" },
+    { "type": "checkbox", "id": "show_gift_toggle", "label": "Show the gift panel", "default": true },
+    { "type": "text", "id": "gift_label", "label": "Switch label", "default": "This is a gift" },
+    { "type": "text", "id": "gift_subtitle", "label": "Switch subtitle", "default": "Add wrapping, occasion & message" },
+    { "type": "text", "id": "gift_property", "label": "Gift property name", "default": "Gift" },
+    { "type": "text", "id": "gift_value", "label": "Value saved on the line item", "default": "Yes" },
+    {
+      "type": "text",
+      "id": "gift_attribute",
+      "label": "Cart attribute",
+      "default": "gift_order",
+      "info": "Set to true on the cart when a gift is added — read by the Payment Customization that hides Cash on Delivery. Leave empty to skip."
+    },
+    { "type": "header", "content": "Gift wrap" },
+    { "type": "text", "id": "gift_wrap_label", "label": "Wrap label", "default": "Gift wrap" },
+    {
+      "type": "textarea",
+      "id": "gift_wrap_options",
+      "label": "Wrap options",
+      "default": "Classic Ivory (Free)\nSignature Green\nPremium Gold",
+      "info": "One per line. Recorded on the line item only — no charge is added, so put a price in the text just for paid wraps you invoice another way."
+    },
+    { "type": "text", "id": "gift_wrap_property", "label": "Wrap property name", "default": "Gift Wrap" },
+    { "type": "header", "content": "Occasion" },
+    { "type": "text", "id": "occasion_label", "label": "Occasion label", "default": "Occasion" },
+    {
+      "type": "textarea",
+      "id": "occasion_options",
+      "label": "Occasion options",
+      "default": "Eid\nRamadan\nNikah\nNew Baby\nBirthday\nJust Because",
+      "info": "One per line. Leave empty to hide the row."
+    },
+    { "type": "text", "id": "occasion_property", "label": "Occasion property name", "default": "Occasion" },
+    { "type": "header", "content": "Gift message" },
+    { "type": "checkbox", "id": "show_gift_message", "label": "Ask for a gift message", "default": true },
+    { "type": "text", "id": "gift_message_label", "label": "Message label", "default": "Gift message (optional)" },
+    { "type": "text", "id": "gift_message_property", "label": "Message property name", "default": "Gift Message" },
+    {
+      "type": "text",
+      "id": "gift_message_placeholder",
+      "label": "Message placeholder",
+      "default": "Write a message for the recipient…"
+    },
+    {
+      "type": "range",
+      "id": "gift_message_max",
+      "label": "Message limit",
+      "min": 40,
+      "max": 400,
+      "step": 20,
+      "unit": "ch",
+      "default": 200
+    },
+    { "type": "checkbox", "id": "show_hide_price", "label": "Offer \"hide price from recipient\"", "default": true },
+    { "type": "text", "id": "hide_price_label", "label": "Hide-price label", "default": "Hide price from recipient" },
+    { "type": "text", "id": "hide_price_property", "label": "Hide-price property name", "default": "Hide Price From Recipient" },
+    { "type": "text", "id": "hide_price_value", "label": "Hide-price value", "default": "Yes" },
+    { "type": "header", "content": "Buy" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Add to Bag" },
+    { "type": "text", "id": "sold_out_label", "label": "Sold out label", "default": "Sold out" },
+    { "type": "text", "id": "added_label", "label": "Added label", "default": "Added to your bag" },
+    {
+      "type": "select",
+      "id": "after_add",
+      "label": "After adding",
+      "options": [
+        { "value": "cart", "label": "Go to the cart" },
+        { "value": "stay", "label": "Stay on the page" }
+      ],
+      "default": "cart"
+    },
+    { "type": "checkbox", "id": "show_sticky_bar", "label": "Sticky buy bar once the button scrolls away", "default": true },
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust",
+      "name": "Trust line item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "hand-coins", "label": "Coins" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "undo-2", "label": "Return" },
+            { "value": "truck", "label": "Delivery" },
+            { "value": "badge-check", "label": "Badge" },
+            { "value": "shield-check", "label": "Shield" },
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "package", "label": "Package" }
+          ],
+          "default": "gift"
+        },
+        { "type": "text", "id": "label", "label": "Label", "default": "Gift-wrapped by hand" }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Accordion",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Description" },
+        {
+          "type": "select",
+          "id": "source",
+          "label": "Content from",
+          "options": [
+            { "value": "description", "label": "Product description" },
+            { "value": "custom", "label": "Text below" },
+            { "value": "metafield", "label": "Product metafield" }
+          ],
+          "default": "custom"
+        },
+        { "type": "richtext", "id": "content", "label": "Text" },
+        { "type": "text", "id": "metafield", "label": "Metafield", "info": "namespace.key" },
+        { "type": "checkbox", "id": "open", "label": "Open by default", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "TSS · Product",
+      "blocks": [
+        { "type": "trust", "settings": { "icon": "hand-coins", "label": "Cash on Delivery" } },
+        { "type": "trust", "settings": { "icon": "gift", "label": "Gift-wrapped by hand" } },
+        { "type": "trust", "settings": { "icon": "undo-2", "label": "14-day returns" } },
+        { "type": "accordion", "settings": { "title": "Description", "source": "description" } },
+        { "type": "accordion", "settings": { "title": "Details & Specifications", "source": "metafield", "metafield": "tss.details" } },
+        { "type": "accordion", "settings": { "title": "Shipping & Returns", "source": "custom" } },
+        { "type": "accordion", "settings": { "title": "How It's Made", "source": "custom" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

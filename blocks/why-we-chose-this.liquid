@@ -1,0 +1,139 @@
+{%- doc -%}
+  "Why we chose this" — a bordered, italic short product description box.
+  Dynamic: pulls from a product metafield (default custom.why_we_chose_this).
+  Falls back to the block's default text.
+{%- enddoc -%}
+
+{% liquid
+  assign block_settings = block.settings
+  assign product = closest.product
+
+  if request.visual_preview_mode and product == blank
+    assign product = collections.all.products.first
+  endif
+
+  assign ns = block_settings.metafield_namespace | default: 'custom'
+  assign key = block_settings.metafield_key | default: 'why_we_chose_this'
+  assign mf = product.metafields[ns][key]
+
+  assign body = ''
+  if mf != blank
+    assign body = mf.value | default: mf
+  endif
+  if body == blank
+    assign body = block_settings.default_text
+  endif
+%}
+
+{%- if body != blank -%}
+  <div
+    class="why-chosen spacing-style"
+    style="{% render 'spacing-style', settings: block_settings %}"
+    {{ block.shopify_attributes }}
+  >
+    {%- if block_settings.heading != blank -%}
+      <p class="why-chosen__heading">{{ block_settings.heading }}</p>
+    {%- endif -%}
+    <div class="why-chosen__body">{{ body }}</div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .why-chosen {
+    width: 100%;
+    border-left: 3px solid #D4A830;
+    background-color: #F5F0E8;
+    padding: var(--padding-md, 1rem) var(--padding-lg, 1.25rem);
+  }
+
+  .why-chosen__heading {
+    margin: 0 0 var(--margin-2xs, 0.5rem);
+    font-family: var(--font-body--family);
+    font-size: calc(var(--font-paragraph--size, 1.5rem) * 0.85);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #B8860B;
+  }
+
+  .why-chosen__body {
+    margin: 0;
+    font-family: var(--font-heading--family, var(--font-body--family));
+    font-size: var(--font-paragraph--size, 1.5rem);
+    font-style: italic;
+    line-height: 1.55;
+    color: #4a4236;
+  }
+
+  .why-chosen__body p {
+    margin: 0;
+  }
+
+  .why-chosen__body p + p {
+    margin-top: var(--margin-xs, 0.5rem);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Why We Chose This",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Why we chose this"
+    },
+    {
+      "type": "text",
+      "id": "metafield_namespace",
+      "label": "Metafield namespace",
+      "default": "custom"
+    },
+    {
+      "type": "text",
+      "id": "metafield_key",
+      "label": "Metafield key",
+      "default": "why_we_chose_this",
+      "info": "Per-product text comes from this metafield. Falls back to the default text below."
+    },
+    {
+      "type": "richtext",
+      "id": "default_text",
+      "label": "Default text",
+      "info": "Shown when the product has no metafield value.",
+      "default": "<p>Chosen for its warmth, craftsmanship and timeless appeal — a piece made to be treasured for years.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Why We Chose This",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

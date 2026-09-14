@@ -1,0 +1,185 @@
+{% comment %}
+  TSS 02 — Hadith band
+  Deep emerald band holding a centred italic serif saying with a gold source
+  line. Multiple blocks cross-fade in place on a timer.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+-%}
+
+<style>
+  #tss-hadith-{{ uid }} {
+    background: var(--tss-green);
+    padding: {{ s.padding_top | default: 56 }}px 24px {{ s.padding_bottom | default: 56 }}px;
+    text-align: center;
+  }
+
+  #tss-hadith-{{ uid }} .tss-hadith__stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-inline: auto;
+    min-height: 7.5rem;
+    max-width: 34ch;
+  }
+
+  #tss-hadith-{{ uid }} blockquote {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.9s var(--tss-ease);
+    pointer-events: none;
+  }
+
+  #tss-hadith-{{ uid }} blockquote.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  #tss-hadith-{{ uid }} .tss-hadith__text {
+    font-family: var(--tss-serif);
+    font-size: {{ s.quote_size | default: 22 }}px;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.4;
+    text-wrap: balance;
+    color: var(--tss-ivory);
+  }
+
+  #tss-hadith-{{ uid }} .tss-hadith__source {
+    margin-top: 20px;
+    font-family: var(--tss-sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--tss-gold-bright);
+  }
+</style>
+
+<section
+  id="tss-hadith-{{ uid }}"
+  class="tss-section"
+  aria-label="{{ s.aria_label | default: 'A saying of the Prophet ﷺ' | escape }}"
+>
+  <div
+    class="tss-hadith__stage"
+    data-tss-rotator
+    data-interval="{{ s.rotate_seconds | default: 7 | times: 1000 }}"
+  >
+    {%- for block in section.blocks -%}
+      <blockquote
+        class="{% if forloop.first %}is-active{% endif %}"
+        {{ block.shopify_attributes }}
+      >
+        <p class="tss-hadith__text">{{ block.settings.quote | escape }}</p>
+        {%- if block.settings.source != blank -%}
+          <footer class="tss-hadith__source">{{ block.settings.source | escape }}</footer>
+        {%- endif -%}
+      </blockquote>
+    {%- endfor -%}
+  </div>
+</section>
+
+<script>
+  (function () {
+    var stage = document.querySelector('#tss-hadith-{{ uid }} [data-tss-rotator]');
+    if (!stage || stage.__tssRotating) return;
+    stage.__tssRotating = true;
+
+    var slides = stage.querySelectorAll('blockquote');
+    if (slides.length < 2) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var i = 0;
+    setInterval(function () {
+      slides[i].classList.remove('is-active');
+      i = (i + 1) % slides.length;
+      slides[i].classList.add('is-active');
+    }, parseInt(stage.getAttribute('data-interval'), 10) || 7000);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "TSS 02 · Hadith band",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "quote_size",
+      "label": "Quote size",
+      "min": 16,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "rotate_seconds",
+      "label": "Rotate every",
+      "min": 3,
+      "max": 15,
+      "step": 1,
+      "unit": "s",
+      "default": 7
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    { "type": "text", "id": "aria_label", "label": "Section label", "default": "A saying of the Prophet ﷺ" }
+  ],
+  "blocks": [
+    {
+      "type": "quote",
+      "name": "Saying",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Give gifts, for gifts remove grudges."
+        },
+        { "type": "text", "id": "source", "label": "Source", "default": "Tirmidhi" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "TSS 02 · Hadith band",
+      "blocks": [
+        {
+          "type": "quote",
+          "settings": { "quote": "Give gifts, for gifts remove grudges.", "source": "Tirmidhi" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

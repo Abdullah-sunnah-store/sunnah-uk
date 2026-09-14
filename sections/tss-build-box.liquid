@@ -1,0 +1,108 @@
+{% comment %}
+  TSS 05 — Build your own box
+  Emerald band: header in ivory on a narrow centred measure, a gold CTA and a
+  closing note.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+-%}
+
+<style>
+  #tss-build-box-{{ uid }} {
+    background: var(--tss-green);
+    padding-block: {{ s.padding_top | default: 112 }}px {{ s.padding_bottom | default: 112 }}px;
+    scroll-margin-top: 96px;
+  }
+
+  #tss-build-box-{{ uid }} .tss-box__cta {
+    margin-top: 48px;
+    padding-inline: var(--tss-gutter);
+    text-align: center;
+  }
+
+  #tss-build-box-{{ uid }} .tss-box__note {
+    margin: 24px auto 0;
+    max-width: 38ch;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: rgb(245 240 232 / 0.6);
+  }
+</style>
+
+<section
+  id="tss-build-box-{{ uid }}"
+  class="tss-section"
+  aria-labelledby="tss-box-heading-{{ uid }}"
+>
+  <a id="build-your-box" class="tss-sr-only" aria-hidden="true" tabindex="-1"></a>
+
+  <div id="tss-box-heading-{{ uid }}">
+    {% render 'tss-head', eyebrow: s.eyebrow, title: s.title, lede: s.lede, on_dark: true %}
+  </div>
+
+  <div class="tss-rise">
+    <div class="tss-box__cta">
+      {%- if s.button_label != blank -%}
+        <a href="{{ s.button_link | default: '#' }}" class="tss-btn tss-btn--gold">{{ s.button_label | escape }}</a>
+      {%- endif -%}
+      {%- if s.note != blank -%}
+        <p class="tss-box__note">{{ s.note | escape }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "TSS 05 · Build your box",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our Signature" },
+    { "type": "textarea", "id": "title", "label": "Headline", "default": "Build your own box" },
+    {
+      "type": "textarea",
+      "id": "lede",
+      "label": "Supporting text",
+      "default": "Choose the pieces yourself. We'll size the box, wrap it by hand, and send it as one considered whole."
+    },
+    { "type": "header", "content": "Button" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Begin Your Box" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    {
+      "type": "textarea",
+      "id": "note",
+      "label": "Closing note",
+      "default": "The box and the wrapping are ours. You pay only for what's inside."
+    },
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 112
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 112
+    }
+  ],
+  "presets": [
+    { "name": "TSS 05 · Build your box" }
+  ]
+}
+{% endschema %}

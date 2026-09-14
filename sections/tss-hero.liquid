@@ -1,0 +1,329 @@
+{% comment %}
+  TSS 01 — Hero
+  Full-bleed portrait image, bottom-anchored eyebrow / headline / CTA over an
+  upward emerald gradient, followed by the "shop by" link rail.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+-%}
+
+<style>
+  #tss-hero-{{ uid }} .tss-hero__media {
+    position: relative;
+    width: 100%;
+    height: {{ s.height | default: 92 }}svh;
+    overflow: hidden;
+    background: var(--tss-green-dark);
+  }
+
+  /* Settles from 1.06 on load. Driven by an animation, not a reveal class, so
+     the hero — the LCP element — is never held at opacity 0. */
+  #tss-hero-{{ uid }} .tss-hero__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: tss-hero-settle-{{ uid }} 2.4s var(--tss-ease) both;
+  }
+
+  @keyframes tss-hero-settle-{{ uid }} {
+    from {
+      transform: scale(1.06);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  /* Animates on load, matching the stagger the reference build runs on mount.
+     The shared scroll-reveal engine is wrong for the hero: it is above the fold,
+     yet the observer both waits on deferred JS and discounts the bottom 12% of
+     the viewport — exactly where the CTA and scroll line sit — so this copy
+     could sit at opacity 0 until the visitor scrolled. Same delays as the
+     data-tss-delay values it replaces. */
+  #tss-hero-{{ uid }} .tss-hero__eyebrow,
+  #tss-hero-{{ uid }} .tss-hero__title,
+  #tss-hero-{{ uid }} .tss-hero__cta {
+    animation: tss-hero-in-{{ uid }} 0.9s var(--tss-ease) both;
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__title {
+    animation-delay: 0.1s;
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__cta {
+    animation-delay: 0.2s;
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__scroll {
+    animation: tss-hero-fade-{{ uid }} 0.9s var(--tss-ease) 0.5s both;
+  }
+
+  @keyframes tss-hero-in-{{ uid }} {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes tss-hero-fade-{{ uid }} {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #tss-hero-{{ uid }} .tss-hero__img,
+    #tss-hero-{{ uid }} .tss-hero__eyebrow,
+    #tss-hero-{{ uid }} .tss-hero__title,
+    #tss-hero-{{ uid }} .tss-hero__cta,
+    #tss-hero-{{ uid }} .tss-hero__scroll {
+      animation: none;
+    }
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(5, 30, 22, 0.92) 0%,
+      rgba(5, 30, 22, 0.55) 22%,
+      rgba(5, 30, 22, 0) 46%
+    );
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__content {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    padding: 0 var(--tss-gutter) 96px;
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--tss-gold-bright);
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__title {
+    margin-top: 16px;
+    max-width: 15ch;
+    font-family: var(--tss-serif);
+    font-size: {{ s.title_size | default: 46 }}px;
+    font-weight: 400;
+    line-height: 1.03;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+    color: var(--tss-ivory);
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__cta {
+    margin-top: 32px;
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__scroll {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 24px;
+    display: flex;
+    justify-content: center;
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__scroll span {
+    display: block;
+    height: 40px;
+    width: 1px;
+    background: rgb(245 240 232 / 0.6);
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: var(--tss-ivory);
+    padding: 24px var(--tss-gutter);
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__navitem {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__navlink {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--tss-gold);
+    text-decoration: none;
+    transition: color 0.4s ease;
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__navlink:hover {
+    color: var(--tss-green-mid);
+  }
+
+  #tss-hero-{{ uid }} .tss-hero__navrule {
+    display: block;
+    height: 12px;
+    width: 1px;
+    background: rgb(8 41 30 / 0.2);
+  }
+</style>
+
+<section
+  id="tss-hero-{{ uid }}"
+  class="tss-section"
+  aria-label="{{ s.aria_label | default: shop.name | escape }}"
+>
+  <a id="top" class="tss-sr-only" aria-hidden="true" tabindex="-1"></a>
+
+  <div class="tss-hero__media">
+    {% render 'tss-image',
+      image: s.image,
+      asset: s.image_asset,
+      class: 'tss-hero__img',
+      asset_width: 1024,
+      asset_height: 1024,
+      width: 1600,
+      widths: '480,720,960,1280,1600',
+      sizes: '100vw',
+      priority: true,
+      alt: s.title,
+      placeholder: 'lifestyle-1'
+    %}
+
+    <div class="tss-hero__scrim" aria-hidden="true"></div>
+
+    <div class="tss-hero__content">
+      {%- if s.eyebrow != blank -%}
+        <p class="tss-hero__eyebrow">{{ s.eyebrow | escape }}</p>
+      {%- endif -%}
+
+      {%- if s.title != blank -%}
+        <h1 class="tss-hero__title">{{ s.title }}</h1>
+      {%- endif -%}
+
+      {%- if s.button_label != blank -%}
+        <div class="tss-hero__cta">
+          <a href="{{ s.button_link | default: '#' }}" class="tss-btn tss-btn--outline-ivory">
+            {{- s.button_label | escape -}}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if s.show_scroll_line -%}
+      <div class="tss-hero__scroll" aria-hidden="true">
+        <span></span>
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <nav class="tss-hero__nav" aria-label="{{ s.nav_label | default: 'Shop by' | escape }}">
+      {%- for block in section.blocks -%}
+        <span class="tss-hero__navitem" {{ block.shopify_attributes }}>
+          <a href="{{ block.settings.link | default: '#' }}" class="tss-hero__navlink">
+            {{- block.settings.label | escape -}}
+          </a>
+          {%- unless forloop.last -%}
+            <span class="tss-hero__navrule" aria-hidden="true"></span>
+          {%- endunless -%}
+        </span>
+      {%- endfor -%}
+    </nav>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "TSS 01 · Hero",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Media" },
+    { "type": "image_picker", "id": "image", "label": "Hero image (portrait)" },
+    {
+      "type": "text",
+      "id": "image_asset",
+      "label": "Fallback theme asset",
+      "info": "Filename in assets/. Used when no image is picked above.",
+      "default": "tss-hero.jpg"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Height",
+      "min": 60,
+      "max": 100,
+      "step": 1,
+      "unit": "svh",
+      "default": 92
+    },
+    { "type": "checkbox", "id": "show_scroll_line", "label": "Show scroll indicator", "default": true },
+    { "type": "header", "content": "Content" },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Curated Islamic Gifting"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Headline",
+      "default": "The few we chose this month."
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Headline size",
+      "min": 28,
+      "max": 72,
+      "step": 1,
+      "unit": "px",
+      "default": 46
+    },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "See This Month's Edit" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "header", "content": "Accessibility" },
+    { "type": "text", "id": "aria_label", "label": "Section label" },
+    { "type": "text", "id": "nav_label", "label": "Link rail label", "default": "Shop by" }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Shop-by link",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "By Occasion" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "TSS 01 · Hero",
+      "blocks": [
+        { "type": "link", "settings": { "label": "By Occasion" } },
+        { "type": "link", "settings": { "label": "By Recipient" } },
+        { "type": "link", "settings": { "label": "By Budget" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

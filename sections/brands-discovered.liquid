@@ -1,0 +1,859 @@
+{%- assign sid = section.id -%}
+{%- assign s = section.settings -%}
+
+<section class="brd-section" id="brd-{{ sid }}">
+  <div class="brd-wrap">
+
+    <!-- Section Header -->
+    <div class="brd-header">
+      <div class="brd-header__left">
+        {%- if s.eyebrow != blank -%}
+          <p class="brd-eyebrow">{{ s.eyebrow }}</p>
+        {%- endif -%}
+        <{{ s.heading_tag }} class="brd-heading">{{ s.heading }}</{{ s.heading_tag }}>
+      </div>
+      {%- if s.see_all_text != blank -%}
+        <a class="brd-see-all" href="{{ s.see_all_url | default: '#' }}">{{ s.see_all_text }} &rarr;</a>
+      {%- endif -%}
+    </div>
+
+    <!-- Card -->
+    <div class="brd-content">
+
+      <!-- Brand Info Panel -->
+      <div class="brd-brand-panel">
+
+        <!-- Default slide -->
+        <div class="brd-brand-slide brd-brand-slide--active" data-slide="default">
+          {%- if s.brand_badge != blank -%}
+            <p class="brd-brand-badge">&#10022; {{ s.brand_badge }}</p>
+          {%- endif -%}
+          <h3 class="brd-brand-name">{{ s.brand_name }}</h3>
+          {%- if s.brand_location != blank -%}
+            <p class="brd-brand-location">{{ s.brand_location }}</p>
+          {%- endif -%}
+          {%- if s.brand_desc != blank -%}
+            <p class="brd-brand-desc">&ldquo;{{ s.brand_desc }}&rdquo;</p>
+          {%- endif -%}
+          {%- if s.brand_quote != blank -%}
+            <blockquote class="brd-brand-quote">
+              <p>{{ s.brand_quote }}</p>
+              {%- if s.brand_quote_attr != blank -%}
+                <footer>{{ s.brand_quote_attr }}</footer>
+              {%- endif -%}
+            </blockquote>
+          {%- endif -%}
+          {%- if s.show_brand_cta and s.brand_cta_text != blank -%}
+            <a class="brd-brand-cta" href="{{ s.brand_cta_url | default: '#' }}">{{ s.brand_cta_text }} &rarr;</a>
+          {%- endif -%}
+        </div>
+
+        <!-- Per-block hover slides -->
+        {%- for block in section.blocks -%}
+          {%- if block.settings.brand_name != blank -%}
+            <div class="brd-brand-slide" data-slide="{{ block.id }}">
+              {%- if block.settings.brand_badge != blank -%}
+                <p class="brd-brand-badge">&#10022; {{ block.settings.brand_badge }}</p>
+              {%- endif -%}
+              <h3 class="brd-brand-name">{{ block.settings.brand_name }}</h3>
+              {%- if block.settings.brand_location != blank -%}
+                <p class="brd-brand-location">{{ block.settings.brand_location }}</p>
+              {%- endif -%}
+              {%- if block.settings.brand_desc != blank -%}
+                <p class="brd-brand-desc">&ldquo;{{ block.settings.brand_desc }}&rdquo;</p>
+              {%- endif -%}
+              {%- if block.settings.brand_quote != blank -%}
+                <blockquote class="brd-brand-quote">
+                  <p>{{ block.settings.brand_quote }}</p>
+                  {%- if block.settings.brand_quote_attr != blank -%}
+                    <footer>{{ block.settings.brand_quote_attr }}</footer>
+                  {%- endif -%}
+                </blockquote>
+              {%- endif -%}
+              {%- if s.show_brand_cta and block.settings.brand_cta_text != blank -%}
+                <a class="brd-brand-cta" href="{{ block.settings.brand_cta_url | default: '#' }}">{{ block.settings.brand_cta_text }} &rarr;</a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+      </div>
+
+      <!-- Products -->
+      <div class="brd-products-wrapper">
+        <div class="brd-scroll-wrap">
+        <button class="brd-nav brd-nav--prev" aria-label="Previous">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="brd-products" id="brd-scroll-{{ sid }}">
+          {%- if section.blocks.size > 0 -%}
+            {%- for block in section.blocks -%}
+              {%- assign product = all_products[block.settings.product] -%}
+              {%- if product != blank -%}
+                <div class="brd-product"
+                  data-index="{{ forloop.index0 }}"
+                  {%- if block.settings.brand_name != blank %} data-slide="{{ block.id }}"{% endif %}
+                  {{ block.shopify_attributes }}
+                >
+                  <a class="brd-product__img-link" href="{{ product.url }}">
+                    {%- if product.featured_image -%}
+                      {%- assign img_url = product.featured_image | image_url: width: 600 -%}
+                      <img src="{{ img_url }}" alt="{{ product.featured_image.alt | escape }}" loading="lazy" class="brd-product__img" width="600" height="600">
+                    {%- else -%}
+                      <div class="brd-product__placeholder">{{ 'image' | placeholder_svg_tag: 'brd-product__placeholder-svg' }}</div>
+                    {%- endif -%}
+                  </a>
+                  <div class="brd-product__info">
+                    <a class="brd-product__title" href="{{ product.url }}">{{ product.title }}</a>
+                    <p class="brd-product__price">{{ product.price | money_without_trailing_zeros }}</p>
+                  </div>
+                </div>
+              {%- else -%}
+                <div class="brd-product"
+                  data-index="{{ forloop.index0 }}"
+                  {%- if block.settings.brand_name != blank %} data-slide="{{ block.id }}"{% endif %}
+                  {{ block.shopify_attributes }}
+                >
+                  <div class="brd-product__img-link">
+                    <div class="brd-product__placeholder">{{ 'image' | placeholder_svg_tag: 'brd-product__placeholder-svg' }}</div>
+                  </div>
+                  <div class="brd-product__info">
+                    <span class="brd-product__title">Select a product</span>
+                    <p class="brd-product__price">—</p>
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- else -%}
+            {%- for i in (1..3) -%}
+              <div class="brd-product" data-index="{{ forloop.index0 }}">
+                <div class="brd-product__img-link">
+                  <div class="brd-product__placeholder">{{ 'image' | placeholder_svg_tag: 'brd-product__placeholder-svg' }}</div>
+                </div>
+                <div class="brd-product__info">
+                  <span class="brd-product__title">Sample Product {{ i }}</span>
+                  <p class="brd-product__price">৳1,000</p>
+                </div>
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+        <button class="brd-nav brd-nav--next" aria-label="Next">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2L10 7L5 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        </div>
+
+        <!-- Bottom: dots only -->
+        <div class="brd-products-footer">
+          <div class="brd-dots" id="brd-dots-{{ sid }}"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% style %}
+  #brd-{{ sid }} {
+    background-color: {{ s.section_bg }};
+    padding: {{ s.padding_top }}px {{ s.padding_h }}px {{ s.padding_bottom }}px;
+    box-sizing: border-box;
+  }
+  #brd-{{ sid }} .brd-wrap { max-width: {{ s.max_width }}px; margin: 0 auto; }
+
+  /* ── Header ── */
+  #brd-{{ sid }} .brd-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 20px; gap: 16px;
+  }
+  #brd-{{ sid }} .brd-eyebrow {
+    margin: 0 0 6px; font-size: 11px; letter-spacing: 0.12em;
+    text-transform: none; color: #1C4A3A; opacity: 1;
+    font-family: var(--font-body--family);
+  }
+  #brd-{{ sid }} .brd-heading {
+    margin: 0; font-size: var(--font-h2--size);
+    font-family: var(--font-heading--family); font-weight: var(--font-h2--weight);
+    letter-spacing: var(--font-h2--letter-spacing);
+    color: {{ s.heading_color }}; line-height: var(--font-h2--line-height);
+  }
+  #brd-{{ sid }} .brd-see-all {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+    font-weight: 500;
+    white-space: nowrap; flex-shrink: 0;
+    padding: 0;
+    background: none;
+    color: #1C4A3A;
+    border: none;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    text-decoration-thickness: 1px;
+    transition: opacity 0.2s;
+    font-family: var(--button-font-family-primary, var(--font-body--family));
+  }
+  #brd-{{ sid }} .brd-see-all:hover {
+    opacity: 0.6;
+    text-decoration: underline;
+  }
+
+  /* ── Card wrapper ── */
+  #brd-{{ sid }} .brd-content {
+    display: grid; grid-template-columns: {{ s.panel_width }}px 1fr;
+    gap: 0; background-color: {{ s.card_bg }};
+    border: 1px solid rgba(28, 28, 26, 0.09); border-radius: {{ s.border_radius }}px;
+    overflow: hidden;
+  }
+
+  /* ── Brand panel ── */
+  #brd-{{ sid }} .brd-brand-panel {
+    padding: {{ s.panel_padding }}px;
+    display: flex; flex-direction: column;
+    border-right: 1px solid rgba(28, 28, 26, 0.09);
+    overflow: hidden;
+  }
+
+  /* ── Brand slides ── */
+  #brd-{{ sid }} .brd-brand-slide {
+    display: none; flex-direction: column; gap: 14px; flex: 1;
+  }
+  #brd-{{ sid }} .brd-brand-slide--active {
+    display: flex;
+    animation: brd-fadein-{{ sid }} 0.22s ease;
+  }
+  @keyframes brd-fadein-{{ sid }} {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  #brd-{{ sid }} .brd-brand-badge {
+    margin: 0; font-size: 10px; letter-spacing: 0.12em; text-transform: none;
+    font-weight: 700; color: {{ s.badge_color }}; font-family: var(--font-body--family);
+  }
+  #brd-{{ sid }} .brd-brand-name {
+    margin: 0; font-size: 28px; font-family: var(--font-heading--family);
+    font-weight: 400; color: {{ s.heading_color }}; line-height: 1.15;
+  }
+  #brd-{{ sid }} .brd-brand-location {
+    margin: 0; font-size: 12px; color: {{ s.accent_color }};
+    font-style: italic; font-family: var(--font-body--family);
+  }
+  #brd-{{ sid }} .brd-brand-desc {
+    margin: 0; font-size: 13px; font-style: italic; line-height: 1.65;
+    color: {{ s.text_color }}; font-family: var(--font-body--family);
+  }
+  #brd-{{ sid }} .brd-brand-quote {
+    margin: 0; padding: 12px 16px;
+    border-left: 3px solid {{ s.accent_color }};
+    background: rgba(28, 28, 26, 0.04); border-radius: 0 4px 4px 0;
+  }
+  #brd-{{ sid }} .brd-brand-quote p {
+    margin: 0 0 6px; font-size: 13px; line-height: 1.65;
+    color: {{ s.text_color }}; font-family: var(--font-body--family);
+  }
+  #brd-{{ sid }} .brd-brand-quote footer {
+    font-size: 11px; color: {{ s.text_color }}; opacity: 0.55;
+    font-family: var(--font-body--family);
+  }
+  #brd-{{ sid }} .brd-brand-cta {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    margin-top: auto; align-self: flex-start;
+    font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase;
+    font-weight: 500; text-decoration: none;
+    background-color: var(--color-primary-button-background, #111);
+    color: var(--color-primary-button-text, #fff);
+    border: 1.5px solid var(--color-primary-button-border, #111);
+    padding: 11px 24px; border-radius: var(--style-border-radius-buttons-primary, 14px);
+    font-family: var(--button-font-family-primary, var(--font-body--family));
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+  #brd-{{ sid }} .brd-brand-cta:hover {
+    background-color: var(--color-primary-button-text, #fff);
+    color: var(--color-primary-button-background, #111);
+    border-color: var(--color-primary-button-background, #111);
+  }
+
+  /* ── Products wrapper ── */
+  #brd-{{ sid }} .brd-products-wrapper {
+    display: flex; flex-direction: column; min-width: 0;
+  }
+  #brd-{{ sid }} .brd-scroll-wrap {
+    position: relative; flex: 1;
+  }
+
+  /* ── Products scroll area ── */
+  #brd-{{ sid }} .brd-products {
+    display: flex; overflow: hidden;
+    gap: {{ s.product_gap }}px;
+    padding: {{ s.panel_padding }}px;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    flex: 1;
+  }
+  #brd-{{ sid }} .brd-product {
+    flex: 0 0 calc((100% - {{ s.panel_padding | times: 2 }}px - {{ s.product_gap | times: 2 }}px) / 3);
+    display: flex; flex-direction: column; gap: 10px; min-width: 0;
+  }
+
+  /* ── Product image ── */
+  #brd-{{ sid }} .brd-product__img-link {
+    display: block; position: relative; width: 100%;
+    height: 0; padding-bottom: 100%;
+    border-radius: {{ s.img_radius }}px; overflow: hidden; text-decoration: none;
+  }
+  #brd-{{ sid }} .brd-product__img {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover; display: block; transition: transform 0.35s ease;
+  }
+  #brd-{{ sid }} .brd-product__img-link:hover .brd-product__img { transform: scale(1.04); }
+  #brd-{{ sid }} .brd-product__placeholder {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(28, 28, 26, 0.07); display: flex; align-items: center;
+    justify-content: center; border-radius: {{ s.img_radius }}px;
+  }
+  #brd-{{ sid }} .brd-product__placeholder-svg { width: 48px; height: 48px; opacity: 0.3; }
+
+  /* ── Product info ── */
+  #brd-{{ sid }} .brd-product__info { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 5px; }
+  #brd-{{ sid }} .brd-product__title {
+    font-size: 14px; font-family: var(--font-body--family);
+    color: {{ s.heading_color }}; text-decoration: none; line-height: 1.35; font-weight: 400;
+  }
+  #brd-{{ sid }} .brd-product__title:hover { text-decoration: underline; }
+  #brd-{{ sid }} .brd-product__price {
+    margin: 0; font-size: 14px; font-weight: 600;
+    color: {{ s.price_color }}; font-family: var(--font-body--family);
+  }
+  #brd-{{ sid }} .brd-atc-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    width: 100%;
+    font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase;
+    font-weight: 500; text-decoration: none;
+    background-color: var(--color-primary-button-background, #111);
+    color: var(--color-primary-button-text, #fff);
+    border: 1.5px solid var(--color-primary-button-border, #111);
+    border-radius: var(--style-border-radius-buttons-primary, 14px);
+    padding: 11px 16px;
+    font-family: var(--button-font-family-primary, var(--font-body--family));
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+  #brd-{{ sid }} .brd-atc-btn:hover {
+    background-color: var(--color-primary-button-text, #fff);
+    color: var(--color-primary-button-background, #111);
+    border-color: var(--color-primary-button-background, #111);
+  }
+
+  /* ── Product nav buttons — overlaid on images ── */
+  #brd-{{ sid }} .brd-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    z-index: 2;
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(28, 28, 26, 0.18); border-radius: 50%;
+    background: rgba(255,255,255,0.92); color: {{ s.heading_color }};
+    cursor: pointer; padding: 0; flex-shrink: 0;
+    transition: filter 0.2s, transform 0.2s;
+  }
+  #brd-{{ sid }} .brd-nav--prev { left: {{ s.panel_padding | minus: 4 }}px; }
+  #brd-{{ sid }} .brd-nav--next { right: {{ s.panel_padding | minus: 4 }}px; }
+  #brd-{{ sid }} .brd-nav:hover:not(:disabled) { filter: brightness(0.88); transform: translateY(-50%) scale(1.06); }
+  #brd-{{ sid }} .brd-nav:disabled { opacity: 0.28; cursor: default; }
+
+  /* ── Products footer: dots only ── */
+  #brd-{{ sid }} .brd-products-footer {
+    display: flex; align-items: center; justify-content: center;
+    padding: 10px {{ s.panel_padding }}px {{ s.panel_padding }}px;
+    border-top: 1px solid rgba(28, 28, 26, 0.07);
+  }
+
+  /* Dots */
+  #brd-{{ sid }} .brd-dots {
+    display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+    justify-content: center;
+  }
+  #brd-{{ sid }} .brd-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(28, 28, 26, 0.18); border: none; padding: 0; cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    flex-shrink: 0;
+  }
+  #brd-{{ sid }} .brd-dot--active {
+    background: {{ s.accent_color }};
+    transform: scale(1.4);
+  }
+
+  /* ── Tablet ── */
+  @media screen and (max-width: 960px) {
+    #brd-{{ sid }} .brd-content { grid-template-columns: 1fr; }
+    #brd-{{ sid }} .brd-brand-panel { border-right: none; border-bottom: 1px solid rgba(28, 28, 26, 0.09); }
+  }
+
+  /* ── Mobile: swipe carousel ── */
+  @media screen and (max-width: 640px) {
+    #brd-{{ sid }} .brd-nav { display: none !important; }
+    #brd-{{ sid }} .brd-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    #brd-{{ sid }} .brd-products {
+      overflow-x: auto; overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch; scrollbar-width: none;
+      gap: {{ s.product_gap }}px;
+      padding-bottom: {{ s.panel_padding }}px;
+    }
+    #brd-{{ sid }} .brd-products::-webkit-scrollbar { display: none; }
+    #brd-{{ sid }} .brd-product { flex: 0 0 75%; scroll-snap-align: start; }
+  }
+{% endstyle %}
+
+<script>
+(function () {
+  var wrap   = document.getElementById('brd-{{ sid }}');
+  var slider = document.getElementById('brd-scroll-{{ sid }}');
+  if (!wrap || !slider) return;
+
+  var panel       = wrap.querySelector('.brd-brand-panel');
+  var dotsWrap    = document.getElementById('brd-dots-{{ sid }}');
+  var prevBtn     = wrap.querySelector('.brd-nav--prev');
+  var nextBtn     = wrap.querySelector('.brd-nav--next');
+  var cards       = Array.from(slider.querySelectorAll('.brd-product'));
+  var totalCards  = cards.length;
+  var activeIndex = 0;
+  var isHovering  = false;
+
+  /* Build slide-id map from cards */
+  var slideIds = cards.map(function (c) { return c.getAttribute('data-slide') || null; });
+
+  /* ── Dots ── */
+  var dots = [];
+  if (dotsWrap && totalCards > 0) {
+    cards.forEach(function (_, i) {
+      var d = document.createElement('button');
+      d.className = 'brd-dot';
+      d.setAttribute('aria-label', 'Go to product ' + (i + 1));
+      d.addEventListener('click', function () { goToIndex(i); });
+      dotsWrap.appendChild(d);
+      dots.push(d);
+    });
+  }
+
+  function updateDots() {
+    dots.forEach(function (d, i) {
+      d.classList.toggle('brd-dot--active', i === activeIndex);
+    });
+  }
+
+  /* ── Card step ── */
+  function cardStep() {
+    var card = slider.querySelector('.brd-product');
+    if (!card) return slider.clientWidth;
+    var gap = parseFloat(getComputedStyle(slider).gap) || parseFloat(getComputedStyle(slider).columnGap) || 0;
+    return card.offsetWidth + gap;
+  }
+
+  /* ── Brand slide switching ── */
+  function activateSlide(slideId) {
+    if (!panel) return;
+    var target = panel.querySelector('[data-slide="' + (slideId || 'default') + '"]')
+                 || panel.querySelector('[data-slide="default"]');
+    var current = panel.querySelector('.brd-brand-slide--active');
+    if (current === target) return;
+    if (current) current.classList.remove('brd-brand-slide--active');
+    if (target)  target.classList.add('brd-brand-slide--active');
+  }
+
+  /* ── Navigate to index ── */
+  function goToIndex(i) {
+    i = Math.max(0, Math.min(i, totalCards - 1));
+    activeIndex = i;
+    slider.scrollTo({ left: i * cardStep(), behavior: 'smooth' });
+    if (!isHovering) activateSlide(slideIds[i]);
+    updateDots();
+    updateProductNav();
+  }
+
+  /* ── Nav button states ── */
+  function updateProductNav() {
+    var isMob = window.innerWidth <= 640;
+    var hasOverflow = slider.scrollWidth > slider.clientWidth + 2;
+    var atStart = slider.scrollLeft <= 2;
+    var atEnd   = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 2;
+    if (prevBtn) { prevBtn.disabled = atStart; }
+    if (nextBtn) { nextBtn.disabled = atEnd;   }
+    /* hide footer entirely if no overflow on desktop */
+    var footer = wrap.querySelector('.brd-products-footer');
+    if (footer) footer.style.display = (!isMob && !hasOverflow) ? 'none' : 'flex';
+  }
+
+  /* ── Product nav buttons ── */
+  if (prevBtn) prevBtn.addEventListener('click', function () { goToIndex(activeIndex - 1); });
+  if (nextBtn) nextBtn.addEventListener('click', function () { goToIndex(activeIndex + 1); });
+
+  /* ── Sync on scroll (touch / mouse drag) ── */
+  slider.addEventListener('scroll', function () {
+    var i = Math.round(slider.scrollLeft / (cardStep() || 1));
+    i = Math.max(0, Math.min(i, totalCards - 1));
+    if (i !== activeIndex) {
+      activeIndex = i;
+      if (!isHovering) activateSlide(slideIds[i]);
+    }
+    updateDots();
+    updateProductNav();
+  }, { passive: true });
+
+  /* ── Card hover: temporarily show that card's brand slide ── */
+  cards.forEach(function (card, i) {
+    card.addEventListener('mouseenter', function () {
+      isHovering = true;
+      activateSlide(slideIds[i]);
+    });
+  });
+  slider.addEventListener('mouseleave', function () {
+    isHovering = false;
+    activateSlide(slideIds[activeIndex]);
+  });
+
+  /* ── Init ── */
+  window.addEventListener('resize', function () { updateProductNav(); });
+  requestAnimationFrame(function () {
+    updateDots();
+    updateProductNav();
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Brands Discovered",
+  "tag": "section",
+  "class": "shopify-section",
+  "blocks": [
+    {
+      "type": "product_slot",
+      "name": "Product Slot",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Product"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product",
+          "info": "Select the product to show in this slot"
+        },
+        {
+          "type": "header",
+          "content": "Brand Panel (hover text)"
+        },
+        {
+          "type": "text",
+          "id": "brand_name",
+          "label": "Brand name",
+          "info": "Fill to enable a custom brand panel for this card"
+        },
+        {
+          "type": "text",
+          "id": "brand_badge",
+          "label": "Badge text"
+        },
+        {
+          "type": "text",
+          "id": "brand_location",
+          "label": "Location / Est."
+        },
+        {
+          "type": "textarea",
+          "id": "brand_desc",
+          "label": "Brand description (shown in quotes)"
+        },
+        {
+          "type": "textarea",
+          "id": "brand_quote",
+          "label": "Curator's quote"
+        },
+        {
+          "type": "text",
+          "id": "brand_quote_attr",
+          "label": "Quote attribution"
+        },
+        {
+          "type": "text",
+          "id": "brand_cta_text",
+          "label": "CTA button text"
+        },
+        {
+          "type": "url",
+          "id": "brand_cta_url",
+          "label": "CTA button URL"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "NEW TO THE SUNNAH STORE"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Brands we discovered this month"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size (px)",
+      "min": 24,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "text",
+      "id": "see_all_text",
+      "label": "See all link text",
+      "default": "SEE ALL PARTNERS"
+    },
+    {
+      "type": "url",
+      "id": "see_all_url",
+      "label": "See all link URL"
+    },
+    {
+      "type": "header",
+      "content": "Default Brand Info"
+    },
+    {
+      "type": "text",
+      "id": "brand_badge",
+      "label": "Badge text",
+      "default": "NEWLY ONBOARDED"
+    },
+    {
+      "type": "text",
+      "id": "brand_name",
+      "label": "Brand name",
+      "default": "Brand Name"
+    },
+    {
+      "type": "text",
+      "id": "brand_location",
+      "label": "Location / Est.",
+      "default": "Dhaka, Bangladesh · Est. 2022"
+    },
+    {
+      "type": "textarea",
+      "id": "brand_desc",
+      "label": "Brand description (shown in quotes)",
+      "default": "A small studio making hand-poured candles using only natural waxes and oud-based scents — no synthetics, no alcohol."
+    },
+    {
+      "type": "textarea",
+      "id": "brand_quote",
+      "label": "Curator's quote",
+      "default": "We found them at a craft fair and knew their products belonged in a Sunnah Store gift box."
+    },
+    {
+      "type": "text",
+      "id": "brand_quote_attr",
+      "label": "Quote attribution",
+      "default": "— The Sunnah Store Curation Team"
+    },
+    {
+      "type": "text",
+      "id": "brand_cta_text",
+      "label": "Brand CTA text",
+      "default": "SHOP THIS BRAND"
+    },
+    {
+      "type": "url",
+      "id": "brand_cta_url",
+      "label": "Brand CTA URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_brand_cta",
+      "label": "Show Shop button",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "text",
+      "id": "atc_text",
+      "label": "Button text",
+      "default": "Shop"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section background",
+      "default": "#F5F0E8"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#F5F0E8"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1C1C1A"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text color",
+      "default": "#1C4A3A"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color (links, location)",
+      "default": "#2B6B6E"
+    },
+    {
+      "type": "color",
+      "id": "price_color",
+      "label": "Price color",
+      "default": "#B8860B"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Badge color",
+      "default": "#B8860B"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width (px)",
+      "min": 800,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "panel_width",
+      "label": "Brand panel width (px)",
+      "min": 200,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "default": 260
+    },
+    {
+      "type": "range",
+      "id": "panel_padding",
+      "label": "Card inner padding (px)",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "product_gap",
+      "label": "Space between products (px)",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Card corner radius (px)",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "img_radius",
+      "label": "Image corner radius (px)",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_h",
+      "label": "Horizontal padding (px)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brands Discovered"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,410 @@
+{% comment %}
+  TSS — Footer
+  Deep emerald ground: gold letter-spaced wordmark, accordion link columns,
+  payment wordmarks, socials, region toggle and copyright.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+-%}
+
+<style>
+  #tss-footer-{{ uid }} {
+    background: var(--tss-green-dark);
+    color: var(--tss-ivory);
+    padding: {{ s.padding_top | default: 64 }}px var(--tss-gutter) {{ s.padding_bottom | default: 40 }}px;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__wordmark {
+    display: block;
+    text-align: center;
+    font-family: var(--tss-serif);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    color: var(--tss-gold);
+    text-decoration: none;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__logo {
+    display: block;
+    margin: 0 auto;
+    max-width: 200px;
+    height: auto;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__cols {
+    margin-top: 40px;
+    border-top: 1px solid rgb(245 240 232 / 0.1);
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__col {
+    border-bottom: 1px solid rgb(245 240 232 / 0.1);
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__toggle {
+    display: flex;
+    height: 56px;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
+    font-family: var(--tss-sans);
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__toggle span {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(245 240 232 / 0.8);
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__toggle .tss-icon {
+    width: 16px;
+    height: 16px;
+    color: rgb(245 240 232 / 0.5);
+    transition: transform 0.4s ease;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__toggle[aria-expanded='true'] .tss-icon {
+    transform: rotate(180deg);
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s var(--tss-ease);
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__panel[data-open='true'] {
+    grid-template-rows: 1fr;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__panel > ul {
+    overflow: hidden;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__panel li {
+    padding-bottom: 16px;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__panel li:first-child {
+    padding-top: 4px;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__panel a {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgb(245 240 232 / 0.65);
+    text-decoration: none;
+    transition: color 0.4s ease;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__panel a:hover {
+    color: var(--tss-gold-bright);
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__base {
+    margin-top: 48px;
+    border-top: 1px solid rgb(245 240 232 / 0.1);
+    padding-top: 32px;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__payments {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 16px;
+    row-gap: 8px;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__payments li {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgb(245 240 232 / 0.5);
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__social {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 32px;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__social a {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(245 240 232 / 0.55);
+    text-decoration: none;
+    transition: color 0.4s ease;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__social a:hover {
+    color: var(--tss-gold-bright);
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__region {
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+  }
+
+  #tss-footer-{{ uid }} .tss-foot__copy {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: rgb(245 240 232 / 0.4);
+  }
+
+  /* The link menus are an accordion because a phone has no room for columns.
+     A desktop does: lay them side by side, open, and drop the toggle affordance
+     so one collapsed stack of tap targets stops running the footer to ~2,000px.
+     The panel rules carry an attribute selector to outrank [data-open='false']
+     rather than reaching for !important. */
+  @media (min-width: 64rem) {
+    #tss-footer-{{ uid }} {
+      padding-inline: max(var(--tss-gutter), calc((100% - var(--tss-max)) / 2));
+    }
+
+    #tss-footer-{{ uid }} .tss-foot__cols {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 40px;
+      padding-top: 48px;
+    }
+
+    #tss-footer-{{ uid }} .tss-foot__col {
+      border-bottom: 0;
+    }
+
+    #tss-footer-{{ uid }} .tss-foot__toggle {
+      height: auto;
+      margin-bottom: 20px;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    #tss-footer-{{ uid }} .tss-foot__toggle .tss-icon {
+      display: none;
+    }
+
+    #tss-footer-{{ uid }} .tss-foot__panel,
+    #tss-footer-{{ uid }} .tss-foot__panel[data-open='false'] {
+      grid-template-rows: 1fr;
+    }
+  }
+</style>
+
+<footer id="tss-footer-{{ uid }}" class="tss-section">
+  {%- if s.logo != blank -%}
+    <a href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+      {{ s.logo | image_url: width: 400 | image_tag: class: 'tss-foot__logo', alt: shop.name }}
+    </a>
+  {%- else -%}
+    <a href="{{ routes.root_url }}" class="tss-foot__wordmark">
+      {{- s.wordmark | default: shop.name | escape -}}
+    </a>
+  {%- endif -%}
+
+  {%- if section.blocks.size > 0 -%}
+    <div class="tss-foot__cols">
+      {%- for block in section.blocks -%}
+        {%- assign menu = linklists[block.settings.menu] -%}
+        <div class="tss-foot__col" {{ block.shopify_attributes }}>
+          <button
+            type="button"
+            class="tss-foot__toggle"
+            aria-expanded="false"
+            aria-controls="tss-foot-panel-{{ block.id }}"
+            data-panel="tss-foot-panel-{{ block.id }}"
+            data-tss-accordion
+          >
+            <span>{{ block.settings.title | default: menu.title | escape }}</span>
+            {% render 'tss-icon', icon: 'chevron-down', size: 16, stroke: 1.5 %}
+          </button>
+
+          <div class="tss-foot__panel" id="tss-foot-panel-{{ block.id }}" data-open="false">
+            <ul>
+              {%- for link in menu.links -%}
+                <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  <div class="tss-foot__base">
+    {%- if s.payments != blank -%}
+      <ul class="tss-foot__payments">
+        {%- assign payment_items = s.payments | split: ',' -%}
+        {%- for item in payment_items -%}
+          <li>{{ item | strip | escape }}</li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    {%- if s.social_menu != blank -%}
+      {%- assign social = linklists[s.social_menu] -%}
+      {%- if social.links.size > 0 -%}
+        <div class="tss-foot__social">
+          {%- for link in social.links -%}
+            <a
+              href="{{ link.url }}"
+              aria-label="{{ shop.name }} on {{ link.title | escape }}"
+              rel="noopener"
+              target="_blank"
+            >
+              {{- link.title | escape -}}
+            </a>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%}
+      The toggle decides for itself whether there is more than one currency to
+      offer, so capture it and only build the wrapper when it produced something
+      — otherwise its 32px margin opens a gap under the socials for nothing.
+    {%- endcomment -%}
+    {%- if s.show_region -%}
+      {%- capture region_toggle -%}
+        {% render 'tss-region-toggle', long: true %}
+      {%- endcapture -%}
+      {%- unless region_toggle == blank -%}
+        <div class="tss-foot__region">{{ region_toggle }}</div>
+      {%- endunless -%}
+    {%- endif -%}
+
+    <p class="tss-foot__copy">
+      &copy; {{ 'now' | date: '%Y' }} {{ s.copyright | default: shop.name | escape }}
+    </p>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var root = document.getElementById('tss-footer-{{ uid }}');
+    if (!root || root.__tssBound) return;
+    root.__tssBound = true;
+
+    root.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-tss-accordion]');
+      if (!btn) return;
+      var panel = document.getElementById(btn.getAttribute('data-panel'));
+      if (!panel) return;
+      var open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!open));
+      panel.setAttribute('data-open', String(!open));
+    });
+
+    // From 64rem the columns are laid out open and side by side, so the toggles
+    // stop being controls. Strip the button semantics there rather than leave
+    // them announcing "collapsed" over links that are plainly visible; the
+    // panel id lives on data-panel so aria-controls can come and go with it.
+    var wide = window.matchMedia('(min-width: 64rem)');
+
+    function syncToggles() {
+      var toggles = root.querySelectorAll('[data-tss-accordion]');
+      for (var i = 0; i < toggles.length; i++) {
+        var btn = toggles[i];
+        var id = btn.getAttribute('data-panel');
+        var panel = id && document.getElementById(id);
+        if (wide.matches) {
+          btn.removeAttribute('aria-expanded');
+          btn.removeAttribute('aria-controls');
+          btn.setAttribute('tabindex', '-1');
+          if (panel) panel.setAttribute('data-open', 'true');
+        } else {
+          btn.removeAttribute('tabindex');
+          btn.setAttribute('aria-controls', id);
+          if (!btn.hasAttribute('aria-expanded')) {
+            btn.setAttribute('aria-expanded', 'false');
+            if (panel) panel.setAttribute('data-open', 'false');
+          }
+        }
+      }
+    }
+
+    syncToggles();
+    if (wide.addEventListener) wide.addEventListener('change', syncToggles);
+    else if (wide.addListener) wide.addListener(syncToggles);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "TSS · Footer",
+  "settings": [
+    { "type": "header", "content": "Identity" },
+    { "type": "image_picker", "id": "logo", "label": "Logo", "info": "Falls back to the wordmark below." },
+    { "type": "text", "id": "wordmark", "label": "Wordmark", "default": "THE SUNNAH STORE" },
+    { "type": "header", "content": "Base row" },
+    {
+      "type": "text",
+      "id": "payments",
+      "label": "Payment methods",
+      "info": "Comma separated.",
+      "default": "Cash on Delivery, bKash, Visa, Mastercard"
+    },
+    { "type": "link_list", "id": "social_menu", "label": "Social menu" },
+    { "type": "checkbox", "id": "show_region", "label": "Show region / currency toggle", "default": true },
+    { "type": "text", "id": "copyright", "label": "Copyright name" },
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "column",
+      "name": "Link column",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Shopping" },
+        { "type": "link_list", "id": "menu", "label": "Menu" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "TSS · Footer",
+      "blocks": [
+        { "type": "column", "settings": { "title": "Shopping" } },
+        { "type": "column", "settings": { "title": "Gifting" } },
+        { "type": "column", "settings": { "title": "Our House" } },
+        { "type": "column", "settings": { "title": "Help" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

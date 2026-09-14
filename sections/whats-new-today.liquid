@@ -1,0 +1,503 @@
+{% comment %}
+  Section: What's New Today
+  Desktop: left panel + horizontal carousel with arrows
+  Mobile:  centered header → swipeable carousel → dot indicators → full-width button
+  Upload to: sections/whats-new-today.liquid
+{% endcomment %}
+
+{% assign collection = collections[section.settings.collection] %}
+{% assign products   = collection.products %}
+{% assign product_count = products.size %}
+
+<section class="wnt-section" id="whats-new-today-{{ section.id }}">
+
+  {%- comment -%} ── HEADER ── {%- endcomment -%}
+  <div class="wnt-header">
+    <p class="wnt-label">{{ section.settings.label | default: "WHAT'S NEW TODAY" }}</p>
+    <p class="wnt-count">{{ product_count }}</p>
+    <p class="wnt-sub">{{ section.settings.subtitle | default: "Discover what just landed" }}</p>
+    <a class="wnt-btn wnt-btn--desktop" href="{{ collection.url }}">
+      {{ section.settings.button_text | default: "Shop now" }}
+    </a>
+  </div>
+
+  {%- comment -%} ── CAROUSEL ── {%- endcomment -%}
+  <div class="wnt-carousel-wrap">
+    <div class="wnt-track" id="wnt-track-{{ section.id }}">
+      {%- for product in products limit: section.settings.products_to_show -%}
+        <div class="wnt-card">
+          <a href="{{ product.url }}" class="wnt-card-link">
+            <div class="wnt-img-wrap">
+              {%- if product.featured_image -%}
+                <img
+                  src="{{ product.featured_image | image_url: width: 480 }}"
+                  alt="{{ product.featured_image.alt | escape }}"
+                  width="480"
+                  height="{{ 480 | divided_by: product.featured_image.aspect_ratio | round }}"
+                  loading="lazy"
+                  class="wnt-img"
+                >
+              {%- else -%}
+                <div class="wnt-img-placeholder">{{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+              {%- endif -%}
+              {%- if product.compare_at_price > product.price -%}
+                <span class="wnt-badge">Sale</span>
+              {%- endif -%}
+            </div>
+            <div class="wnt-card-info">
+              <p class="wnt-vendor">{{ product.vendor | upcase }}</p>
+              <p class="wnt-title">{{ product.title }}</p>
+              <p class="wnt-price">
+                {%- if product.compare_at_price > product.price -%}
+                  <s class="wnt-compare">{{ product.compare_at_price | money }}</s>
+                {%- endif -%}
+                <span>{{ product.price | money }}</span>
+              </p>
+            </div>
+          </a>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <button class="wnt-arrow wnt-arrow--prev" aria-label="Previous" data-target="{{ section.id }}">
+      <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
+        <path d="M9 1L1 9L9 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <button class="wnt-arrow wnt-arrow--next" aria-label="Next" data-target="{{ section.id }}">
+      <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
+        <path d="M1 1L9 9L1 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  {%- comment -%} ── MOBILE: progress dots ── {%- endcomment -%}
+  <div class="wnt-dots" id="wnt-dots-{{ section.id }}" aria-hidden="true">
+    {%- for product in products limit: section.settings.products_to_show -%}
+      <span class="wnt-dot{% if forloop.first %} wnt-dot--active{% endif %}"></span>
+    {%- endfor -%}
+  </div>
+
+  {%- comment -%} ── MOBILE: bottom button ── {%- endcomment -%}
+  <div class="wnt-footer">
+    <a class="wnt-btn wnt-btn--mobile" href="{{ collection.url }}">
+      {{ section.settings.button_text | default: "Shop now" }}
+    </a>
+  </div>
+
+</section>
+
+<style>
+  #whats-new-today-{{ section.id }} {
+    --wnt-bg:       {{ section.settings.bg_color }};
+    --wnt-text:     {{ section.settings.text_color }};
+    --wnt-accent:   {{ section.settings.accent_color }};
+    --wnt-btn-bg:   {{ section.settings.btn_bg_color }};
+    --wnt-btn-text: {{ section.settings.btn_text_color }};
+    --wnt-card-bg:  {{ section.settings.card_bg_color }};
+    --wnt-gap:      12px;
+    --wnt-card-w:   220px;
+  }
+
+  /* ── BASE (desktop row) ── */
+  .wnt-section {
+    background: var(--wnt-bg);
+    color: var(--wnt-text);
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    padding: 56px 40px;
+    overflow: hidden;
+  }
+
+  .wnt-header {
+    flex: 0 0 220px;
+    min-width: 180px;
+  }
+
+  .wnt-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: none;
+    color: #1C4A3A;
+    margin: 0 0 8px;
+  }
+
+  .wnt-count {
+    font-size: clamp(72px, 8vw, 100px);
+    font-weight: 400;
+    line-height: 1;
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+  }
+
+  .wnt-sub {
+    font-size: 13px;
+    line-height: 1.55;
+    opacity: 0.7;
+    margin: 0 0 28px;
+  }
+
+  .wnt-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px 22px;
+    background-color: var(--color-primary-button-background, #111);
+    color: var(--color-primary-button-text, #fff);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    text-align: center;
+    text-decoration: none;
+    border: 1.5px solid var(--color-primary-button-border, #111);
+    border-radius: var(--style-border-radius-buttons-primary, 14px);
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    cursor: pointer;
+    font-family: var(--button-font-family-primary, var(--font-body--family));
+  }
+  .wnt-btn:hover {
+    background-color: var(--color-primary-button-text, #fff);
+    color: var(--color-primary-button-background, #111);
+    border-color: var(--color-primary-button-background, #111);
+  }
+  .wnt-btn--desktop { /* same style as base */ }
+  .wnt-btn--mobile  { display: none; }
+
+  /* Carousel */
+  .wnt-carousel-wrap {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .wnt-track {
+    display: flex;
+    gap: var(--wnt-gap);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+  }
+
+  .wnt-card {
+    flex: 0 0 var(--wnt-card-w);
+    width: var(--wnt-card-w);
+    transition: box-shadow 0.2s;
+    border: 1px solid #1C1C1A24;
+    border-radius: 10px;
+  }
+
+  .wnt-card-link { display: block; text-decoration: none; color: inherit; }
+
+  .wnt-img-wrap {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+  }
+
+  .wnt-img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    transition: transform 0.5s ease;
+    border-radius: 10px 10px 0 0;
+  }
+  .wnt-card-link:hover .wnt-img { transform: scale(1.04); }
+
+  .wnt-img-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: #ebebeb;
+  }
+
+  .wnt-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: var(--wnt-accent); color: #fff;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: none;
+    padding: 3px 8px;
+  }
+
+  .wnt-card-info { 
+    padding: 10px;
+    text-align: center; 
+  }
+
+  .wnt-vendor {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+    color: #1C4A3A;
+    margin: 0 0 3px;
+  }
+
+  .wnt-title {
+    font-size: 12px; opacity: 0.7;
+    margin: 0 0 5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .wnt-price {
+    font-size: 13px; margin: 0;
+    display: flex; gap: 6px; 
+    justify-content: center;
+  }
+  .wnt-compare { opacity: 0.45; font-size: 11px; text-decoration: line-through; }
+
+  /* Desktop arrows */
+  .wnt-arrow {
+    position: absolute; top: 38%; transform: translateY(-50%);
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,0.92); border: 1px solid rgba(28, 28, 26, 0.18);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 2; color: var(--wnt-text);
+    transition: filter 0.2s, transform 0.2s; padding: 0;
+  }
+  .wnt-arrow:hover { filter: brightness(0.88); transform: translateY(-50%) scale(1.06); }
+  .wnt-arrow[disabled] { opacity: 0.28; pointer-events: none; }
+  .wnt-arrow--prev { left: 4px; }
+  .wnt-arrow--next { right: 4px; }
+
+  /* Dots + footer hidden on desktop */
+  .wnt-dots  { display: none; }
+  .wnt-footer{ display: none; }
+
+  /* ═══════════════════════════
+     MOBILE ≤ 768px
+  ═══════════════════════════ */
+  @media (max-width: 768px) {
+
+    .wnt-section {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 36px 0 0;
+      gap: 0;
+      overflow: visible;
+    }
+
+    .wnt-header {
+      flex: unset; width: 100%;
+      padding: 0 20px 24px;
+    }
+
+    .wnt-count { font-size: 80px; }
+    .wnt-sub   { font-size: 14px; margin-bottom: 0; }
+
+    /* Hide desktop btn on mobile */
+    .wnt-btn--desktop { display: none; }
+
+    /* Carousel: native scroll */
+    .wnt-carousel-wrap {
+      width: 100%;
+      overflow: inherit; /* clip bleed */
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    .wnt-track {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      transform: none !important; /* disable JS transform */
+      transition: none;
+      gap: 10px;
+    }
+    .wnt-track::-webkit-scrollbar { display: none; }
+
+    /* ~3 cards visible with right peek */
+    .wnt-card {
+      flex: 0 0 calc(33% - 4px);
+      width: calc(33% - 4px);
+      min-width: 110px;
+      scroll-snap-align: start;
+    }
+
+    /* Hide arrows on mobile */
+    .wnt-arrow { display: none; }
+
+    /* ── DOT INDICATORS ── */
+    .wnt-dots {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 20px 0 0;
+      width: 100%;
+    }
+
+    .wnt-dot {
+      display: block;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--wnt-text);
+      opacity: 0.2;
+      width: 5px;
+      transition: width 0.3s ease, opacity 0.3s ease;
+    }
+
+    .wnt-dot--active {
+      opacity: 1;
+      width: 5px;
+    }
+
+    /* ── FOOTER BUTTON ── */
+    .wnt-footer {
+      display: block;
+      width: 100%;
+      padding: 24px 20px 40px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .wnt-btn--mobile {
+      display: inline-block;
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .wnt-count { font-size: 64px; }
+    .wnt-card  { flex: 0 0 45%; width: 45%; }
+  }
+</style>
+
+<script>
+(function () {
+  var sid     = '{{ section.id }}';
+  var track   = document.getElementById('wnt-track-' + sid);
+  var dotsEl  = document.getElementById('wnt-dots-' + sid);
+  var prevBtn = document.querySelector('[data-target="' + sid + '"].wnt-arrow--prev');
+  var nextBtn = document.querySelector('[data-target="' + sid + '"].wnt-arrow--next');
+  if (!track) return;
+
+  var cards   = Array.from(track.querySelectorAll('.wnt-card'));
+  var dots    = dotsEl ? Array.from(dotsEl.querySelectorAll('.wnt-dot')) : [];
+  var current = 0;
+
+  function isMobile() { return window.innerWidth <= 768; }
+
+  function activeDot(i) {
+    dots.forEach(function (d, idx) {
+      d.classList.toggle('wnt-dot--active', idx === i);
+    });
+  }
+
+  /* Mobile: native scroll → dots */
+  track.addEventListener('scroll', function () {
+    if (!isMobile() || !cards.length) return;
+    var cardW = cards[0].offsetWidth + 10;
+    var idx   = Math.round(track.scrollLeft / cardW);
+    if (idx !== current) { current = idx; activeDot(current); }
+  }, { passive: true });
+
+  /* Desktop: JS transform */
+  function gap() { return 12; }
+  function step() { return (cards[0] ? cards[0].offsetWidth : 220) + gap(); }
+  function visible() {
+    var w = track.parentElement.offsetWidth;
+    return Math.max(1, Math.floor((w - 72) / step()));
+  }
+
+  function update() {
+    if (isMobile()) return;
+    var max = Math.max(0, cards.length - visible());
+    current = Math.min(current, max);
+    track.style.transform = 'translateX(-' + (current * step()) + 'px)';
+    if (prevBtn) prevBtn.disabled = current === 0;
+    if (nextBtn) nextBtn.disabled = current >= max;
+    activeDot(current);
+  }
+
+  if (prevBtn) prevBtn.addEventListener('click', function () { current = Math.max(0, current - 1); update(); });
+  if (nextBtn) nextBtn.addEventListener('click', function () { current++; update(); });
+
+  update();
+  window.addEventListener('resize', function () { current = 0; update(); });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "What's New Today",
+  "tag": "section",
+  "class": "whats-new-today-section",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "default": 12,
+      "label": "Max products to show"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Eyebrow label",
+      "default": "WHAT'S NEW TODAY"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Discover what just landed"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Shop now"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1C1C1A"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Badge / accent color",
+      "default": "#c0392b"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_color",
+      "label": "Button background",
+      "default": "#1C1C1A"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card / image background",
+      "default": "#ebebeb"
+    }
+  ],
+  "presets": [
+    {
+      "name": "What's New Today"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,229 @@
+{% comment %}
+  TSS — Collection hero
+  The flat emerald band that opens a gifting landing page: a gold breadcrumb,
+  a serif title and an italic lede, matching the reference build at
+  thesunnahstoremarketplace.vercel.app/gifts/by-occasion
+
+  Text falls back to the page it sits on, so the same section can head any
+  "By …" landing page without being re-typed.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+
+  assign heading = s.title
+  if heading == blank
+    assign heading = page.title
+  endif
+  if heading == blank
+    assign heading = collection.title
+  endif
+
+  assign crumb = s.crumb_current
+  if crumb == blank
+    assign crumb = heading
+  endif
+-%}
+
+<style>
+  #tss-chero-{{ uid }} {
+    position: relative;
+    background: var(--tss-green);
+    overflow: hidden;
+  }
+
+  #tss-chero-{{ uid }} .tss-chero__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #tss-chero-{{ uid }} .tss-chero__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      rgba(5, 30, 22, {{ s.scrim | default: 80 | divided_by: 100.0 }}) 0%,
+      rgba(5, 30, 22, {{ s.scrim | default: 80 | times: 0.7 | divided_by: 100.0 }}) 55%,
+      rgba(5, 30, 22, {{ s.scrim | default: 80 | times: 0.45 | divided_by: 100.0 }}) 100%
+    );
+  }
+
+  #tss-chero-{{ uid }} .tss-chero__inner {
+    position: relative;
+    padding: {{ s.padding_top | default: 84 }}px var(--tss-gutter) {{ s.padding_bottom | default: 72 }}px;
+  }
+
+  #tss-chero-{{ uid }} .tss-chero__crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--tss-gold-bright);
+  }
+
+  #tss-chero-{{ uid }} .tss-chero__crumb a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.4s ease;
+  }
+
+  #tss-chero-{{ uid }} .tss-chero__crumb a:hover {
+    color: var(--tss-ivory);
+  }
+
+  #tss-chero-{{ uid }} .tss-chero__crumb span[aria-hidden] {
+    opacity: 0.6;
+  }
+
+  #tss-chero-{{ uid }} .tss-chero__title {
+    margin-top: 18px;
+    max-width: 18ch;
+    font-family: var(--tss-serif);
+    font-size: {{ s.title_size | default: 42 }}px;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+    color: var(--tss-ivory);
+  }
+
+  #tss-chero-{{ uid }} .tss-chero__lede {
+    margin-top: 16px;
+    max-width: 40ch;
+    font-family: var(--tss-serif);
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.55;
+    color: rgb(245 240 232 / 0.78);
+  }
+
+  @media (min-width: 64rem) {
+    #tss-chero-{{ uid }} .tss-chero__inner {
+      max-width: var(--tss-max);
+      margin-inline: auto;
+      padding-block: {{ s.padding_top | default: 84 | plus: 28 }}px {{ s.padding_bottom | default: 72 | plus: 24 }}px;
+    }
+
+    #tss-chero-{{ uid }} .tss-chero__title {
+      font-size: {{ s.title_size | default: 42 | plus: 12 }}px;
+    }
+
+    #tss-chero-{{ uid }} .tss-chero__lede {
+      font-size: 18px;
+      max-width: 46ch;
+    }
+  }
+</style>
+
+<section id="tss-chero-{{ uid }}" class="tss-section" {{ section.shopify_attributes }}>
+  {%- if s.image != blank or s.image_asset != blank -%}
+    {% render 'tss-image',
+      image: s.image,
+      asset: s.image_asset,
+      class: 'tss-chero__img',
+      width: 1600,
+      widths: '480,720,960,1280,1600',
+      sizes: '100vw',
+      priority: true,
+      alt: heading
+    %}
+    <div class="tss-chero__scrim" aria-hidden="true"></div>
+  {%- endif -%}
+
+  <div class="tss-chero__inner">
+    {%- if s.crumb_parent != blank or crumb != blank -%}
+      <nav class="tss-chero__crumb" aria-label="Breadcrumb">
+        {%- if s.crumb_parent != blank -%}
+          {%- if s.crumb_parent_url != blank -%}
+            <a href="{{ s.crumb_parent_url }}">{{ s.crumb_parent | escape }}</a>
+          {%- else -%}
+            <span>{{ s.crumb_parent | escape }}</span>
+          {%- endif -%}
+          <span aria-hidden="true">/</span>
+        {%- endif -%}
+        <span aria-current="page">{{ crumb | escape }}</span>
+      </nav>
+    {%- endif -%}
+
+    {%- if heading != blank -%}
+      <h1 class="tss-chero__title">{{ heading | escape }}</h1>
+    {%- endif -%}
+
+    {%- if s.lede != blank -%}
+      <p class="tss-chero__lede">{{ s.lede | escape }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "TSS · Collection hero",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Breadcrumb" },
+    { "type": "text", "id": "crumb_parent", "label": "Parent label", "default": "Gifts" },
+    { "type": "url", "id": "crumb_parent_url", "label": "Parent link" },
+    {
+      "type": "text",
+      "id": "crumb_current",
+      "label": "Current label",
+      "info": "Falls back to the title below, then to the page title."
+    },
+    { "type": "header", "content": "Text" },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "info": "Leave empty to use the page title."
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size",
+      "min": 28,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 42
+    },
+    {
+      "type": "textarea",
+      "id": "lede",
+      "label": "Lede",
+      "default": "Every occasion asks for something different. Here is where we would begin."
+    },
+    { "type": "header", "content": "Background" },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Optional. The band is flat emerald when nothing is set."
+    },
+    { "type": "text", "id": "image_asset", "label": "Theme asset", "info": "Filename in assets/, used when no image is picked." },
+    {
+      "type": "range",
+      "id": "scrim",
+      "label": "Image darkening",
+      "min": 40,
+      "max": 95,
+      "step": 5,
+      "unit": "%",
+      "default": 80
+    },
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 32, "max": 200, "step": 4, "unit": "px", "default": 84 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 32, "max": 200, "step": 4, "unit": "px", "default": 72 }
+  ],
+  "presets": [{ "name": "TSS · Collection hero" }]
+}
+{% endschema %}

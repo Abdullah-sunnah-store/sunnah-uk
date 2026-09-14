@@ -1,0 +1,47 @@
+{% comment %}
+  TSS collection tile — one card in the collection rail.
+
+  Accepts:
+    url        - where the tile goes
+    label      - caption, set in serif at the bottom-left
+    image      - image object (optional)
+    asset      - filename in assets/ (optional, used when image is blank)
+    active     - true to ring the tile in gold and mark it aria-current
+    attributes - shopify_attributes when the tile came from a block
+
+  A tile with neither image nor asset falls back to a flat emerald ground
+  rather than a grey placeholder, so a label-only rail still reads as design.
+{% endcomment %}
+
+{%- liquid
+  assign has_media = false
+  if image != blank or asset != blank
+    assign has_media = true
+  endif
+-%}
+
+<a
+  class="tss-crail__tile{% unless has_media %} tss-crail__tile--flat{% endunless %}{% if active %} is-active{% endif %}"
+  href="{{ url | default: '#' }}"
+  {% if active %}
+    aria-current="page"
+  {% endif %}
+  {{ attributes }}
+>
+  {%- if has_media -%}
+    {% render 'tss-image',
+      image: image,
+      asset: asset,
+      class: 'tss-crail__img',
+      asset_width: 480,
+      asset_height: 600,
+      width: 480,
+      widths: '160,240,320,480',
+      sizes: '148px',
+      alt: label
+    %}
+    <span class="tss-crail__scrim" aria-hidden="true"></span>
+  {%- endif -%}
+
+  <span class="tss-crail__label">{{ label | escape }}</span>
+</a>

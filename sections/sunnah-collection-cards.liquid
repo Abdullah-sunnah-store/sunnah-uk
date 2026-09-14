@@ -1,0 +1,318 @@
+{%- assign sid = section.id -%}
+
+<section
+  class="scc-section"
+  id="scc-{{ sid }}"
+  style="background-color:{{ section.settings.section_bg }};padding:{{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;"
+>
+  <div class="scc-wrap">
+
+    <!-- Header -->
+    <div class="scc-head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="scc-eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h2 class="scc-title">{{ section.settings.heading }}</h2>
+      {%- if section.settings.subtext != blank -%}
+        <p class="scc-subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+
+    <!-- Collection cards -->
+    <div class="scc-grid">
+      {%- for block in section.blocks -%}
+        {%- assign col = collections[block.settings.collection] -%}
+        {%- assign col_title = col.title | default: block.settings.fallback_title -%}
+        <a
+          class="scc-card"
+          href="{{ col.url | default: '#' }}"
+          style="background: linear-gradient(160deg, {{ block.settings.card_color_top }}, {{ block.settings.card_color_bottom }});"
+          {{ block.shopify_attributes }}
+        >
+          {%- if block.settings.icon != blank -%}
+            <div class="scc-card-img-wrap">
+              <img src="{{ block.settings.icon | image_url: width: 600 }}" alt="" class="scc-icon-img" loading="lazy">
+            </div>
+          {%- endif -%}
+
+          <div class="scc-card-text">
+            {%- if block.settings.category_label != blank -%}
+              <p class="scc-category" style="color:{{ block.settings.category_color }};">{{ block.settings.category_label }}</p>
+            {%- endif -%}
+            <p class="scc-col-name">{{ col_title }}</p>
+            {%- if block.settings.quote != blank -%}
+              <p class="scc-quote">&ldquo;{{ block.settings.quote }}&rdquo;</p>
+            {%- endif -%}
+          </div>
+        </a>
+      {%- endfor -%}
+    </div>
+
+    <!-- View All — bottom center primary button -->
+    {%- if section.settings.view_all_text != blank -%}
+      <div class="scc-view-all-wrap">
+        <a class="scc-view-all btn btn--primary" href="{{ section.settings.view_all_url | default: '#' }}">
+          {{ section.settings.view_all_text }}
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<style>
+  #scc-{{ sid }} { box-sizing: border-box; }
+
+  #scc-{{ sid }} .scc-wrap {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+  }
+
+  /* ── Header — centered ── */
+  #scc-{{ sid }} .scc-head {
+    text-align: center;
+    margin-bottom: {{ section.settings.head_bottom_gap }}px;
+  }
+
+  #scc-{{ sid }} .scc-eyebrow {
+    margin: 0 0 8px;
+    font-size: {{ section.settings.eyebrow_size }}px;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    color: {{ section.settings.eyebrow_color }};
+    font-family: var(--font-body--family);
+  }
+
+  #scc-{{ sid }} .scc-title {
+    margin: 0 0 10px;
+    font-size: var(--font-h2--size);
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-h2--weight);
+    letter-spacing: var(--font-h2--letter-spacing);
+    color: {{ section.settings.heading_color }};
+    line-height: var(--font-h2--line-height);
+    text-align: center;
+  }
+
+  #scc-{{ sid }} .scc-subtext {
+    margin: 0 auto;
+    font-size: {{ section.settings.subtext_size }}px;
+    color: {{ section.settings.subtext_color }};
+    line-height: 1.5;
+    max-width: 520px;
+    text-align: center;
+    font-family: var(--font-body--family);
+  }
+
+  /* ── View All — bottom center primary button ── */
+  #scc-{{ sid }} .scc-view-all-wrap {
+    text-align: center;
+    margin-top: {{ section.settings.view_all_top_gap }}px;
+  }
+
+  #scc-{{ sid }} .scc-view-all {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    padding: var(--button-padding-block, 14px) var(--button-padding-inline, 36px);
+    background-color: var(--color-primary-button-background);
+    color: var(--color-primary-button-text);
+    border: 1.5px solid var(--color-primary-button-border);
+    border-radius: var(--style-border-radius-buttons-primary);
+    font-size: {{ section.settings.btn_font_size }}px;
+    font-family: var(--button-font-family-primary);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: var(--button-text-case-primary, none);
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  #scc-{{ sid }} .scc-view-all:hover {
+    background-color: var(--color-primary-button-text, #fff);
+    color: var(--color-primary-button-background, #111);
+    border-color: var(--color-primary-button-background, #111);
+  }
+
+  /* ── Grid ── */
+  #scc-{{ sid }} .scc-grid {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.columns }}, 1fr);
+    gap: {{ section.settings.card_gap }}px;
+  }
+
+  /* ── Card ── */
+  #scc-{{ sid }} .scc-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    text-decoration: none;
+    border-radius: {{ section.settings.card_radius }}px;
+    overflow: hidden;
+    min-height: {{ section.settings.card_height }}px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+  }
+
+  #scc-{{ sid }} .scc-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(28, 28, 26, 0.22);
+  }
+
+  /* ── Full-width image ── */
+  #scc-{{ sid }} .scc-card-img-wrap {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  #scc-{{ sid }} .scc-icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ── Card text — center aligned, sits above image ── */
+  #scc-{{ sid }} .scc-card-text {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: {{ section.settings.card_padding }}px;
+    padding-top: calc({{ section.settings.card_padding }}px + 32px);
+    background: linear-gradient(to top, rgba(28, 28, 26, 0.88) 0%, rgba(28, 28, 26, 0.78) 35%, rgba(28, 28, 26, 0.45) 70%, rgba(0,0,0,0) 100%);
+  }
+
+  #scc-{{ sid }} .scc-category {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 4px rgba(28, 28, 26, 0.7);
+  }
+
+  #scc-{{ sid }} .scc-col-name {
+    margin: 0 0 8px;
+    font-size: {{ section.settings.card_title_size }}px;
+    font-family: var(--font-heading--family);
+    color: {{ section.settings.card_title_color }};
+    line-height: 1.25;
+    font-weight: 600;
+    text-shadow: 0 1px 6px rgba(28, 28, 26, 0.75);
+  }
+
+  #scc-{{ sid }} .scc-quote {
+    margin: 0;
+    font-size: {{ section.settings.quote_size }}px;
+    font-style: italic;
+    color: {{ section.settings.quote_color }};
+    line-height: 1.5;
+    opacity: 1;
+    text-shadow: 0 1px 5px rgba(28, 28, 26, 0.8);
+    font-family: var(--font-body--family);
+  }
+
+  /* ── Responsive ── */
+  @media screen and (max-width: 768px) {
+    #scc-{{ sid }} {
+      padding: {{ section.settings.mobile_padding_top }}px {{ section.settings.mobile_padding_right }}px {{ section.settings.mobile_padding_bottom }}px {{ section.settings.mobile_padding_left }}px !important;
+    }
+    /* .scc-title size handled by theme heading scale */
+    #scc-{{ sid }} .scc-grid { grid-template-columns: repeat(2, 1fr); }
+    #scc-{{ sid }} .scc-card { aspect-ratio: 4 / 6; min-height: unset; }
+  }
+
+  @media screen and (max-width: 480px) {
+    #scc-{{ sid }} .scc-grid { grid-template-columns: repeat(2, 1fr); }
+    #scc-{{ sid }} .scc-card { aspect-ratio: 4 / 6; min-height: unset; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Sunnah Collection Cards",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Section" },
+    { "type": "color", "id": "section_bg", "label": "Background color", "default": "#f5f0e8" },
+    { "type": "range", "id": "max_width",  "label": "Content max-width (px)", "min": 800, "max": 1800, "step": 20, "default": 1400 },
+
+    { "type": "header", "content": "Eyebrow" },
+    { "type": "text",  "id": "eyebrow",       "label": "Eyebrow text",   "default": "A SUNNAH OF GIVING" },
+    { "type": "range", "id": "eyebrow_size",  "label": "Font size (px)", "min": 9, "max": 18, "step": 1, "default": 11 },
+    { "type": "color", "id": "eyebrow_color", "label": "Color",          "default": "#1C4A3A" },
+
+    { "type": "header", "content": "Heading" },
+    { "type": "text",   "id": "heading",             "label": "Heading",                "default": "Gifts that never age." },
+    { "type": "range",  "id": "heading_size",        "label": "Font size desktop (px)", "min": 20, "max": 80, "step": 2, "default": 44 },
+    { "type": "range",  "id": "heading_size_mobile", "label": "Font size mobile (px)",  "min": 18, "max": 48, "step": 2, "default": 28 },
+    { "type": "color",  "id": "heading_color",       "label": "Color",                  "default": "#1C1C1A" },
+    { "type": "header", "content": "Subtext" },
+    { "type": "text",  "id": "subtext",       "label": "Subtext",        "default": "Four gifts the world has always loved — carried here as the Sunnah intended." },
+    { "type": "range", "id": "subtext_size",  "label": "Font size (px)", "min": 12, "max": 20, "step": 1, "default": 15 },
+    { "type": "color", "id": "subtext_color", "label": "Color",          "default": "#555555" },
+    { "type": "range", "id": "head_bottom_gap", "label": "Space below header (px)", "min": 8, "max": 80, "step": 4, "default": 32 },
+
+    { "type": "header", "content": "View All Button" },
+    { "type": "text",  "id": "view_all_text",    "label": "Button text",           "default": "View All" },
+    { "type": "url",   "id": "view_all_url",     "label": "URL" },
+    { "type": "range", "id": "btn_font_size",    "label": "Button font size (px)", "min": 11, "max": 18, "step": 1, "default": 13 },
+    { "type": "range", "id": "view_all_top_gap", "label": "Space above button (px)", "min": 8, "max": 80, "step": 4, "default": 32 },
+
+    { "type": "header", "content": "Card Grid" },
+    { "type": "range", "id": "columns",        "label": "Columns (desktop)", "min": 1, "max": 6, "step": 1, "default": 4 },
+    { "type": "range", "id": "columns_tablet", "label": "Columns (tablet)",  "min": 1, "max": 4, "step": 1, "default": 2 },
+    { "type": "range", "id": "columns_mobile", "label": "Columns (mobile)",  "min": 1, "max": 3, "step": 1, "default": 1 },
+    { "type": "range", "id": "card_gap",     "label": "Gap between cards (px)",  "min": 0, "max": 40,  "step": 2,  "default": 12 },
+    { "type": "range", "id": "card_radius", "label": "Card radius (px)",        "min": 0, "max": 24,  "step": 2,  "default": 8 },
+    { "type": "range", "id": "card_height", "label": "Card min-height (px)",    "min": 200, "max": 700, "step": 10, "default": 380 },
+    { "type": "range", "id": "card_padding","label": "Text padding (px)",       "min": 12, "max": 60,  "step": 4,  "default": 24 },
+
+    { "type": "header", "content": "Card Text" },
+    { "type": "color",  "id": "card_title_color", "label": "Title color",     "default": "#ffffff" },
+    { "type": "range",  "id": "card_title_size",  "label": "Title size (px)", "min": 14, "max": 32, "step": 1, "default": 20 },
+    { "type": "color", "id": "quote_color", "label": "Quote color",    "default": "#F5F0E8" },
+    { "type": "range", "id": "quote_size",  "label": "Quote size (px)","min": 10, "max": 18, "step": 1, "default": 12 },
+
+    { "type": "header", "content": "Section Spacing — Desktop" },
+    { "type": "range", "id": "padding_top",    "label": "Padding top",    "min": 0, "max": 120, "step": 4, "default": 80 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "default": 80 },
+    { "type": "range", "id": "padding_left",   "label": "Padding left",   "min": 0, "max": 80,  "step": 4, "default": 40 },
+    { "type": "range", "id": "padding_right",  "label": "Padding right",  "min": 0, "max": 80,  "step": 4, "default": 40 },
+
+    { "type": "header", "content": "Section Spacing — Mobile" },
+    { "type": "range", "id": "mobile_padding_top",    "label": "Padding top",    "min": 0, "max": 80, "step": 4, "default": 40 },
+    { "type": "range", "id": "mobile_padding_bottom", "label": "Padding bottom", "min": 0, "max": 80, "step": 4, "default": 40 },
+    { "type": "range", "id": "mobile_padding_left",   "label": "Padding left",   "min": 0, "max": 60, "step": 4, "default": 20 },
+    { "type": "range", "id": "mobile_padding_right",  "label": "Padding right",  "min": 0, "max": 60, "step": 4, "default": 20 }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Collection Card",
+      "settings": [
+        { "type": "collection",   "id": "collection",      "label": "Collection" },
+        { "type": "text",         "id": "fallback_title",  "label": "Fallback title (if no collection)" },
+        { "type": "image_picker", "id": "icon",            "label": "Icon image" },
+        { "type": "text",         "id": "category_label",  "label": "Category label (e.g. KNOWLEDGE)" },
+        { "type": "color",        "id": "category_color",  "label": "Category label color", "default": "#B8860B" },
+        { "type": "textarea",     "id": "quote",           "label": "Quote text" },
+        { "type": "color",        "id": "card_color_top",  "label": "Card gradient top color",    "default": "#1C4A3A" },
+        { "type": "color",        "id": "card_color_bottom","label": "Card gradient bottom color", "default": "#051E16" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sunnah Collection Cards",
+      "blocks": [
+        { "type": "card" },
+        { "type": "card" },
+        { "type": "card" },
+        { "type": "card" }
+      ]
+    }
+  ]
+}
+{% endschema %}

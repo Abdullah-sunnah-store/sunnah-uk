@@ -1,0 +1,914 @@
+{% comment %}
+  TSS — Collection grid
+  The body of a collection page: a single outlined "Filter & Sort" control that
+  opens a drawer carrying the collection's real Shopify filters and sort
+  options, then the product grid — two up on a phone, four on a desktop — with
+  an editorial break dropped in after a set number of products. Mirrors
+  thesunnahstoremarketplace.vercel.app/collections/hijabs
+
+  The drawer is a plain GET form, so filtering works with JavaScript disabled
+  and every filtered view keeps its own shareable URL.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+  assign per_page = s.products_per_page | default: 24
+
+  assign break_after = s.break_after | default: 6
+  assign has_break = false
+  if s.break_text != blank or s.break_image != blank or s.break_asset != blank
+    assign has_break = true
+  endif
+
+  assign has_filters = false
+  if s.enable_filtering and collection.filters.size > 0
+    assign has_filters = true
+  endif
+
+  assign has_sorting = false
+  if s.enable_sorting and collection.sort_options.size > 0
+    assign has_sorting = true
+  endif
+
+  assign sort_by = collection.sort_by | default: collection.default_sort_by
+-%}
+
+<style>
+  #tss-cgrid-{{ uid }} {
+    background: var(--tss-ivory);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: {{ s.padding_top | default: 24 }}px var(--tss-gutter) 0;
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    border: 1px solid var(--tss-green-mid);
+    border-radius: 2px;
+    padding-inline: 20px;
+    background: transparent;
+    font-family: var(--tss-sans);
+    font-size: 13px;
+    line-height: 1;
+    color: var(--tss-green);
+    cursor: pointer;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__filter-btn:hover {
+    background: var(--tss-green-mid);
+    color: var(--tss-ivory);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__count {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(28 28 26 / 0.55);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__active {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+    padding-top: 12px;
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgb(26 74 58 / 0.3);
+    border-radius: 2px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--tss-green);
+    text-decoration: none;
+    transition: border-color 0.4s ease, color 0.4s ease;
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__chip:hover {
+    border-color: var(--tss-gold);
+    color: var(--tss-gold);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__body {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding-block: 48px {{ s.padding_bottom | default: 48 }}px;
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: {{ s.column_gap | default: 12 }}px;
+    row-gap: {{ s.row_gap | default: 40 }}px;
+    padding-inline: var(--tss-gutter);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: var(--tss-ivory-2);
+  }
+
+  /* The clip-reveal wrapper sits inside the frame rather than around it:
+     .tss-clip styles every direct child, and the sold-out flag is a sibling of
+     the image, so wrapping the pair would clip the badge away too. */
+  #tss-cgrid-{{ uid }} .tss-cgrid__frame {
+    position: absolute;
+    inset: 0;
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: clip-path 1.2s var(--tss-ease), transform 1.2s var(--tss-ease);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__link:hover .tss-cgrid__img {
+    transform: scale(1.04);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__flag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 8px;
+    background: rgb(5 30 22 / 0.82);
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--tss-ivory);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__meta {
+    margin-top: 12px;
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__vendor {
+    font-family: var(--tss-sans);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(28 28 26 / 0.55);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: 4px;
+    font-family: var(--tss-serif);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.375;
+    color: var(--tss-ink);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__price {
+    margin-top: 4px;
+    font-family: var(--tss-sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--tss-gold);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__was {
+    margin-left: 8px;
+    font-weight: 400;
+    color: rgb(28 28 26 / 0.4);
+    text-decoration: line-through;
+  }
+
+  /* Editorial break — a full-width row inside the grid rather than a break in
+     it, pulled back out to the container edge so the photograph runs full
+     bleed the way it does in the reference. */
+  #tss-cgrid-{{ uid }} .tss-cgrid__break {
+    grid-column: 1 / -1;
+    margin-inline: calc(var(--tss-gutter) * -1);
+    padding-block: 16px;
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__break-media {
+    width: 100%;
+    height: {{ s.break_height | default: 400 }}px;
+    overflow: hidden;
+    background: var(--tss-ivory-2);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__break-img {
+    width: 100%;
+    height: {{ s.break_height | default: 400 }}px;
+    object-fit: cover;
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__break-text {
+    padding: 20px var(--tss-gutter) 0;
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__break-quote {
+    max-width: 34ch;
+    font-family: var(--tss-serif);
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.375;
+    text-wrap: balance;
+    color: var(--tss-ink);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__break-link {
+    margin-top: 12px;
+  }
+
+  /* Empty state */
+  #tss-cgrid-{{ uid }} .tss-cgrid__empty {
+    padding: 24px var(--tss-gutter);
+    text-align: center;
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__empty p {
+    font-family: var(--tss-serif);
+    font-size: 22px;
+    color: var(--tss-green);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__empty a {
+    margin-top: 16px;
+  }
+
+  /* Pagination */
+  #tss-cgrid-{{ uid }} .tss-cgrid__pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding-inline: var(--tss-gutter);
+  }
+
+  #tss-cgrid-{{ uid }} .tss-cgrid__pager-note {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: rgb(28 28 26 / 0.5);
+  }
+
+  /* ---------- drawer ---------- */
+  #tss-cfd-{{ uid }} {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  #tss-cfd-{{ uid }}.is-open {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__scrim {
+    position: absolute;
+    inset: 0;
+    background: rgb(5 30 22 / 0.5);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  #tss-cfd-{{ uid }}.is-open .tss-cfd__scrim {
+    opacity: 1;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__panel {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    display: flex;
+    flex-direction: column;
+    width: min(420px, 92vw);
+    background: var(--tss-ivory);
+    transform: translateX(100%);
+    transition: transform 0.5s var(--tss-ease);
+  }
+
+  #tss-cfd-{{ uid }}.is-open .tss-cfd__panel {
+    transform: none;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px var(--tss-gutter);
+    border-bottom: 1px solid rgb(8 41 30 / 0.12);
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__title {
+    font-family: var(--tss-serif);
+    font-size: 22px;
+    color: var(--tss-green);
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__close {
+    border: 0;
+    background: transparent;
+    padding: 4px;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--tss-green);
+    cursor: pointer;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__form {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 8px var(--tss-gutter) 24px;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__group {
+    border-bottom: 1px solid rgb(8 41 30 / 0.1);
+    padding-block: 16px;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__legend,
+  #tss-cfd-{{ uid }} .tss-cfd__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    font-family: var(--tss-sans);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--tss-green);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__summary::after {
+    content: '+';
+    font-size: 14px;
+    letter-spacing: 0;
+    color: var(--tss-gold);
+  }
+
+  #tss-cfd-{{ uid }} details[open] .tss-cfd__summary::after {
+    content: '–';
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 14px;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--tss-ink);
+    cursor: pointer;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__opt input {
+    accent-color: var(--tss-green-mid);
+    width: 15px;
+    height: 15px;
+    margin: 0;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__opt--off {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__opt em {
+    font-style: normal;
+    color: rgb(28 28 26 / 0.4);
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__range {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 14px;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__range input {
+    width: 100%;
+    border: 1px solid rgb(8 41 30 / 0.2);
+    border-radius: 2px;
+    padding: 8px 10px;
+    font-family: var(--tss-sans);
+    font-size: 14px;
+    color: var(--tss-ink);
+    background: transparent;
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__foot {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px var(--tss-gutter) calc(16px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgb(8 41 30 / 0.12);
+  }
+
+  #tss-cfd-{{ uid }} .tss-cfd__foot .tss-btn {
+    flex: 1;
+    padding-block: 13px;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  @media (min-width: 40rem) {
+    #tss-cgrid-{{ uid }} .tss-cgrid__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    #tss-cgrid-{{ uid }} .tss-cgrid__bar,
+    #tss-cgrid-{{ uid }} .tss-cgrid__grid,
+    #tss-cgrid-{{ uid }} .tss-cgrid__break-text,
+    #tss-cgrid-{{ uid }} .tss-cgrid__pager {
+      max-width: var(--tss-max);
+      margin-inline: auto;
+      width: 100%;
+    }
+
+    #tss-cgrid-{{ uid }} .tss-cgrid__grid {
+      grid-template-columns: repeat({{ s.desktop_columns | default: 4 }}, minmax(0, 1fr));
+      column-gap: {{ s.column_gap | default: 12 | plus: 12 }}px;
+      row-gap: {{ s.row_gap | default: 40 | plus: 16 }}px;
+    }
+
+    #tss-cgrid-{{ uid }} .tss-cgrid__body {
+      gap: 56px;
+      padding-block: 64px {{ s.padding_bottom | default: 48 | plus: 24 }}px;
+    }
+
+    #tss-cgrid-{{ uid }} .tss-cgrid__title {
+      font-size: 17px;
+    }
+
+    #tss-cgrid-{{ uid }} .tss-cgrid__price {
+      font-size: 15px;
+    }
+
+    #tss-cgrid-{{ uid }} .tss-cgrid__break-media,
+    #tss-cgrid-{{ uid }} .tss-cgrid__break-img {
+      height: {{ s.break_height | default: 400 | plus: 120 }}px;
+    }
+
+    #tss-cgrid-{{ uid }} .tss-cgrid__break-quote {
+      max-width: 40ch;
+      font-size: 28px;
+    }
+  }
+</style>
+
+<section id="tss-cgrid-{{ uid }}" class="tss-section" {{ section.shopify_attributes }}>
+  {%- if has_filters or has_sorting or s.show_count -%}
+    <div class="tss-cgrid__bar">
+      {%- if has_filters or has_sorting -%}
+        <button
+          type="button"
+          class="tss-cgrid__filter-btn"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-controls="tss-cfd-{{ uid }}"
+          data-tss-cfd-open="tss-cfd-{{ uid }}"
+        >
+          {{ s.filter_label | default: 'Filter & Sort' | escape }}
+        </button>
+      {%- endif -%}
+
+      {%- if s.show_count -%}
+        <span class="tss-cgrid__count">
+          {{ collection.products_count }}
+          {% if collection.products_count == 1 %}piece{% else %}pieces{% endif %}
+        </span>
+      {%- endif -%}
+
+      {%- assign active_count = 0 -%}
+      {%- for f in collection.filters -%}
+        {%- assign active_count = active_count | plus: f.active_values.size -%}
+      {%- endfor -%}
+      {%- if active_count > 0 -%}
+        <div class="tss-cgrid__active">
+          {%- for f in collection.filters -%}
+            {%- for v in f.active_values -%}
+              <a class="tss-cgrid__chip" href="{{ v.url_to_remove }}">
+                {{ v.label | escape }}
+                <span aria-hidden="true">&times;</span>
+                <span class="tss-sr-only">Remove filter</span>
+              </a>
+            {%- endfor -%}
+          {%- endfor -%}
+          <a class="tss-cgrid__chip" href="{{ collection.url }}">Clear all</a>
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="tss-cgrid__body">
+    {%- paginate collection.products by per_page -%}
+      {%- if collection.products.size == 0 -%}
+        <div class="tss-cgrid__empty">
+          <p>{{ s.empty_text | default: 'Nothing here yet.' }}</p>
+          <a class="tss-btn tss-btn--outline-green" href="{{ collection.url | default: routes.all_products_collection_url }}">
+            Clear the filters
+          </a>
+        </div>
+      {%- else -%}
+        <div class="tss-cgrid__grid">
+          {%- for product in collection.products -%}
+            {%- liquid
+              assign on_sale = false
+              if product.compare_at_price > product.price
+                assign on_sale = true
+              endif
+            -%}
+            <div class="tss-cgrid__card">
+              <a class="tss-cgrid__link" href="{{ product.url }}">
+                <div class="tss-cgrid__media">
+                  <div class="tss-cgrid__frame tss-clip">
+                    {%- if product.featured_media -%}
+                      {{
+                        product.featured_media
+                        | image_url: width: 900
+                        | image_tag:
+                          class: 'tss-cgrid__img',
+                          widths: '240,320,480,640,900',
+                          sizes: '(min-width: 64rem) 300px, 46vw',
+                          loading: 'lazy',
+                          alt: product.featured_media.alt | default: product.title
+                      }}
+                    {%- else -%}
+                      {{ 'product-1' | placeholder_svg_tag: 'tss-cgrid__img' }}
+                    {%- endif -%}
+                  </div>
+
+                  {%- if product.available == false -%}
+                    <span class="tss-cgrid__flag">Sold out</span>
+                  {%- elsif on_sale -%}
+                    <span class="tss-cgrid__flag">Reduced</span>
+                  {%- endif -%}
+                </div>
+
+                <div class="tss-cgrid__meta">
+                  {%- if s.show_vendor and product.vendor != blank -%}
+                    <p class="tss-cgrid__vendor">{{ product.vendor | escape }}</p>
+                  {%- endif -%}
+                  <h3 class="tss-cgrid__title">{{ product.title | escape }}</h3>
+                  <p class="tss-cgrid__price">
+                    {{ product.price | money }}
+                    {%- if on_sale -%}
+                      <span class="tss-cgrid__was">{{ product.compare_at_price | money }}</span>
+                    {%- endif -%}
+                  </p>
+                </div>
+              </a>
+            </div>
+
+            {%- if has_break and paginate.current_page == 1 and forloop.index == break_after and forloop.last == false -%}
+              <div class="tss-cgrid__break">
+                {%- if s.break_image != blank or s.break_asset != blank -%}
+                  <div class="tss-cgrid__break-media tss-clip">
+                    {% render 'tss-image',
+                      image: s.break_image,
+                      asset: s.break_asset,
+                      class: 'tss-cgrid__break-img',
+                      asset_width: 1600,
+                      asset_height: 900,
+                      width: 1600,
+                      widths: '480,720,960,1280,1600',
+                      sizes: '100vw',
+                      alt: s.break_text
+                    %}
+                  </div>
+                {%- endif -%}
+
+                {%- if s.break_text != blank or s.break_link_label != blank -%}
+                  <div class="tss-cgrid__break-text tss-rise">
+                    {%- if s.break_text != blank -%}
+                      <p class="tss-cgrid__break-quote">{{ s.break_text | escape }}</p>
+                    {%- endif -%}
+                    {%- if s.break_link_label != blank -%}
+                      <a class="tss-link-gold tss-cgrid__break-link" href="{{ s.break_link_url | default: '#' }}">
+                        {{ s.break_link_label | escape }} &rarr;
+                      </a>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if paginate.pages > 1 -%}
+          <div class="tss-cgrid__pager">
+            {%- if paginate.previous -%}
+              <a class="tss-btn tss-btn--outline-green" href="{{ paginate.previous.url }}">Previous</a>
+            {%- endif -%}
+            <span class="tss-cgrid__pager-note">
+              Page {{ paginate.current_page }} of {{ paginate.pages }}
+            </span>
+            {%- if paginate.next -%}
+              <a class="tss-btn tss-btn--outline-green" href="{{ paginate.next.url }}">Next</a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{%- if has_filters or has_sorting -%}
+  <div id="tss-cfd-{{ uid }}" class="tss-section">
+    <div class="tss-cfd__scrim" data-tss-cfd-close></div>
+
+    <aside class="tss-cfd__panel" role="dialog" aria-modal="true" aria-label="Filter and sort">
+      <div class="tss-cfd__head">
+        <span class="tss-cfd__title">{{ s.filter_label | default: 'Filter & Sort' | escape }}</span>
+        <button type="button" class="tss-cfd__close" data-tss-cfd-close aria-label="Close">&times;</button>
+      </div>
+
+      <form class="tss-cfd__form" method="get" action="{{ collection.url }}">
+        <div class="tss-cfd__scroll">
+          {%- if has_sorting -%}
+            <details class="tss-cfd__group" open>
+              <summary class="tss-cfd__summary">Sort by</summary>
+              <div class="tss-cfd__options">
+                {%- for option in collection.sort_options -%}
+                  <label class="tss-cfd__opt">
+                    <input
+                      type="radio"
+                      name="sort_by"
+                      value="{{ option.value }}"
+                      {% if option.value == sort_by %}
+                        checked
+                      {% endif %}
+                    >
+                    <span>{{ option.name | escape }}</span>
+                  </label>
+                {%- endfor -%}
+              </div>
+            </details>
+          {%- endif -%}
+
+          {%- if has_filters -%}
+            {%- for filter in collection.filters -%}
+              <details class="tss-cfd__group" {% if filter.active_values.size > 0 %}open{% endif %}>
+                <summary class="tss-cfd__summary">{{ filter.label | escape }}</summary>
+
+                {%- case filter.type -%}
+                  {%- when 'price_range' -%}
+                    <div class="tss-cfd__range">
+                      <input
+                        type="number"
+                        inputmode="decimal"
+                        name="{{ filter.min_value.param_name }}"
+                        value="{{ filter.min_value.value }}"
+                        min="0"
+                        max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                        placeholder="{{ 0 | money_without_currency }}"
+                        aria-label="Lowest price"
+                      >
+                      <span aria-hidden="true">&ndash;</span>
+                      <input
+                        type="number"
+                        inputmode="decimal"
+                        name="{{ filter.max_value.param_name }}"
+                        value="{{ filter.max_value.value }}"
+                        min="0"
+                        max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                        placeholder="{{ filter.range_max | money_without_currency }}"
+                        aria-label="Highest price"
+                      >
+                    </div>
+
+                  {%- else -%}
+                    <div class="tss-cfd__options">
+                      {%- for value in filter.values -%}
+                        {%- liquid
+                          assign muted = false
+                          if value.count == 0 and value.active == false
+                            assign muted = true
+                          endif
+                        -%}
+                        <label class="tss-cfd__opt{% if muted %} tss-cfd__opt--off{% endif %}">
+                          <input
+                            type="checkbox"
+                            name="{{ value.param_name }}"
+                            value="{{ value.value | escape }}"
+                            {% if value.active %}
+                              checked
+                            {% endif %}
+                            {% if muted %}
+                              disabled
+                            {% endif %}
+                          >
+                          <span>{{ value.label | escape }}</span>
+                          <em>{{ value.count }}</em>
+                        </label>
+                      {%- endfor -%}
+                    </div>
+                {%- endcase -%}
+              </details>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+
+        <div class="tss-cfd__foot">
+          <a class="tss-btn tss-btn--outline-green" href="{{ collection.url }}">Clear</a>
+          <button type="submit" class="tss-btn tss-btn--gold">Apply</button>
+        </div>
+      </form>
+    </aside>
+  </div>
+
+  <script>
+    (function () {
+      var drawer = document.getElementById('tss-cfd-{{ uid }}');
+      var opener = document.querySelector('[data-tss-cfd-open="tss-cfd-{{ uid }}"]');
+      if (!drawer || !opener) return;
+
+      function open() {
+        drawer.classList.add('is-open');
+        opener.setAttribute('aria-expanded', 'true');
+        document.documentElement.style.overflow = 'hidden';
+        var first = drawer.querySelector('.tss-cfd__close');
+        if (first) first.focus();
+      }
+
+      function close() {
+        drawer.classList.remove('is-open');
+        opener.setAttribute('aria-expanded', 'false');
+        document.documentElement.style.overflow = '';
+        opener.focus();
+      }
+
+      opener.addEventListener('click', open);
+
+      drawer.addEventListener('click', function (event) {
+        if (event.target.closest('[data-tss-cfd-close]')) close();
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && drawer.classList.contains('is-open')) close();
+      });
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "TSS · Collection grid",
+  "tag": "section",
+  "enabled_on": { "templates": ["collection"] },
+  "settings": [
+    { "type": "header", "content": "Filter & sort" },
+    { "type": "checkbox", "id": "enable_filtering", "label": "Enable filtering", "default": true },
+    { "type": "checkbox", "id": "enable_sorting", "label": "Enable sorting", "default": true },
+    { "type": "text", "id": "filter_label", "label": "Button label", "default": "Filter & Sort" },
+    { "type": "checkbox", "id": "show_count", "label": "Show product count", "default": false },
+    { "type": "header", "content": "Grid" },
+    { "type": "checkbox", "id": "show_vendor", "label": "Show the maker above each name", "default": true },
+    {
+      "type": "range",
+      "id": "desktop_columns",
+      "label": "Desktop columns",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "label": "Column gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "row_gap",
+      "label": "Row gap",
+      "min": 8,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    { "type": "text", "id": "empty_text", "label": "Empty message", "default": "Nothing here yet." },
+    { "type": "header", "content": "Editorial break" },
+    {
+      "type": "range",
+      "id": "break_after",
+      "label": "Insert after",
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "default": 6,
+      "unit": "pcs"
+    },
+    { "type": "image_picker", "id": "break_image", "label": "Image" },
+    { "type": "text", "id": "break_asset", "label": "Theme asset", "info": "Filename in assets/." },
+    {
+      "type": "range",
+      "id": "break_height",
+      "label": "Image height",
+      "min": 200,
+      "max": 700,
+      "step": 20,
+      "unit": "px",
+      "default": 400
+    },
+    {
+      "type": "textarea",
+      "id": "break_text",
+      "label": "Line",
+      "default": "A hijab is chosen by the hand, not the screen — feel is the whole point."
+    },
+    { "type": "text", "id": "break_link_label", "label": "Link label", "default": "On choosing fabric" },
+    { "type": "url", "id": "break_link_url", "label": "Link" },
+    { "type": "header", "content": "Spacing" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [{ "name": "TSS · Collection grid" }]
+}
+{% endschema %}

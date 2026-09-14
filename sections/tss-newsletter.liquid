@@ -1,0 +1,209 @@
+{% comment %}
+  TSS 10 — Letters from our house
+  Emerald band, centred serif heading, underline-only email field and a gold
+  submit. Posts to Shopify's customer (newsletter) form.
+{% endcomment %}
+
+{% render 'tss-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+-%}
+
+<style>
+  #tss-newsletter-{{ uid }} {
+    background: var(--tss-green);
+    padding: {{ s.padding_top | default: 96 }}px var(--tss-gutter) {{ s.padding_bottom | default: 96 }}px;
+  }
+
+  #tss-newsletter-{{ uid }} .tss-news__inner {
+    margin-inline: auto;
+    max-width: 28rem;
+    text-align: center;
+  }
+
+  #tss-newsletter-{{ uid }} .tss-news__title {
+    font-family: var(--tss-serif);
+    font-size: {{ s.title_size | default: 30 }}px;
+    font-weight: 400;
+    line-height: 1.1;
+    text-wrap: balance;
+    color: var(--tss-ivory);
+  }
+
+  #tss-newsletter-{{ uid }} .tss-news__lede {
+    margin: 16px auto 0;
+    max-width: 36ch;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: rgb(245 240 232 / 0.65);
+  }
+
+  #tss-newsletter-{{ uid }} .tss-news__form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+    margin-top: 40px;
+  }
+
+  #tss-newsletter-{{ uid }} .tss-news__input {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid rgb(245 240 232 / 0.4);
+    background: transparent;
+    padding-bottom: 12px;
+    text-align: center;
+    font-family: var(--tss-sans);
+    font-size: 16px;
+    color: var(--tss-ivory);
+    transition: border-color 0.4s ease;
+  }
+
+  #tss-newsletter-{{ uid }} .tss-news__input::placeholder {
+    color: rgb(245 240 232 / 0.4);
+  }
+
+  #tss-newsletter-{{ uid }} .tss-news__input:focus {
+    border-color: var(--tss-gold);
+    outline: none;
+  }
+
+  #tss-newsletter-{{ uid }} .tss-news__success {
+    margin-top: 24px;
+    font-size: 14px;
+    color: var(--tss-gold-bright);
+  }
+
+  #tss-newsletter-{{ uid }} .tss-news__error {
+    margin-top: 16px;
+    font-size: 13px;
+    color: rgb(245 240 232 / 0.75);
+  }
+
+  /* Field over button is the phone layout; side by side once there is room. */
+  @media (min-width: 40rem) {
+    #tss-newsletter-{{ uid }} .tss-news__inner {
+      max-width: 34rem;
+    }
+
+    #tss-newsletter-{{ uid }} .tss-news__form {
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 16px;
+    }
+
+    #tss-newsletter-{{ uid }} .tss-news__input {
+      flex: 1;
+      text-align: left;
+    }
+
+    #tss-newsletter-{{ uid }} .tss-news__form .tss-btn {
+      flex: 0 0 auto;
+    }
+  }
+</style>
+
+<section
+  id="tss-newsletter-{{ uid }}"
+  class="tss-section"
+  aria-labelledby="tss-news-heading-{{ uid }}"
+>
+  <div class="tss-news__inner">
+    <div class="tss-rise">
+      {%- if s.title != blank -%}
+        <h2 id="tss-news-heading-{{ uid }}" class="tss-news__title">{{ s.title | escape }}</h2>
+      {%- endif -%}
+      {%- if s.lede != blank -%}
+        <p class="tss-news__lede">{{ s.lede | escape }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="tss-rise">
+      {%- form 'customer', class: 'tss-news__form' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+
+        <label for="tss-news-email-{{ uid }}" class="tss-sr-only">
+          {{ s.placeholder | default: 'Email address' | escape }}
+        </label>
+        <input
+          id="tss-news-email-{{ uid }}"
+          class="tss-news__input"
+          type="email"
+          name="contact[email]"
+          value="{{ form.email }}"
+          autocomplete="email"
+          placeholder="{{ s.placeholder | default: 'Your email' | escape }}"
+          required
+        >
+
+        <button type="submit" class="tss-btn tss-btn--gold">
+          {{ s.button_label | default: 'Receive the Letters' | escape }}
+        </button>
+
+        {%- if form.errors -%}
+          <p class="tss-news__error">{{ form.errors.translated_fields.email }} {{ form.errors.messages.email }}</p>
+        {%- elsif form.posted_successfully? -%}
+          <p class="tss-news__success">{{ s.success_text | default: 'Thank you — your first letter is on its way.' | escape }}</p>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "TSS 10 · Newsletter",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading", "default": "Letters from our house" },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 52,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "textarea",
+      "id": "lede",
+      "label": "Supporting text",
+      "default": "A quiet note each month — the makers we found and the founder's latest letter. Nothing more."
+    },
+    { "type": "text", "id": "placeholder", "label": "Field placeholder", "default": "Your email" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Receive the Letters" },
+    {
+      "type": "text",
+      "id": "success_text",
+      "label": "Success message",
+      "default": "Thank you — your first letter is on its way."
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    }
+  ],
+  "presets": [{ "name": "TSS 10 · Newsletter" }]
+}
+{% endschema %}
