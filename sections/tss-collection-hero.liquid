@@ -26,7 +26,34 @@
   if crumb == blank
     assign crumb = heading
   endif
+
+  assign lede = s.lede
+  if lede == blank and collection != blank
+    assign lede = collection.description | strip_html | strip
+  endif
+
+  comment
+    On a collection template the band can be limited to collections that head
+    a menu item with children, where it replaces the usual header.
+  endcomment
+  assign show_here = true
+  if s.show_on == 'menu_parents'
+    assign show_here = false
+    if collection != blank and s.menu != blank
+      for l in linklists[s.menu].links
+        assign lp = l.url | split: '?' | first
+        if l.links.size > 0
+          if lp == request.path or l.object.handle == collection.handle
+            assign show_here = true
+            break
+          endif
+        endif
+      endfor
+    endif
+  endif
 -%}
+
+{%- if show_here -%}
 
 <style>
   /* A third of the viewport, text settled at the bottom, as on the reference. */
@@ -147,11 +174,12 @@
       <h1 class="tss-chero__title">{{ heading | escape }}</h1>
     {%- endif -%}
 
-    {%- if s.lede != blank -%}
-      <p class="tss-chero__lede">{{ s.lede | escape }}</p>
+    {%- if lede != blank -%}
+      <p class="tss-chero__lede">{{ lede | escape }}</p>
     {%- endif -%}
   </div>
 </section>
+{%- endif -%}
 
 {% schema %}
 {
@@ -210,7 +238,24 @@
     },
     { "type": "header", "content": "Spacing" },
     { "type": "range", "id": "padding_top", "label": "Padding top", "min": 32, "max": 200, "step": 4, "unit": "px", "default": 84 },
-    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 32, "max": 200, "step": 4, "unit": "px", "default": 72 }
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 32, "max": 200, "step": 4, "unit": "px", "default": 72 },
+    { "type": "header", "content": "Visibility" },
+    {
+      "type": "select",
+      "id": "show_on",
+      "label": "Show on",
+      "options": [
+        { "value": "always", "label": "Always" },
+        { "value": "menu_parents", "label": "Collections with a submenu" }
+      ],
+      "default": "always"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "info": "Used with \"Collections with a submenu\"."
+    }
   ],
   "presets": [{ "name": "TSS · Collection hero" }]
 }

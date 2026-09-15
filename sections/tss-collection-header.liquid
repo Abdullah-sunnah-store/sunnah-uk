@@ -58,7 +58,26 @@
         assign eyebrow = vendor_list[0] | append: ' · and others'
     endcase
   endif
+
+  comment
+    Stand aside on collections that head a menu item with children; the
+    submenu rows and their own hero take this page instead.
+  endcomment
+  assign hide_here = false
+  if s.hide_on_menu_parents and collection != blank and s.menu != blank
+    for l in linklists[s.menu].links
+      assign lp = l.url | split: '?' | first
+      if l.links.size > 0
+        if lp == request.path or l.object.handle == collection.handle
+          assign hide_here = true
+          break
+        endif
+      endif
+    endfor
+  endif
 -%}
+
+{%- unless hide_here -%}
 
 <style>
   #tss-cheader-{{ uid }} {
@@ -238,6 +257,7 @@
     {%- endif -%}
   </div>
 </section>
+{%- endunless -%}
 
 {% schema %}
 {
@@ -329,7 +349,15 @@
       "step": 4,
       "unit": "px",
       "default": 40
-    }
+    },
+    { "type": "header", "content": "Visibility" },
+    {
+      "type": "checkbox",
+      "id": "hide_on_menu_parents",
+      "label": "Hide on collections with a submenu",
+      "default": false
+    },
+    { "type": "link_list", "id": "menu", "label": "Menu" }
   ],
   "presets": [{ "name": "TSS · Collection header" }]
 }

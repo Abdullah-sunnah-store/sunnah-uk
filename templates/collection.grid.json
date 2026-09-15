@@ -9,43 +9,6 @@
  */
 {
   "sections": {
-    "tss_menu_hero": {
-      "type": "tss-collection-hero",
-      "settings": {
-        "crumb_parent": "The House",
-        "crumb_parent_url": "/",
-        "crumb_current": "",
-        "title": "",
-        "title_size": 36,
-        "lede": "",
-        "scrim": 80,
-        "padding_top": 32,
-        "padding_bottom": 32,
-        "show_on": "menu_parents",
-        "menu": "main-menu-2"
-      }
-    },
-    "tss_menu_rows": {
-      "type": "tss-collection-rows",
-      "blocks": {},
-      "block_order": [],
-      "settings": {
-        "aria_label": "Categories",
-        "source": "menu",
-        "menu": "main-menu-2",
-        "row_height": 200,
-        "gap": 8,
-        "label_size": 24,
-        "scrim": 55,
-        "show_count": false,
-        "count_label": "pieces",
-        "foot_text": "Not sure yet? See everything in [title] →",
-        "foot_url": "",
-        "padding_top": 0,
-        "padding_bottom": 0,
-        "empty_text": "Add a row to start this list."
-      }
-    },
     "tss_header": {
       "type": "tss-collection-header",
       "settings": {
@@ -61,9 +24,7 @@
         "image_asset": "",
         "scrim": 85,
         "height": 52,
-        "padding_bottom": 40,
-        "hide_on_menu_parents": true,
-        "menu": "main-menu-2"
+        "padding_bottom": 40
       }
     },
     "tss_rail": {
@@ -77,8 +38,7 @@
         "tile_height": 150,
         "gap": 8,
         "padding_top": 24,
-        "padding_bottom": 0,
-        "hide_on_menu_parents": true
+        "padding_bottom": 0
       }
     },
     "tss_grid": {
@@ -101,15 +61,11 @@
         "break_link_label": "",
         "break_link_url": "",
         "padding_top": 24,
-        "padding_bottom": 48,
-        "hide_on_menu_parents": true,
-        "menu": "main-menu-2"
+        "padding_bottom": 48
       }
     }
   },
   "order": [
-    "tss_menu_hero",
-    "tss_menu_rows",
     "tss_header",
     "tss_rail",
     "tss_grid"

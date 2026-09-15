@@ -13,7 +13,46 @@
 {%- liquid
   assign s = section.settings
   assign uid = section.id
+
+  comment
+    Menu mode: the rows are the children of the menu item that links to the
+    collection being viewed, so a parent category lists its subcategories.
+  endcomment
+  assign from_menu = false
+  assign menu_parent = nil
+  if s.source == 'menu'
+    assign from_menu = true
+    if collection != blank and s.menu != blank
+      for l in linklists[s.menu].links
+        assign lp = l.url | split: '?' | first
+        if l.links.size > 0
+          if lp == request.path or l.object.handle == collection.handle
+            assign menu_parent = l
+            break
+          endif
+        endif
+      endfor
+    endif
+  endif
+
+  if from_menu
+    assign items = menu_parent.links
+  else
+    assign items = section.blocks
+  endif
+
+  assign foot_url = s.foot_url
+  if foot_url == blank and menu_parent != nil
+    assign foot_url = collection.url | append: '?view=grid'
+  endif
+
+  assign foot_text = s.foot_text
+  if collection != blank
+    assign foot_text = foot_text | replace: '[title]', collection.title
+  endif
 -%}
+
+{%- unless from_menu and menu_parent == nil -%}
 
 <style>
   #tss-crows-{{ uid }} {
@@ -145,26 +184,40 @@
   {% if s.aria_label != blank %}aria-label="{{ s.aria_label | escape }}"{% endif %}
   {{ section.shopify_attributes }}
 >
-  {%- if section.blocks.size > 0 -%}
+  {%- if items.size > 0 -%}
     <div class="tss-crows__list">
-      {%- for block in section.blocks -%}
+      {%- for item in items -%}
         {%- liquid
-          assign b = block.settings
-          assign col = b.collection
-
-          assign label = b.label
-          if label == blank
-            assign label = col.title
-          endif
-
-          assign url = b.link
-          if url == blank and col != blank
-            assign url = col.url
-          endif
-
-          assign row_image = b.image
-          if row_image == blank
+          if from_menu
+            assign col = nil
+            if item.type == 'collection_link'
+              assign col = item.object
+            endif
+            assign label = item.title
+            assign url = item.url
             assign row_image = col.featured_image
+            assign row_asset = ''
+            assign row_attrs = ''
+          else
+            assign b = item.settings
+            assign col = b.collection
+
+            assign label = b.label
+            if label == blank
+              assign label = col.title
+            endif
+
+            assign url = b.link
+            if url == blank and col != blank
+              assign url = col.url
+            endif
+
+            assign row_image = b.image
+            if row_image == blank
+              assign row_image = col.featured_image
+            endif
+            assign row_asset = b.image_asset
+            assign row_attrs = item.shopify_attributes
           endif
 
           assign tag = 'div'
@@ -176,11 +229,11 @@
         <{{ tag }}
           class="tss-crows__row tss-rise"
           {% if url != blank %}href="{{ url }}"{% endif %}
-          {{ block.shopify_attributes }}
+          {{ row_attrs }}
         >
           {% render 'tss-image',
             image: row_image,
-            asset: b.image_asset,
+            asset: row_asset,
             class: 'tss-crows__img',
             asset_width: 1600,
             asset_height: 600,
@@ -210,15 +263,16 @@
       {%- endfor -%}
     </div>
 
-    {%- if s.foot_text != blank and s.foot_url != blank -%}
+    {%- if foot_text != blank and foot_url != blank -%}
       <div class="tss-crows__foot tss-rise">
-        <a class="tss-crows__foot-link" href="{{ s.foot_url }}">{{ s.foot_text | escape }}</a>
+        <a class="tss-crows__foot-link" href="{{ foot_url }}">{{ foot_text | escape }}</a>
       </div>
     {%- endif -%}
   {%- else -%}
     <p class="tss-crows__empty">{{ s.empty_text | default: 'Add a row to start this list.' | escape }}</p>
   {%- endif -%}
 </section>
+{%- endunless -%}
 
 {% schema %}
 {
@@ -227,6 +281,18 @@
   "max_blocks": 16,
   "settings": [
     { "type": "text", "id": "aria_label", "label": "Accessible label", "default": "Gifts by occasion" },
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Rows come from",
+      "options": [
+        { "value": "blocks", "label": "Blocks below" },
+        { "value": "menu", "label": "Submenu of this collection" }
+      ],
+      "default": "blocks",
+      "info": "Submenu mode shows only on collections that head a menu item with children, and lists those children."
+    },
+    { "type": "link_list", "id": "menu", "label": "Menu" },
     { "type": "header", "content": "Rows" },
     {
       "type": "range",
@@ -263,7 +329,12 @@
     { "type": "text", "id": "count_label", "label": "Count word", "default": "gifts" },
     { "type": "header", "content": "Closing link" },
     { "type": "text", "id": "foot_text", "label": "Link text", "default": "Not sure yet? See everything we've chosen →" },
-    { "type": "url", "id": "foot_url", "label": "Link" },
+    {
+      "type": "url",
+      "id": "foot_url",
+      "label": "Link",
+      "info": "In submenu mode, leave empty to open this collection's full product grid. Use [title] in the text for the collection name."
+    },
     { "type": "header", "content": "Spacing" },
     { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 0 },
     { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 64 },

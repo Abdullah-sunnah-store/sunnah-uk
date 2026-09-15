@@ -34,7 +34,26 @@
   endif
 
   assign sort_by = collection.sort_by | default: collection.default_sort_by
+
+  comment
+    Stand aside on collections that head a menu item with children; their
+    full grid lives on the ?view=grid template instead.
+  endcomment
+  assign hide_here = false
+  if s.hide_on_menu_parents and collection != blank and s.menu != blank
+    for l in linklists[s.menu].links
+      assign lp = l.url | split: '?' | first
+      if l.links.size > 0
+        if lp == request.path or l.object.handle == collection.handle
+          assign hide_here = true
+          break
+        endif
+      endif
+    endfor
+  endif
 -%}
+
+{%- unless hide_here -%}
 
 <style>
   #tss-cgrid-{{ uid }} {
@@ -803,6 +822,7 @@
     })();
   </script>
 {%- endif -%}
+{%- endunless -%}
 
 {% schema %}
 {
@@ -815,6 +835,14 @@
     { "type": "checkbox", "id": "enable_sorting", "label": "Enable sorting", "default": true },
     { "type": "text", "id": "filter_label", "label": "Button label", "default": "Filter & Sort" },
     { "type": "checkbox", "id": "show_count", "label": "Show product count", "default": false },
+    { "type": "header", "content": "Visibility" },
+    {
+      "type": "checkbox",
+      "id": "hide_on_menu_parents",
+      "label": "Hide on collections with a submenu",
+      "default": false
+    },
+    { "type": "link_list", "id": "menu", "label": "Menu" },
     { "type": "header", "content": "Grid" },
     { "type": "checkbox", "id": "show_vendor", "label": "Show the maker above each name", "default": true },
     {

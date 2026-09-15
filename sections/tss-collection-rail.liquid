@@ -150,6 +150,23 @@
   endif
 
   assign all_label = s.all_label | default: 'All'
+
+  comment
+    Stand aside on collections that head a top-level menu item with children;
+    the submenu rows list those children in full instead.
+  endcomment
+  assign hide_here = false
+  if s.hide_on_menu_parents and collection != blank
+    for l in menu_links
+      assign lp = l.url | split: '?' | first
+      if l.links.size > 0
+        if lp == here or l.object.handle == collection.handle
+          assign hide_here = true
+          break
+        endif
+      endif
+    endfor
+  endif
 -%}
 
 <style>
@@ -312,7 +329,7 @@
   {%- endif -%}
 {%- endcapture -%}
 
-{%- if tiles contains 'tss-crail__tile' -%}
+{%- if hide_here == false and tiles contains 'tss-crail__tile' -%}
   {%- liquid
     comment
       "All" reads as current whenever nothing narrower does.
@@ -367,6 +384,12 @@
       "id": "menu",
       "label": "Menu",
       "info": "The rail finds this collection in the menu and shows its sub-menu. Defaults to main-menu-2. Adding tiles below overrides it."
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_on_menu_parents",
+      "label": "Hide on collections with a submenu",
+      "default": false
     },
     { "type": "header", "content": "\"All\" tile" },
     { "type": "checkbox", "id": "show_all", "label": "Show an \"All\" tile first", "default": true },
