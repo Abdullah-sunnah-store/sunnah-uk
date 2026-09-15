@@ -29,8 +29,13 @@
 -%}
 
 <style>
+  /* A third of the viewport, text settled at the bottom, as on the reference. */
   #tss-chero-{{ uid }} {
     position: relative;
+    display: flex;
+    min-height: 34svh;
+    flex-direction: column;
+    justify-content: flex-end;
     background: var(--tss-green);
     overflow: hidden;
   }
@@ -64,10 +69,10 @@
     align-items: center;
     gap: 8px;
     font-size: 10px;
-    font-weight: 500;
+    font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.22em;
-    color: var(--tss-gold-bright);
+    letter-spacing: 0.2em;
+    color: rgb(184 134 11 / 0.7);
   }
 
   #tss-chero-{{ uid }} .tss-chero__crumb a {
@@ -85,43 +90,26 @@
   }
 
   #tss-chero-{{ uid }} .tss-chero__title {
-    margin-top: 18px;
+    margin-top: 16px;
     max-width: 18ch;
     font-family: var(--tss-serif);
     font-size: {{ s.title_size | default: 42 }}px;
     font-weight: 400;
     line-height: 1.05;
-    letter-spacing: -0.025em;
+    letter-spacing: 0;
     text-wrap: balance;
     color: var(--tss-ivory);
   }
 
   #tss-chero-{{ uid }} .tss-chero__lede {
     margin-top: 16px;
-    max-width: 40ch;
+    max-width: 23em;
     font-family: var(--tss-serif);
-    font-size: 16px;
+    font-size: 17px;
     font-style: italic;
-    font-weight: 300;
-    line-height: 1.55;
-    color: rgb(245 240 232 / 0.78);
-  }
-
-  @media (min-width: 64rem) {
-    #tss-chero-{{ uid }} .tss-chero__inner {
-      max-width: var(--tss-max);
-      margin-inline: auto;
-      padding-block: {{ s.padding_top | default: 84 | plus: 28 }}px {{ s.padding_bottom | default: 72 | plus: 24 }}px;
-    }
-
-    #tss-chero-{{ uid }} .tss-chero__title {
-      font-size: {{ s.title_size | default: 42 | plus: 12 }}px;
-    }
-
-    #tss-chero-{{ uid }} .tss-chero__lede {
-      font-size: 18px;
-      max-width: 46ch;
-    }
+    font-weight: 400;
+    line-height: 1.375;
+    color: rgb(245 240 232 / 0.85);
   }
 </style>
 

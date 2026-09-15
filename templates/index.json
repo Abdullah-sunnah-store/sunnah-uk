@@ -16,7 +16,7 @@
           "type": "link",
           "settings": {
             "label": "By Occasion",
-            "link": "shopify://collections/all-gifts"
+            "link": "shopify://pages/by-occasion"
           }
         },
         "recipient": {

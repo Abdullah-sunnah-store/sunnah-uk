@@ -53,10 +53,10 @@
     position: absolute;
     inset: 0;
     background: linear-gradient(
-      to right,
+      to top,
       rgba(5, 30, 22, {{ s.scrim | default: 55 | divided_by: 100.0 }}) 0%,
-      rgba(5, 30, 22, {{ s.scrim | default: 55 | times: 0.45 | divided_by: 100.0 }}) 45%,
-      rgba(5, 30, 22, 0) 78%
+      rgba(5, 30, 22, {{ s.scrim | default: 55 | times: 0.27 | divided_by: 100.0 }}) 45%,
+      rgba(5, 30, 22, 0) 75%
     );
   }
 
@@ -67,15 +67,15 @@
     display: flex;
     align-items: baseline;
     gap: 14px;
-    padding: 0 var(--tss-gutter) 26px;
+    padding: var(--tss-gutter);
   }
 
   #tss-crows-{{ uid }} .tss-crows__label {
     font-family: var(--tss-serif);
     font-size: {{ s.label_size | default: 26 }}px;
     font-weight: 400;
-    line-height: 1.1;
-    letter-spacing: -0.015em;
+    line-height: 1;
+    letter-spacing: 0;
     color: var(--tss-ivory);
   }
 
@@ -108,34 +108,27 @@
   }
 
   #tss-crows-{{ uid }} .tss-crows__foot {
-    margin-top: 40px;
-    padding-inline: var(--tss-gutter);
+    padding: 64px var(--tss-gutter);
+    text-align: center;
+  }
+
+  #tss-crows-{{ uid }} .tss-crows__foot-link {
+    font-family: var(--tss-serif);
+    font-size: 18px;
+    font-style: italic;
+    color: var(--tss-ink);
+    text-decoration: none;
+    transition: color 0.4s ease;
+  }
+
+  #tss-crows-{{ uid }} .tss-crows__foot-link:hover {
+    color: var(--tss-green-mid);
   }
 
   #tss-crows-{{ uid }} .tss-crows__empty {
     padding: 48px var(--tss-gutter);
     font-size: 14px;
     color: rgb(28 28 26 / 0.55);
-  }
-
-  @media (min-width: 64rem) {
-    #tss-crows-{{ uid }} .tss-crows__row {
-      height: {{ s.row_height | default: 200 | plus: 80 }}px;
-    }
-
-    #tss-crows-{{ uid }} .tss-crows__body {
-      padding-inline: calc((100vw - var(--tss-max)) / 2 + var(--tss-gutter));
-      padding-bottom: 34px;
-    }
-
-    #tss-crows-{{ uid }} .tss-crows__label {
-      font-size: {{ s.label_size | default: 26 | plus: 8 }}px;
-    }
-
-    #tss-crows-{{ uid }} .tss-crows__foot {
-      max-width: var(--tss-max);
-      margin-inline: auto;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -219,7 +212,7 @@
 
     {%- if s.foot_text != blank and s.foot_url != blank -%}
       <div class="tss-crows__foot tss-rise">
-        <a class="tss-link-gold" href="{{ s.foot_url }}">{{ s.foot_text | escape }}</a>
+        <a class="tss-crows__foot-link" href="{{ s.foot_url }}">{{ s.foot_text | escape }}</a>
       </div>
     {%- endif -%}
   {%- else -%}
@@ -243,8 +236,7 @@
       "max": 400,
       "step": 10,
       "unit": "px",
-      "default": 200,
-      "info": "Desktop rows run 80px taller."
+      "default": 200
     },
     { "type": "range", "id": "gap", "label": "Gap between rows", "min": 0, "max": 24, "step": 2, "unit": "px", "default": 4 },
     {
